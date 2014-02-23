@@ -4,3 +4,4 @@
 
 
 int SDL_Init(Uint32 flags);
+element_cntrl get_default_ui_tree(game *cur_game);
