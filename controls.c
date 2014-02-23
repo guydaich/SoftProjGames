@@ -344,6 +344,7 @@ int get_rect(SDL_Rect *rect, control *child, control *parent)
 		rect->h = 0;
 		return 0;
 	}
+	return 1;
 }
 
 void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl target)

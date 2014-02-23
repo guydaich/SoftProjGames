@@ -1,4 +1,7 @@
 /* minimax.h */
+#ifndef MINIMAX_H
+#define MINIMAX_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -69,3 +72,5 @@ int recursive_tree_build(vertex root, int player, int depth, int max_depth,linke
 int calc_min_max_value(int new_score, int player, int prev_score);
 void killInfested(vertex infestedFather, int is_root);
 int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth);
+
+#endif

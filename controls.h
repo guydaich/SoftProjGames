@@ -1,3 +1,6 @@
+#ifndef CONTROLS_H
+#define CONTROLS_H
+
 #include <SDL.h>
 #include <SDL_video.h>
 
@@ -66,4 +69,6 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 control* new_button(int x, int y, int w, int h, char *img, int R, int B, int G, int is_trans);
 control* new_window(int x, int y, int w, int h);
 control* new_panel(int x, int y, int w, int h,int R, int G, int B);
+
+#endif
 

@@ -5,12 +5,12 @@ char* TIC_TAC_TOE_NAME = "Tic Tac Toe";
 int* tic_tac_toe_board;
 int tic_tac_toe_diffficulties[] = {9};
 
-char* get_name()
+char* ttc_get_name()
 {
 	return TIC_TAC_TOE_NAME;
 }
 
-int* get_initial_state()
+int* ttc_get_initial_state()
 {
 	int* initial_board = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
 
@@ -26,7 +26,7 @@ int* get_initial_state()
 	return initial_board;
 }
 
-int* copy_and_make_move(int* game_state, int move_row, int move_col, int player)
+int* ttc_copy_and_make_move(int* game_state, int move_row, int move_col, int player)
 {
 	int* copied_state = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
 	int i=0,j=0;
@@ -43,13 +43,13 @@ int* copy_and_make_move(int* game_state, int move_row, int move_col, int player)
 	return copied_state;
 }
 
-linked_list get_state_children(int* game_state, int player)
+linked_list ttc_get_state_children(int* game_state, int player)
 {
 	linked_list list = new_list();
 	int i,j, return_value = 1 ;
 
 	/*if game is over - no more steps*/
-	if (is_game_over(game_state))
+	if (ttc_is_game_over(game_state))
 	{
 		list->head = NULL;
 		list->tail = NULL;
@@ -64,7 +64,7 @@ linked_list get_state_children(int* game_state, int player)
 			if (game_state[i*TIC_TAC_TOE_ROWS + j] == 0)
 			{
 				/* add this move to children list*/
-				return_value = add_to_children_list(list,game_state,i,j,player);
+				return_value = ttc_add_to_children_list(list,game_state,i,j,player);
 			}
 		}
 	}
@@ -73,14 +73,14 @@ linked_list get_state_children(int* game_state, int player)
 
 
 /* creates a node and element for each child-state, and adds to list*/
-int add_to_children_list(linked_list list, int* game_state, int row, int col, int player)
+int ttc_add_to_children_list(linked_list list, int* game_state, int row, int col, int player)
 {
 	int* moved_state;
 	vertex node;
 	element new_elem,prev_tail;
 
-	moved_state = copy_and_make_move(game_state,row,col,player);
-	node = new_node(row*TIC_TAC_TOE_ROWS + col,(int*)moved_state,get_state_score(moved_state,player));
+	moved_state = ttc_copy_and_make_move(game_state,row,col,player);
+	node = new_node(row*TIC_TAC_TOE_ROWS + col,(int*)moved_state,ttc_get_state_score(moved_state,player));
 
 	/*check for errors*/
 	if (node == NULL)
@@ -122,13 +122,13 @@ int add_to_children_list(linked_list list, int* game_state, int row, int col, in
 
 /*we always work in difficulty 9, so either win, loose or neutral. 
  the winning moves will bubble up*/
-int get_state_score(int* game_state,int player)
+int ttc_get_state_score(int* game_state,int player)
 {
-	if (is_victory(game_state, player))
+	if (ttc_is_victory(game_state, player))
 	{
 		return INT_MAX;
 	}
-	else if (is_victory(game_state, (-1)*player))
+	else if (ttc_is_victory(game_state, (-1)*player))
 	{
 		return INT_MIN;
 	}
@@ -139,19 +139,19 @@ int get_state_score(int* game_state,int player)
 };
 
 /* gets difficult level for game*/
-int* get_difficulty_levels()
+int* ttc_get_difficulty_levels()
 {
 	return tic_tac_toe_diffficulties;
 }
 
 
 /* non-interface functions */
-void init_game()
+void ttc_init_game()
 {
-	tic_tac_toe_board = get_initial_state();
+	tic_tac_toe_board = ttc_get_initial_state();
 }
 
-void make_move(int* game_state, int row, int col, int player)
+void ttc_make_move(int* game_state, int row, int col, int player)
 {
 	if (game_state[row*TIC_TAC_TOE_ROWS + col] == 0)
 	{
@@ -159,16 +159,16 @@ void make_move(int* game_state, int row, int col, int player)
 	}
 }
 
-int is_game_over(int* game_state)
+int ttc_is_game_over(int* game_state)
 {
-	if (is_victory(game_state, TTC_PLAYER_1) ||
-		is_victory(game_state, TTC_PLAYER_2) ||
-		is_board_full(game_state))
+	if (ttc_is_victory(game_state, TTC_PLAYER_1) ||
+		ttc_is_victory(game_state, TTC_PLAYER_2) ||
+		ttc_is_board_full(game_state))
 			return 1;
 	return 0;
 }
 
-int is_board_full(int* game_state)
+int ttc_is_board_full(int* game_state)
 {
 	int i,j;
 	for (i=0; i	< TIC_TAC_TOE_ROWS; i++)
@@ -185,7 +185,7 @@ int is_board_full(int* game_state)
 	return 1;
 }
 /* checks if there is a victory in passed game state */
-int is_victory(int* game_state, int player)
+int ttc_is_victory(int* game_state, int player)
 {
 	int i,j,flag; 
 	/* check lines */	
@@ -259,7 +259,7 @@ int is_victory(int* game_state, int player)
 	return 0;
 }
 
-element_cntrl panel_function(int* game_state)
+element_cntrl ttc_panel_function(int* game_state)
 { 
 	control *ttc_grid;
 	control *ttc_button;
@@ -321,7 +321,7 @@ void ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* gam
 	/* elem get's the elemnt to update (grid slot) */
 	find_element_by_coordinates(root,x,y,elem);
 
-	make_move(game_state,y/200,x/200,1);
-	comp_move = get_computer_move(game_state, 9, get_state_children);
-	make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,-1);
+	ttc_make_move(game_state,y/200,x/200,1);
+	comp_move = get_computer_move(game_state, 9, ttc_get_state_children);
+	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,-1);
 }

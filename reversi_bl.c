@@ -310,3 +310,7 @@ int get_player_pieces(int* game_state, int player)
 	return count;
 }
 
+element_cntrl	rv_panel_function(int *game_state)
+{
+	return NULL;
+}

@@ -1,6 +1,5 @@
 ﻿#include "game.h"
 
-
 int gui_init()
 {
 	
@@ -18,20 +17,21 @@ int main( int argc, char* args[] )
 	
 	control *window;
 	element_cntrl ui_tree,game_panel; 
-	int* game = get_initial_state();
+	game *cur_game = new_game(TTC);
+
+	int* game = cur_game->get_initial_state();
+
 	SDL_Event test_event; 
 	int quit=0;
 
 	gui_init();
-	ui_tree = get_default_ui_tree();
-	game_panel = panel_function(game);
+	ui_tree = get_default_ui_tree(cur_game);
+	game_panel = cur_game->panel_function(game);
 	add_control_element_to_list(ui_tree->children,game_panel);
 	game_panel->parent= ui_tree;
 	
 	draw_ui_tree(ui_tree);
-
     SDL_Flip( ui_tree->cntrl->srfc );
-
 
 	while(!quit)
     {
@@ -39,7 +39,7 @@ int main( int argc, char* args[] )
 		 switch(test_event.type) {
 		 case SDL_MOUSEBUTTONDOWN:
 			 ttc_handle_mouse_button_down(&test_event, ui_tree,game);
-			 game_panel = panel_function(game);
+			 game_panel = cur_game->panel_function(game);
 			 add_control_element_to_list(ui_tree->children,game_panel);
 			 game_panel->parent= ui_tree;
 			 draw_ui_tree(ui_tree);
@@ -54,7 +54,7 @@ int main( int argc, char* args[] )
 	return 0;
 }
 
-element_cntrl get_default_ui_tree()
+element_cntrl get_default_ui_tree(game *cur_game)
 {
 	element_cntrl root, temp_elem;
 	control* temp_control;
@@ -103,7 +103,7 @@ element_cntrl get_default_ui_tree()
 	add_control_element_to_list(list,temp_elem);
 
 	/*difficulties*/
-	diff = get_difficulty_levels();
+	diff = cur_game->get_difficulty_levels();
 	for (i=0; i< 2; i++)
 	{
 		temp_control = new_button(675,(i+5)*100,330,80,"./gfx/btn_diff_1.bmp",255,0,255,1);
