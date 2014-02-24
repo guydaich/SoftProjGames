@@ -1,5 +1,7 @@
 ﻿#include "game.h"
 extern char* TIC_TAC_TOE_NAME;
+char* RESTART="restart";
+char* QUIT="quit";
 
 int gui_init()
 {
@@ -71,11 +73,29 @@ int main( int argc, char* args[] )
 		}
 		 switch(test_event.type) {
 		 case SDL_MOUSEBUTTONDOWN:
-			 ttc_handle_mouse_button_down(&test_event, ui_tree,game);
-			 game_panel = cur_game->panel_function(game);
-			 add_control_element_to_list(ui_tree->children,game_panel);
-			 game_panel->parent= ui_tree;
-			 draw_ui_tree(ui_tree);
+			 if (test_event.button.x<=600 && test_event.button.y<=600)
+			 {
+				ttc_handle_mouse_button_down(&test_event, ui_tree,game);
+				game_panel = cur_game->panel_function(game);
+				add_control_element_to_list(ui_tree->children,game_panel);
+				game_panel->parent= ui_tree;
+				draw_ui_tree(ui_tree);
+			 }
+			 else {
+				 find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
+				 if (strcmp(pressed_Button->cntrl->caption,RESTART)==0){
+					game=ttc_get_initial_state();
+					game_panel = cur_game->panel_function(game);
+					add_control_element_to_list(ui_tree->children,game_panel);
+					game_panel->parent= ui_tree;
+					draw_ui_tree(ui_tree);
+					break;
+				 }
+				  if (strcmp(pressed_Button->cntrl->caption,QUIT)==0){
+					quit=1;
+					break;
+				 }
+			 }
 			 break;
 		 default: //unhandled event
 			 printf("hi");
@@ -95,7 +115,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	int* diff;
 	int i;
 	
-	root = new_control_element(new_window(0,0,1000,1000));
+	root = new_control_element(new_window(0,0,1000,700));
 	/*create panel children*/	
 	list = new_control_list();
 
@@ -110,12 +130,12 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	list = new_control_list();
 
 	/*label - paint first*/
-	temp_control = new_button(650,0,330,80,"./gfx/button_label.bmp",255,0,255,1,NULL);
+	temp_control = new_label(650,0,330,80,"./gfx/button_label.bmp",255,0,255,1);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
 	/*restart*/
-	temp_control = new_button(675,100,200,65,"./gfx/btn_restart.bmp",255,0,255,1,NULL);
+	temp_control = new_button(675,100,200,65,"./gfx/btn_restart.bmp",255,0,255,1,RESTART);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -137,7 +157,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 
 	/*difficulties*/
 	diff = cur_game->get_difficulty_levels();
-	for (i=0; i< 2; i++)
+	for (i=0; i< 1; i++)
 	{
 		temp_control = new_button(675,(i+5)*100,330,80,"./gfx/btn_diff_1.bmp",255,0,255,1,NULL);
 		temp_elem = new_control_element(temp_control);
@@ -145,7 +165,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	}
 
 	/*quit*/
-	temp_control = new_button(675,(i+6)*100,330,80,"./gfx/btn_quit.bmp",0,0,0,0,NULL);
+	temp_control = new_button(675,(i+5)*100+10,330,80,"./gfx/btn_quit.bmp",255,0,255,1,QUIT);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 	

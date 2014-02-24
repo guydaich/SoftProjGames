@@ -2,7 +2,7 @@
 
 
 char* TIC_TAC_TOE_NAME = "Tic Tac Toe";
-int* tic_tac_toe_board;
+int* tic_tac_toe_board=NULL;
 int tic_tac_toe_diffficulties[] = {9};
 
 char* ttc_get_name()
@@ -12,9 +12,14 @@ char* ttc_get_name()
 
 int* ttc_get_initial_state()
 {
-	int* initial_board = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
-
 	int i=0,j=0;
+	int* initial_board;
+	if (tic_tac_toe_board!=NULL){
+		free(tic_tac_toe_board);
+	}
+	initial_board = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
+
+	
 
 	for (i=0; i < TIC_TAC_TOE_ROWS; i++)
 	{
@@ -151,11 +156,15 @@ void ttc_init_game()
 	tic_tac_toe_board = ttc_get_initial_state();
 }
 
-void ttc_make_move(int* game_state, int row, int col, int player)
+int ttc_make_move(int* game_state, int row, int col, int player)
 {
 	if (game_state[row*TIC_TAC_TOE_ROWS + col] == 0)
 	{
 		game_state[row*TIC_TAC_TOE_ROWS + col] = player;
+		return 1;
+	}
+	else{
+		return 0;
 	}
 }
 
@@ -311,17 +320,30 @@ element_cntrl ttc_panel_function(int* game_state)
 	return root;
 }
 
-void ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state)
+int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state)
 {
 	int x=0,y=0;
-	int comp_move;
+	int comp_move,succes;
 	element_cntrl elem=NULL;
 	x=event->button.x;
 	y=event->button.y;
 	/* elem get's the elemnt to update (grid slot) */
 	find_element_by_coordinates(root,x,y,&elem);
 
-	ttc_make_move(game_state,y/200,x/200,1);
+	if(ttc_is_game_over(game_state))
+	{
+		return 0;
+	}
+	succes=ttc_make_move(game_state,y/200,x/200,1);
+	if(succes==0)
+	{
+		return 0;
+	}
+	if (ttc_is_game_over(game_state))
+	{
+		return 0;
+	}
 	comp_move = get_computer_move(game_state, 9, ttc_get_state_children);
 	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,-1);
+	return 0;
 }
