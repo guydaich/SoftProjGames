@@ -4,7 +4,7 @@
 /* inits a new game */
 game* new_game(int game_id)
 {
-	game *new_game_obj = (game*)malloc(sizeof(game));
+	game *new_game_obj = (game*)malloc(sizeof(game));  //TODO check new_game_obj!=NULL
 	switch (game_id)
 	{
 	case TTC:

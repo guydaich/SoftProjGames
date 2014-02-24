@@ -271,7 +271,7 @@ element_cntrl ttc_panel_function(int* game_state)
 	/*create panel children*/	
 	list = new_control_list();
 	/* grid surface - create control and element*/
-	ttc_grid = new_button(0,0,600,600,"./gfx/grid.bmp",0,0,0,0);
+	ttc_grid = new_button(0,0,600,600,"./gfx/grid.bmp",0,0,0,0,NULL);
 	grid = new_control_element(ttc_grid);
 	/* add grid to children list*/
 	add_control_element_to_list(list,grid);
@@ -287,15 +287,15 @@ element_cntrl ttc_panel_function(int* game_state)
 			ttc_button= NULL;
 			if (game_state[i*TIC_TAC_TOE_ROWS + j] == TTC_PLAYER_1)	
 			{
-				ttc_button=new_button(j*200,i*200,200,200,"./gfx/x.bmp",255,0,255,1);
+				ttc_button=new_button(j*200,i*200,200,200,"./gfx/x.bmp",255,0,255,1,NULL);
 			}
 			else if (game_state[i*TIC_TAC_TOE_ROWS + j] == TTC_PLAYER_2)	
 			{
-				ttc_button=new_button(j*200,i*200,200,200,"./gfx/o.bmp",255,0,255,1);
+				ttc_button=new_button(j*200,i*200,200,200,"./gfx/o.bmp",255,0,255,1,NULL);
 			}
 			else
 			{
-				ttc_button=new_button(j*200,i*200,200,200,"./gfx/ttc_empty.bmp",255,0,255,1);
+				ttc_button=new_button(j*200,i*200,200,200,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
 			}
 			/*add pieces to children list*/
 			if (ttc_button != NULL)
@@ -319,7 +319,7 @@ void ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* gam
 	x=event->button.x;
 	y=event->button.y;
 	/* elem get's the elemnt to update (grid slot) */
-	find_element_by_coordinates(root,x,y,elem);
+	find_element_by_coordinates(root,x,y,&elem);
 
 	ttc_make_move(game_state,y/200,x/200,1);
 	comp_move = get_computer_move(game_state, 9, ttc_get_state_children);

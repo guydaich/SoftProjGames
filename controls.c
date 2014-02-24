@@ -110,7 +110,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 }
 
 
-control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans)
+control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption)
 {
 	// allocate button
 	control *button = (control*)malloc(sizeof(control));
@@ -128,6 +128,7 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 	button->G = G;
 	button->img = img;
 	button->draw=draw_button;
+	button->caption=caption;
 
 	return button;
 }
@@ -160,8 +161,8 @@ control* new_window(int x, int y, int w, int h)
 	control *window = (control*)malloc(sizeof(control));
 	window->is_button = 0;
 	window->is_label = 0;
-	window->is_panel = 1;
-	window->is_window = 0;
+	window->is_panel = 0;
+	window->is_window = 1;
 	window->x = x;
 	window->y = y;
 	window->h = h;
@@ -347,7 +348,7 @@ int get_rect(SDL_Rect *rect, control *child, control *parent)
 	return 1;
 }
 
-void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl target)
+void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl *target)
 {
 	element_cntrl cur_elem;
 	// fix this! use buttons in lowest level only
@@ -356,7 +357,7 @@ void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl 
 		if ((x >= root->cntrl->x && x <= (root->cntrl->x + root->cntrl->w) &&
 			(y >= root->cntrl->y && y <= (root->cntrl->y + root->cntrl->h))))
 		{
-			target = root; 
+			*target = root; 
 			return;
 		}
 	}

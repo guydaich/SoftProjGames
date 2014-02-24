@@ -56,7 +56,7 @@ element_cntrl new_control_element(control* cntrl);
 linked_list_cntrl new_control_list();
 void add_control_element_to_list(linked_list_cntrl list, element_cntrl elem);
 void set_list_as_children(linked_list_cntrl list, element_cntrl elem);
-void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl target);
+void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl *target);
 
 
 /* control functions */
@@ -66,7 +66,7 @@ void draw_label(control *label, control *container);
 void draw_window(control* window);
 void draw_panel(control* panel);
 control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans);
-control* new_button(int x, int y, int w, int h, char *img, int R, int B, int G, int is_trans);
+control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption);
 control* new_window(int x, int y, int w, int h);
 control* new_panel(int x, int y, int w, int h,int R, int G, int B);
 
