@@ -19,8 +19,6 @@ int* ttc_get_initial_state()
 	}
 	initial_board = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
 
-	
-
 	for (i=0; i < TIC_TAC_TOE_ROWS; i++)
 	{
 		for(j=0; j < TIC_TAC_TOE_COLS; j++)
