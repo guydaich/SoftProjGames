@@ -105,6 +105,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->G = G;
 	label->img = img;
 	label->draw=draw_label;
+	label->ownSurface=NULL;
 
 	return label;
 }
@@ -129,6 +130,7 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 	button->img = img;
 	button->draw=draw_button;
 	button->caption=caption;
+	button->ownSurface=NULL;
 
 	return button;
 }
@@ -149,9 +151,9 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G)
 	panel->R = R;
 	panel->B = B;
 	panel->G = G;
+	panel->draw = draw_panel;// drawing funct
+	panel->ownSurface=NULL;
 
-	// drawing funct
-	panel->draw = draw_panel;
 	return panel;
 }
 
@@ -167,8 +169,9 @@ control* new_window(int x, int y, int w, int h)
 	window->y = y;
 	window->h = h;
 	window->w = w;
-	// drawing funct
-	window->draw = draw_window;
+	window->draw = draw_window;// drawing funct
+	window->ownSurface=NULL;
+
 	return window;
 }
 
@@ -183,22 +186,31 @@ void draw_button(control *button, control *container)
 	// load pic
 	SDL_Surface *surface;
 
-	if ((surface = SDL_LoadBMP(button->img)) == NULL)
+	if (button->ownSurface==NULL)
 	{
-		err=SDL_GetError();
-		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-		SDL_FreeSurface(surface);
-	}
+		if ((surface = SDL_LoadBMP(button->img)) == NULL)
+		{
+			err=SDL_GetError();
+			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
+			SDL_FreeSurface(surface);
+		}
 	
-	// update surface in button object for further use
-	button->srfc = container->srfc;
-	// get rectangle according to container constraints
+		// update surface in button object for further use
+		button->srfc = container->srfc;
+		// get rectangle according to container constraints
+		button->ownSurface=surface;
+	}
+	else{
+		surface=button->ownSurface;
+	}
+
 	get_rect(&rect,button,container);
 
-	/* set transparancy according to button R,G,B values*/
-	if (button->is_transparant)
-		SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(surface->format, button->R, button->G, button->B));
-
+		// set transparancy according to button R,G,B values
+		if (button->is_transparant){
+			SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(surface->format, button->R, button->G, button->B));
+		}
+	
 	
 	if (SDL_BlitSurface(surface,NULL, container->srfc, &rect) != 0)
 	{
@@ -206,8 +218,6 @@ void draw_button(control *button, control *container)
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 		SDL_FreeSurface(surface);
 	}
-
-	SDL_Flip( container->srfc );
 }
 
 
@@ -219,16 +229,21 @@ void draw_label(control *label, control *container)
 	
 	// load pic
 	SDL_Surface *surface;
-
-	if ((surface = SDL_LoadBMP(label->img)) == NULL)
+	if (label->ownSurface==NULL)
 	{
-		err=SDL_GetError();
-		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-		SDL_FreeSurface(surface);
+		if ((surface = SDL_LoadBMP(label->img)) == NULL)
+		{
+			err=SDL_GetError();
+			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
+			SDL_FreeSurface(surface);
+		}
+		
+		// update surface in button object for further use
+		label->srfc = container->srfc;
 	}
-	
-	// update surface in button object for further use
-	label->srfc = container->srfc;
+	else{
+		surface=label->ownSurface;
+	}
 	// get rectangle according to container constraints
 	get_rect(&rect,label,container);
 
@@ -244,8 +259,6 @@ void draw_label(control *label, control *container)
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 		SDL_FreeSurface(surface);
 	}
-
-	SDL_Flip( container->srfc );
 }
 
 
@@ -262,26 +275,29 @@ void draw_panel(control* panel, control *container)
 	char *err; 
 	SDL_Rect rect;
 
-	get_rect(&rect,panel,container);
-
-	/* create a coloreble surface*/ 
-	if ((surface = SDL_CreateRGBSurface(SDL_HWSURFACE, panel->w, panel->h, 32, 0, 0, 0, 0)) == NULL)
+	if (panel->ownSurface==NULL)
 	{
-		err=SDL_GetError();
-		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-		SDL_FreeSurface(surface);
-	}
+		if ((surface = SDL_CreateRGBSurface(SDL_HWSURFACE, panel->w, panel->h, 32, 0, 0, 0, 0)) == NULL)
+		{
+			err=SDL_GetError();
+			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
+			SDL_FreeSurface(surface);
+		}
 	
-	/*fill surface with defualt panel color*/
+		/*fill surface with defualt panel color*/
+		panel->srfc = container->srfc;
+		panel->ownSurface=surface;
+	}
+	else {
+		surface=panel->ownSurface;
+	}
+	get_rect(&rect,panel,container);
 	if (SDL_FillRect(container->srfc,&rect, SDL_MapRGB(surface->format, panel->R, panel->G, panel->B)) != 0)
 	{
 		err=SDL_GetError();
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 		SDL_FreeSurface(surface);
 	}
-	panel->srfc = container->srfc;
-	SDL_Flip( container->srfc );
-	
 }
 
 
@@ -375,3 +391,41 @@ void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl 
 	}
 
 }
+
+void clear_game_panel(element_cntrl ui_tree)
+{
+	element_cntrl game_panel,pre_tail;
+
+	if(ui_tree->children->head==ui_tree->children->tail)//if there is no previous game panel
+	{
+		return;
+	}
+	pre_tail=ui_tree->children->tail->prev;
+	game_panel=ui_tree->children->tail; //assumption!
+	freeControlList(game_panel);
+	pre_tail->next=NULL;
+	ui_tree->children->tail=pre_tail;
+}
+
+void freeControlList(element_cntrl node)
+{
+	element_cntrl run;
+
+	if (node==NULL)
+	{
+		return;
+	}
+	if (node->children!=NULL)
+	{
+		for (run=node->children->head;run!=NULL;run=run->next)
+		{
+			freeControlList(run);
+		}
+	}
+	SDL_FreeSurface(node->cntrl->ownSurface);
+	node->cntrl->ownSurface=NULL;
+	free(node->cntrl);
+}
+
+
+

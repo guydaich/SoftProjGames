@@ -28,7 +28,8 @@ typedef struct _control{
 	int B;
 	int G;
 	/*surface to blit to, always window*/
-	SDL_Surface *srfc; 
+	SDL_Surface *srfc;
+	SDL_Surface *ownSurface;
 
 } control;
 
@@ -70,5 +71,7 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 control* new_window(int x, int y, int w, int h);
 control* new_panel(int x, int y, int w, int h,int R, int G, int B);
 
+void clear_game_panel(element_cntrl ui_tree);
+void freeControlList(element_cntrl node);
 #endif
 

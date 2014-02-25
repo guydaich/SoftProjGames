@@ -216,9 +216,14 @@ element_cntrl draw_game (game *cur_game,element_cntrl prev_ui_tree)
 {
 	element_cntrl game_panel;
 
+	clear_game_panel(prev_ui_tree);
 	game_panel = (cur_game)->panel_function((cur_game)->board);
 	add_control_element_to_list(prev_ui_tree->children,game_panel);
 	game_panel->parent= prev_ui_tree;
 	draw_ui_tree(prev_ui_tree);
+	SDL_Flip( (prev_ui_tree->cntrl->srfc) );
 	return prev_ui_tree;
 }
+
+
+//TODO: MUST clear prev game panel before adding a new one- the the reason for "memory" in restart
