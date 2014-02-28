@@ -4,6 +4,8 @@ extern char* TIC_TAC_TOE_NAME;
 char* RESTART="restart";
 char* QUIT="quit";
 char* MAIN_MENU="mainMenu";
+char* SAVE="save";
+char* LOAD="load";
 
 int gui_init()
 {
@@ -42,6 +44,10 @@ int main( int argc, char* args[] )
 			 }
 			 else {
 				 find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
+				 if(pressed_Button==NULL || pressed_Button->cntrl->caption==NULL)
+				 {
+					 break;
+				 }
 				 if (strcmp(pressed_Button->cntrl->caption,RESTART)==0){
 					cur_game->board=ttc_get_initial_state();
 					ui_tree=draw_game(cur_game,ui_tree);
@@ -53,6 +59,12 @@ int main( int argc, char* args[] )
 				 }
 				 if (strcmp(pressed_Button->cntrl->caption,MAIN_MENU)==0){
 					ui_tree=game_init(&cur_game);
+					break;
+				 }
+				 if (strcmp(pressed_Button->cntrl->caption,SAVE)==0){
+					save_game_to_file("C:/Users/davidl/Documents/TTT.txt",cur_game->board,cur_game->cur_player,
+						cur_game->cols,cur_game->rows,(cur_game->get_name()));
+					printf("saved");
 					break;
 				 }
 			 }
@@ -100,7 +112,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	add_control_element_to_list(list,temp_elem);
 
 	/*save*/
-	temp_control = new_button(675,200,330,80,"./gfx/btn_save.bmp",255,0,255,1,NULL);
+	temp_control = new_button(675,200,330,80,"./gfx/btn_save.bmp",255,0,255,1,SAVE);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -162,6 +174,10 @@ element_cntrl mainMenuWindow(){
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
+	temp_control = new_button(20,100,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,LOAD);
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+
 	set_list_as_children(list,root->children->head);
 	return root;
 
@@ -187,7 +203,19 @@ game* runMainMenu(){
 		 case SDL_MOUSEBUTTONDOWN:
 			 find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
 			 if (strcmp(pressed_Button->cntrl->caption,TIC_TAC_TOE_NAME)==0){
-				 return new_game(TTC);
+				 game *newGame;
+				 newGame=new_game(TTC);
+				 newGame->board=newGame->get_initial_state();
+				 return newGame;
+			 }
+			 if (strcmp(pressed_Button->cntrl->caption,LOAD)==0){
+				int whichGame;
+				int *gameBoard;
+				game *loadedGame;
+				gameBoard=load_game_from_file("C:/Users/davidl/Documents/TTT.txt",&whichGame);
+				loadedGame=new_game(whichGame);
+				loadedGame->board=gameBoard;
+				return loadedGame;
 			 }
 			 break;
 		 default: //unhandled event
@@ -206,7 +234,6 @@ element_cntrl game_init(game **cur_game)
 	element_cntrl ui_tree;
 
 	*cur_game=runMainMenu();
-	(*cur_game)->board = (*cur_game)->get_initial_state();
 	ui_tree = get_default_ui_tree((*cur_game));
 	return draw_game(*cur_game,ui_tree);
 }

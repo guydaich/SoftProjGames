@@ -1,7 +1,7 @@
 #include "tic_tac_toe_bl.h"
 
 
-char* TIC_TAC_TOE_NAME = "Tic Tac Toe";
+char* TIC_TAC_TOE_NAME = "Tic-Tac-Toe";
 int* tic_tac_toe_board=NULL;
 int tic_tac_toe_diffficulties[] = {9};
 
