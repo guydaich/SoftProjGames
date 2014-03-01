@@ -46,8 +46,17 @@ void add_control_element_to_list(linked_list_cntrl list, element_cntrl elem)
 
 void set_list_as_children(linked_list_cntrl list, element_cntrl elem)
 {
-	element_cntrl cur_elem;
+	element_cntrl cur_elem,run;
 	
+	//free prev list
+	if (elem->children!=NULL){
+		for (run=elem->children->head;run!=NULL;run=run->next)
+		{
+			freeControlList(run);
+		}
+		free(elem->children);
+	}
+
 	// set list as children
 	elem->children = list; 
 	
@@ -106,6 +115,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->img = img;
 	label->draw=draw_label;
 	label->ownSurface=NULL;
+	label->caption=NULL;
 
 	return label;
 }
@@ -153,6 +163,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G)
 	panel->G = G;
 	panel->draw = draw_panel;// drawing funct
 	panel->ownSurface=NULL;
+	panel->caption=NULL;
 
 	return panel;
 }
@@ -171,6 +182,7 @@ control* new_window(int x, int y, int w, int h)
 	window->w = w;
 	window->draw = draw_window;// drawing funct
 	window->ownSurface=NULL;
+	window->caption=NULL;
 
 	return window;
 }

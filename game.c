@@ -1,11 +1,13 @@
 ﻿#include "game.h"
+
 int quit=0;
 extern char* TIC_TAC_TOE_NAME;
-char* RESTART="restart";
-char* QUIT="quit";
-char* MAIN_MENU="mainMenu";
-char* SAVE="save";
-char* LOAD="load";
+#define RESTART "restart"
+#define QUIT "quit"
+#define MAIN_MENU "mainMenu"
+#define SAVE "save"
+#define LOAD "load"
+
 
 int gui_init()
 {
@@ -75,6 +77,8 @@ int main( int argc, char* args[] )
 		 }
 	}
 	}
+	freeControlList(ui_tree);
+	free(cur_game);
 
 	return 0;
 }
@@ -224,6 +228,7 @@ game* runMainMenu(){
 		 }
 	}
 	}
+	freeControlList(ui_tree);
 
 	return NULL;
 }
@@ -251,6 +256,3 @@ element_cntrl draw_game (game *cur_game,element_cntrl prev_ui_tree)
 	SDL_Flip( (prev_ui_tree->cntrl->srfc) );
 	return prev_ui_tree;
 }
-
-
-//TODO: MUST clear prev game panel before adding a new one- the the reason for "memory" in restart
