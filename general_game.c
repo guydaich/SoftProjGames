@@ -17,6 +17,7 @@ game* new_game(int game_id)
 		new_game_obj->rows =  TIC_TAC_TOE_ROWS;
 		new_game_obj->cols = TIC_TAC_TOE_COLS;
 		new_game_obj->cur_player= TTC_PLAYER_1; 
+		new_game_obj->handle_mouse_button_down= ttc_handle_mouse_button_down;
 		break;
 	case REVERSI:
 		new_game_obj->get_name = rv_get_name;
@@ -27,7 +28,8 @@ game* new_game(int game_id)
 		new_game_obj->get_initial_state = rv_get_initial_state;
 		new_game_obj->rows =  REVERSI_ROWS;
 		new_game_obj->cols = REVERSI_COLS;
-		new_game_obj->cur_player= REVERSI_PLAYER_1; 
+		new_game_obj->cur_player= REVERSI_PLAYER_1;
+		new_game_obj->handle_mouse_button_down= rv_handle_mouse_button_down;
 		break;
 	case CONNECT4:
 		break;

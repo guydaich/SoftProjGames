@@ -39,7 +39,7 @@ int main( int argc, char* args[] )
 		 case SDL_MOUSEBUTTONDOWN:
 			 if (test_event.button.x<=600 && test_event.button.y<=600)
 			 {
-				ttc_handle_mouse_button_down(&test_event, ui_tree,cur_game->board);
+				cur_game->handle_mouse_button_down(&test_event, ui_tree,cur_game->board);
 				ui_tree=draw_game(cur_game,ui_tree);
 			 }
 			 else {
@@ -201,10 +201,10 @@ game* runMainMenu(){
 		}
 		switch(test_event.type) {
 		 case SDL_MOUSEBUTTONDOWN:
-			 find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
-			 if (strcmp(pressed_Button->cntrl->caption,TIC_TAC_TOE_NAME)==0){
+			 /*find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
+			 if (strcmp(pressed_Button->cntrl->caption,TIC_TAC_TOE_NAME)==0)*/if (1){
 				 game *newGame;
-				 newGame=new_game(TTC);
+				 newGame=new_game(REVERSI);
 				 newGame->board=newGame->get_initial_state();
 				 return newGame;
 			 }

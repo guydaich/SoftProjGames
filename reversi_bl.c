@@ -197,7 +197,7 @@ void rv_init_game()
 }
 
 /*get a position, flips other player's pieces*/
-void rv_make_move(int* game_state, int rows, int cols, int player)
+int rv_make_move(int* game_state, int rows, int cols, int player)
 {
 	int i,t_rows,t_cols, length;
 	int other = player*(-1); 
@@ -236,6 +236,7 @@ void rv_make_move(int* game_state, int rows, int cols, int player)
 			}
 		}
 	}
+	return 1;
 }
 
 /* a move is valid iff another piece of the player is encoutered 
@@ -309,8 +310,77 @@ int get_player_pieces(int* game_state, int player)
 	}
 	return count;
 }
-
 element_cntrl	rv_panel_function(int *game_state)
 {
-	return NULL;
+	control *rv_grid;
+	control *rv_button;
+	element_cntrl root, grid, temp;
+	linked_list_cntrl list;
+	int i,j;
+ 	
+	root = new_control_element(new_panel(0,0,600,600,255,255,255));
+	/*create panel children*/	
+	list = new_control_list();
+	/* grid surface - create control and element*/
+	rv_grid = new_button(0,0,600,600,"./gfx/reversi_board.bmp",0,0,0,0,NULL);
+	grid = new_control_element(rv_grid);
+	/* add grid to children list*/
+	add_control_element_to_list(list,grid);
+	/* update root children, and grid parent*/
+	set_list_as_children(list,root);
+	
+	/*create grid children*/
+	list = new_control_list();
+	for (i=0; i< REVERSI_ROWS; i++)
+	{
+		for(j=0; j< REVERSI_COLS; j++)
+		{
+			rv_button= NULL;
+			if (game_state[i*REVERSI_ROWS + j] == REVERSI_PLAYER_1)	
+			{
+				rv_button=new_button(50+(i)*75,50+(j)*75,75,75,"./gfx/reversi_piece_black.bmp",255,0,255,1,NULL);
+			}
+			else if (game_state[i*REVERSI_ROWS + j] == REVERSI_PLAYER_2)	
+			{
+				rv_button=new_button(50+(i)*75,50+(j)*75,75,75,"./gfx/reversi_piece_white.bmp",255,0,255,1,NULL);
+			}
+			/*else
+			{
+				ttc_button=new_button(j*200,i*200,200,200,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
+			}*/
+			/*add pieces to children list*/
+			if (rv_button != NULL)
+			{
+				temp = new_control_element(rv_button);
+				add_control_element_to_list(list,temp);
+			}
+		}
+	}
+	/*update parent-children*/
+	set_list_as_children(list,grid);
+
+	return root;
+}
+
+int rv_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state)
+{
+	int x=0,y=0;
+	int comp_move,succes;
+	element_cntrl elem=NULL;
+	x=event->button.x;
+	y=event->button.y;
+
+	if(rv_is_game_over(game_state))
+	{
+		return 0;
+	}
+	succes=rv_make_move(game_state,x/75-1,y/75-1,1);
+	if(succes==0)
+	{
+		return 0;
+	}
+
+	//comp_move = get_computer_move(game_state, 9, rv_get_state_children);
+	//rv_make_move(game_state,comp_move/REVERSI_ROWS-1,comp_move%REVERSI_COLS-1,-1);
+	return 0;
 }
