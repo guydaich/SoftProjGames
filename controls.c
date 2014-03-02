@@ -243,7 +243,7 @@ void draw_label(control *label, control *container)
 	SDL_Surface *surface;
 	if (label->ownSurface==NULL)
 	{
-		if ((surface = SDL_LoadBMP(label->img)) == NULL)
+		if ((surface = SDL_LoadBMP(label->img)) == NULL)////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		{
 			err=SDL_GetError();
 			printf("ERROR: failed to blit image: %s\n", SDL_GetError());

@@ -1,4 +1,5 @@
 ﻿#include "game.h"
+#include "reversi_bl.h"
 
 int quit=0;
 extern char* TIC_TAC_TOE_NAME;
@@ -51,7 +52,7 @@ int main( int argc, char* args[] )
 					 break;
 				 }
 				 if (strcmp(pressed_Button->cntrl->caption,RESTART)==0){
-					cur_game->board=ttc_get_initial_state();
+					cur_game->board=cur_game->get_initial_state();
 					ui_tree=draw_game(cur_game,ui_tree);
 					break;
 				 }
@@ -155,12 +156,12 @@ element_cntrl mainMenuWindow(){
 	control* temp_control;
 	linked_list_cntrl list; 
 	
-	root = new_control_element(new_window(0,0,150,200));
+	root = new_control_element(new_window(0,0,150,300));
 	/*create panel children*/	
 	list = new_control_list();
 
 	/*button panel*/
-	temp_control = new_panel(0,0,200,200,255,255,255);
+	temp_control = new_panel(0,0,200,300,255,255,255);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 	set_list_as_children(list,root);
@@ -173,12 +174,15 @@ element_cntrl mainMenuWindow(){
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	/*restart*/
 	temp_control = new_button(20,20,100,60,"./gfx/TTC.bmp",255,0,255,1,TIC_TAC_TOE_NAME);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	temp_control = new_button(20,100,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,LOAD);
+	temp_control = new_button(20,100,100,60,"./gfx/reversi.bmp",255,0,255,1,REVERSI_NAME);
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+
+	temp_control = new_button(20,200,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,LOAD);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -205,8 +209,14 @@ game* runMainMenu(){
 		}
 		switch(test_event.type) {
 		 case SDL_MOUSEBUTTONDOWN:
-			 /*find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
-			 if (strcmp(pressed_Button->cntrl->caption,TIC_TAC_TOE_NAME)==0)*/if (1){
+			 find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
+			 if (strcmp(pressed_Button->cntrl->caption,TIC_TAC_TOE_NAME)==0){
+				 game *newGame;
+				 newGame=new_game(TTC);
+				 newGame->board=newGame->get_initial_state();
+				 return newGame;
+			 }
+			 if (strcmp(pressed_Button->cntrl->caption,REVERSI_NAME)==0){
 				 game *newGame;
 				 newGame=new_game(REVERSI);
 				 newGame->board=newGame->get_initial_state();
@@ -239,6 +249,9 @@ element_cntrl game_init(game **cur_game)
 	element_cntrl ui_tree;
 
 	*cur_game=runMainMenu();
+	if (*cur_game==NULL){
+		exit(0);
+	}
 	ui_tree = get_default_ui_tree((*cur_game));
 	return draw_game(*cur_game,ui_tree);
 }

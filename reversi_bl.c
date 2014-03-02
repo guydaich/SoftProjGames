@@ -380,7 +380,7 @@ int rv_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_
 		return 0;
 	}
 
-	//comp_move = get_computer_move(game_state, 9, rv_get_state_children);
+	//comp_move = get_computer_move(game_state, 2, rv_get_state_children);
 	//rv_make_move(game_state,comp_move/REVERSI_ROWS-1,comp_move%REVERSI_COLS-1,-1);
 	return 0;
 }
