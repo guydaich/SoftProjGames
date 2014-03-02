@@ -4,6 +4,15 @@
 /* inits a new game */
 game* new_game(int game_id)
 {
+	//int is_multi; 
+
+	/*TODO: handle multiplayer selection
+	*
+	*
+	*
+	*/
+	//is_multi = 0; // play against minimax
+
 	game *new_game_obj = (game*)malloc(sizeof(game));  //TODO check new_game_obj!=NULL
 	switch (game_id)
 	{
@@ -30,6 +39,11 @@ game* new_game(int game_id)
 		new_game_obj->cols = REVERSI_COLS;
 		new_game_obj->cur_player= REVERSI_PLAYER_1;
 		new_game_obj->handle_mouse_button_down= rv_handle_mouse_button_down;
+		new_game_obj->handle_computer_move=rv_handle_computer_turn;
+		new_game_obj->is_game_over=rv_is_game_over;
+		new_game_obj->is_multiplayer = 0;
+		new_game_obj->is_victory = rv_is_victory;
+
 		break;
 	case CONNECT4:
 		break;

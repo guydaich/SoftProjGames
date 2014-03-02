@@ -318,7 +318,7 @@ element_cntrl ttc_panel_function(int* game_state)
 	return root;
 }
 
-int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state)
+int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state, int player)
 {
 	int x=0,y=0;
 	int comp_move,succes;

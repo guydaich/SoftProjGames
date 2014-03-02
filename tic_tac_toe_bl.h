@@ -22,4 +22,4 @@ int				ttc_add_to_children_list(linked_list list, int* game_state, int row, int 
 int*			ttc_copy_and_make_move(int* game_state, int move_row, int move_col, int player);
 int				ttc_make_move(int* game_state, int row, int col, int player);
 int				ttc_is_game_over(int* game_state);
-int				ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state);
+int				ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state,int player);

@@ -27,6 +27,8 @@ int main( int argc, char* args[] )
 	element_cntrl ui_tree=NULL,pressed_Button=NULL; 
 	game *cur_game;
 	SDL_Event test_event; 
+	int victory_state = 0;
+	int move_success = 0;
 
 	gui_init();
 	ui_tree=game_init(&cur_game);
@@ -42,8 +44,45 @@ int main( int argc, char* args[] )
 		 case SDL_MOUSEBUTTONDOWN:
 			 if (test_event.button.x<=600 && test_event.button.y<=600)
 			 {
-				cur_game->handle_mouse_button_down(&test_event, ui_tree,cur_game->board);
+				move_success = 0;
+				move_success = cur_game->handle_mouse_button_down(&test_event, ui_tree,cur_game->board,cur_game->cur_player);
+				
+				if (!move_success)
+					continue; 
+
 				ui_tree=draw_game(cur_game,ui_tree);
+				SDL_Delay(3000);
+				if (cur_game->is_game_over(cur_game->board))
+					{
+						victory_state = cur_game->is_victory(cur_game->board);
+						if (victory_state = 1)
+						{
+							/*TODO: handle P1 victory*/
+						}
+						if (victory_state = -1)
+						{
+							/*TODO: handle P2 victory*/
+						}
+						else
+						{
+							/*TODO: handle tie*/
+						}
+						/*TODO: handle game over*/
+					}
+				/*if multi - switch player*/
+				if (cur_game->is_multiplayer)
+				{
+					/*if other player can make a move - switch to him*/
+					if (cur_game->player_has_moves(cur_game->board,(-1)*cur_game->cur_player))
+					{
+						cur_game->cur_player = (-1)* cur_game->cur_player;
+					}
+				}
+				else /* playing against computer */
+				{
+					cur_game->handle_computer_move(cur_game->board);
+					ui_tree=draw_game(cur_game,ui_tree);
+				}
 			 }
 			 else {
 				 find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
