@@ -1,6 +1,7 @@
 #include "tic_tac_toe_bl.h"
 
 
+
 char* TIC_TAC_TOE_NAME = "Tic-Tac-Toe";
 int* tic_tac_toe_board=NULL;
 int tic_tac_toe_diffficulties[] = {9};
@@ -266,7 +267,7 @@ int ttc_is_victory(int* game_state, int player)
 	return 0;
 }
 
-element_cntrl ttc_panel_function(int* game_state)
+element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event))
 { 
 	control *ttc_grid;
 	control *ttc_button;
@@ -303,6 +304,7 @@ element_cntrl ttc_panel_function(int* game_state)
 			else
 			{
 				ttc_button=new_button(j*200,i*200,200,200,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
+				ttc_button->pressedButton=makeMove;
 			}
 			/*add pieces to children list*/
 			if (ttc_button != NULL)
@@ -341,6 +343,12 @@ int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game
 	{
 		return 0;
 	}
+	return 1;
+}
+
+int	ttc_handle_computer_turn(int* game_state, int depth)
+{
+	int comp_move;
 	comp_move = get_computer_move(game_state, 9, ttc_get_state_children);
 	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,-1);
 	return 0;

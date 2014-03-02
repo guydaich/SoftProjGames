@@ -261,6 +261,12 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 {
 	int i,t_rows,t_cols, length;
 	int other = player*(-1); 
+
+	if (game_state[rows*REVERSI_ROWS+cols]!=0)
+	{
+		return 0;
+	}
+
 	/* for every possible direction */
 	for (i=0;i<REVERSI_ROWS; i++)
 	{
@@ -331,7 +337,7 @@ int rv_is_victory(int* game_state)
 }
 
 
-element_cntrl	rv_panel_function(int *game_state)
+element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event))
 {
 	control *rv_grid;
 	control *rv_button;
@@ -365,10 +371,11 @@ element_cntrl	rv_panel_function(int *game_state)
 			{
 				rv_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/reversi_piece_white.bmp",255,0,255,1,NULL);
 			}
-			/*else
+			else
 			{
-				ttc_button=new_button(j*200,i*200,200,200,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
-			}*/
+				rv_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
+				rv_button->pressedButton=makeMove;
+			}
 			/*add pieces to children list*/
 			if (rv_button != NULL)
 			{

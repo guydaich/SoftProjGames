@@ -30,6 +30,7 @@ typedef struct _control{
 	/*surface to blit to, always window*/
 	SDL_Surface *srfc;
 	SDL_Surface *ownSurface;
+	void (*pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event);
 
 } control;
 
@@ -41,9 +42,10 @@ struct element_s_cntrl {
 	struct element_s_cntrl	*parent;
 	struct element_s_cntrl	*next;
 	struct element_s_cntrl	*prev;
+	
 };
 
-typedef struct element_s_cntrl *  element_cntrl;
+typedef struct element_s_cntrl*  element_cntrl;
 
 struct linked_list_s_cntrl {
 	element_cntrl head;
@@ -51,6 +53,8 @@ struct linked_list_s_cntrl {
 };
 
 typedef struct linked_list_s_cntrl *  linked_list_cntrl;
+
+
 
 /*element functions*/
 element_cntrl new_control_element(control* cntrl);

@@ -116,6 +116,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->draw=draw_label;
 	label->ownSurface=NULL;
 	label->caption=NULL;
+	label->pressedButton=NULL;
 
 	return label;
 }
@@ -141,6 +142,7 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 	button->draw=draw_button;
 	button->caption=caption;
 	button->ownSurface=NULL;
+	button->pressedButton=NULL;
 
 	return button;
 }
@@ -164,6 +166,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G)
 	panel->draw = draw_panel;// drawing funct
 	panel->ownSurface=NULL;
 	panel->caption=NULL;
+	panel->pressedButton=NULL;
 
 	return panel;
 }
@@ -183,6 +186,7 @@ control* new_window(int x, int y, int w, int h)
 	window->draw = draw_window;// drawing funct
 	window->ownSurface=NULL;
 	window->caption=NULL;
+	window->pressedButton=NULL;
 
 	return window;
 }
@@ -408,7 +412,7 @@ void clear_game_panel(element_cntrl ui_tree)
 {
 	element_cntrl game_panel,pre_tail;
 
-	if(ui_tree->children->head==ui_tree->children->tail)//if there is no previous game panel
+	if(ui_tree->children==NULL ||ui_tree->children->head==ui_tree->children->tail)//if there is no previous game panel
 	{
 		return;
 	}

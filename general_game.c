@@ -1,5 +1,6 @@
 
 #include "general_game.h"
+#include "game.h"
 
 /* inits a new game */
 game* new_game(int game_id)
@@ -27,6 +28,10 @@ game* new_game(int game_id)
 		new_game_obj->cols = TIC_TAC_TOE_COLS;
 		new_game_obj->cur_player= TTC_PLAYER_1; 
 		new_game_obj->handle_mouse_button_down= ttc_handle_mouse_button_down;
+		new_game_obj->handle_computer_move=ttc_handle_computer_turn;
+		new_game_obj->is_game_over=ttc_is_game_over;
+		new_game_obj->is_multiplayer = 0;
+		new_game_obj->is_victory = ttc_is_victory;
 		break;
 	case REVERSI:
 		new_game_obj->get_name = rv_get_name;
@@ -56,4 +61,70 @@ game* new_game(int game_id)
 
 return new_game_obj;
 
+}
+
+void  restartGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+	(*cur_game)->board=(*cur_game)->get_initial_state();
+	(*ui_tree)=draw_game(*cur_game,*ui_tree);
+}
+
+void  quitGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+	*quit=1;
+}
+
+void  goToMainMenu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+	(*ui_tree)=game_init(cur_game);
+}
+
+void  saveGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+	save_game_to_file("C:/Users/davidl/Documents/TTT.txt",(*cur_game)->board,(*cur_game)->cur_player,
+						(*cur_game)->cols,(*cur_game)->rows,((*cur_game)->get_name()));
+}
+
+void  makeMove(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+		int move_success = 0,victory_state;
+		move_success = (*cur_game)->handle_mouse_button_down(test_event, (*ui_tree), (*cur_game)->board, (*cur_game)->cur_player);
+				
+				if (!move_success)
+					return; 
+
+				(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
+				SDL_Delay( 2000 );
+				if ( (*cur_game)->is_game_over( (*cur_game)->board))
+					{
+						victory_state =  (*cur_game)->is_victory( (*cur_game)->board);
+						if (victory_state = 1)
+						{
+							/*TODO: handle P1 victory*/
+						}
+						if (victory_state = -1)
+						{
+							/*TODO: handle P2 victory*/
+						}
+						else
+						{
+							/*TODO: handle tie*/
+						}
+						/*TODO: handle game over*/
+					}
+				/*if multi - switch player*/
+				if ( (*cur_game)->is_multiplayer==1)
+				{
+					/*if other player can make a move - switch to him*/
+					if ( (*cur_game)->player_has_moves( (*cur_game)->board,(-1)* (*cur_game)->cur_player))
+					{
+						 (*cur_game)->cur_player = (-1)*  (*cur_game)->cur_player;
+					}
+				}
+				else /* playing against computer */
+				{
+					(*cur_game)->handle_computer_move( (*cur_game)->board);
+					(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
+				}
+				return;
 }
