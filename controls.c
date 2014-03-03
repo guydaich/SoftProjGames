@@ -3,10 +3,18 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
+int controlElementNum=0;
+int buttomNum=0;
+int labelNum=0;
+int panelNum=0;
+int windowNum=0;
+int surfaceNum=0;
+
 /* return pointer to element containing pointer to give control*/
 element_cntrl new_control_element(control* cntrl)
 {
 	element_cntrl elem = (element_cntrl)malloc(sizeof(struct element_s_cntrl));
+	controlElementNum++;
 	elem->cntrl = cntrl;
 	elem->next=NULL;
 	elem->prev=NULL;
@@ -100,6 +108,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 {
 	// allocate button
 	control *label = (control*)malloc(sizeof(control));
+	labelNum++;
 	label->is_button = 0;
 	label->is_label = 1;
 	label->is_panel = 0;
@@ -126,6 +135,7 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 {
 	// allocate button
 	control *button = (control*)malloc(sizeof(control));
+	buttomNum++;
 	button->is_button = 1;
 	button->is_label = 0;
 	button->is_panel = 0;
@@ -152,6 +162,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G)
 {
 	// allocate window
 	control *panel = (control*)malloc(sizeof(control));
+	panelNum++;
 	panel->is_button = 0;
 	panel->is_label = 0;
 	panel->is_panel = 1;
@@ -175,6 +186,7 @@ control* new_window(int x, int y, int w, int h)
 {
 	// allocate window
 	control *window = (control*)malloc(sizeof(control));
+	windowNum++;
 	window->is_button = 0;
 	window->is_label = 0;
 	window->is_panel = 0;
@@ -210,7 +222,7 @@ void draw_button(control *button, control *container)
 			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 			SDL_FreeSurface(surface);
 		}
-	
+		surfaceNum++;
 		// update surface in button object for further use
 		button->srfc = container->srfc;
 		// get rectangle according to container constraints
@@ -253,7 +265,7 @@ void draw_label(control *label, control *container)
 			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 			SDL_FreeSurface(surface);
 		}
-		
+		surfaceNum++;
 		// update surface in button object for further use
 		label->srfc = container->srfc;
 	}
@@ -282,6 +294,7 @@ void draw_window(control* window)
 {
 	SDL_WM_SetCaption("SDL Test", "SDL Test");
 	window->srfc = SDL_SetVideoMode(window->w,window->h,32,SDL_HWSURFACE|SDL_DOUBLEBUF);
+	surfaceNum++;
 }
 
 /*add this functionality to window as well. use it to paiunt background in white*/
@@ -299,7 +312,7 @@ void draw_panel(control* panel, control *container)
 			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 			SDL_FreeSurface(surface);
 		}
-	
+		surfaceNum++;
 		/*fill surface with defualt panel color*/
 		panel->srfc = container->srfc;
 		panel->ownSurface=surface;
@@ -425,7 +438,7 @@ void clear_game_panel(element_cntrl ui_tree)
 
 void freeControlList(element_cntrl node)
 {
-	element_cntrl run;
+	element_cntrl run,nextNode;
 
 	if (node==NULL)
 	{
@@ -433,14 +446,35 @@ void freeControlList(element_cntrl node)
 	}
 	if (node->children!=NULL)
 	{
-		for (run=node->children->head;run!=NULL;run=run->next)
+		for (run=node->children->head;run!=NULL;run=nextNode)
 		{
+			nextNode=run->next;
 			freeControlList(run);
 		}
 	}
 	SDL_FreeSurface(node->cntrl->ownSurface);
+	surfaceNum--;
 	node->cntrl->ownSurface=NULL;
+	if (node->cntrl->is_button==1)
+	{
+		buttomNum--;
+	}
+	if (node->cntrl->is_label==1)
+	{
+		labelNum--;
+	}
+	if (node->cntrl->is_panel==1)
+	{
+		panelNum--;
+	}
+	if (node->cntrl->is_window==1)
+	{
+		windowNum--;
+	}
 	free(node->cntrl);
+	free(node);
+	controlElementNum--;
+
 }
 
 

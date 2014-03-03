@@ -2,6 +2,8 @@
 #include "general_game.h"
 #include "game.h"
 
+int gameNum=0;
+
 /* inits a new game */
 game* new_game(int game_id)
 {
@@ -15,6 +17,7 @@ game* new_game(int game_id)
 	//is_multi = 0; // play against minimax
 
 	game *new_game_obj = (game*)malloc(sizeof(game));  //TODO check new_game_obj!=NULL
+	gameNum++;
 	switch (game_id)
 	{
 	case TTC:
@@ -93,8 +96,8 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_
 				if (!move_success)
 					return; 
 
-				(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
-				SDL_Delay( 2000 );
+				//(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
+				//SDL_Delay( 2000 );
 				if ( (*cur_game)->is_game_over( (*cur_game)->board))
 					{
 						victory_state =  (*cur_game)->is_victory( (*cur_game)->board);
@@ -127,4 +130,25 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_
 					(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
 				}
 				return;
+}
+
+void  setDifficalty(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+	int i=0;
+	i++;
+}
+
+void  chooseGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+	(*cur_game)=new_game(*quit);
+	(*cur_game)->board=(*cur_game)->get_initial_state();
+}
+
+void  loadGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+	int whichGame;
+	int *gameBoard;
+	gameBoard=load_game_from_file("C:/Users/davidl/Documents/TTT.txt",&whichGame);
+	(*cur_game)=new_game(whichGame);
+	(*cur_game)->board=gameBoard;
 }

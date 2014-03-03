@@ -44,5 +44,8 @@ void  quitGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_
 void  goToMainMenu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
 void  saveGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
 void  makeMove(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
+void  setDifficalty(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
+void  chooseGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
+void  loadGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
 
 #endif

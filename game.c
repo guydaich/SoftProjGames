@@ -3,6 +3,12 @@
 
 int quit=0;
 extern char* TIC_TAC_TOE_NAME;
+extern int gameNum;
+extern int controlElementNum;
+extern int buttomNum;
+extern int panelNum;
+extern int windowNum;
+
 #define RESTART "restart"
 #define QUIT "quit"
 #define MAIN_MENU "mainMenu"
@@ -50,13 +56,13 @@ int main( int argc, char* args[] )
 				pressed_Button->cntrl->pressedButton(&cur_game,&ui_tree,&quit,&test_event);
 				break;
 		 default: //unhandled event
-			 printf("hi");
 			 break;
 		 }
 	}
 	}
 	freeControlList(ui_tree);
 	free(cur_game);
+	gameNum--;
 
 	return 0;
 }
@@ -157,15 +163,18 @@ element_cntrl mainMenuWindow(){
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	temp_control = new_button(20,20,100,60,"./gfx/TTC.bmp",255,0,255,1,TIC_TAC_TOE_NAME);
+	temp_control = new_button(20,20,100,60,"./gfx/TTC.bmp",255,0,255,1,"1");
+	temp_control->pressedButton=chooseGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	temp_control = new_button(20,100,100,60,"./gfx/reversi.bmp",255,0,255,1,REVERSI_NAME);
+	temp_control = new_button(20,100,100,60,"./gfx/reversi.bmp",255,0,255,1,"2");
+	temp_control->pressedButton=chooseGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
 	temp_control = new_button(20,200,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,LOAD);
+	temp_control->pressedButton=loadGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -177,7 +186,9 @@ element_cntrl mainMenuWindow(){
 //run window in which a game is chosen
 game* runMainMenu(){
 	element_cntrl ui_tree,pressed_Button=NULL;
+	int whichGame;
 	SDL_Event test_event; 
+	game *newGame=NULL;
 
 	ui_tree =mainMenuWindow();
 	draw_ui_tree(ui_tree);
@@ -193,30 +204,16 @@ game* runMainMenu(){
 		switch(test_event.type) {
 		 case SDL_MOUSEBUTTONDOWN:
 			 find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
-			 if (strcmp(pressed_Button->cntrl->caption,TIC_TAC_TOE_NAME)==0){
-				 game *newGame;
-				 newGame=new_game(TTC);
-				 newGame->board=newGame->get_initial_state();
-				 return newGame;
+			 if(pressed_Button==NULL)
+			 {
+				 break;
 			 }
-			 if (strcmp(pressed_Button->cntrl->caption,REVERSI_NAME)==0){
-				 game *newGame;
-				 newGame=new_game(REVERSI);
-				 newGame->board=newGame->get_initial_state();
-				 return newGame;
-			 }
-			 if (strcmp(pressed_Button->cntrl->caption,LOAD)==0){
-				int whichGame;
-				int *gameBoard;
-				game *loadedGame;
-				gameBoard=load_game_from_file("C:/Users/davidl/Documents/TTT.txt",&whichGame);
-				loadedGame=new_game(whichGame);
-				loadedGame->board=gameBoard;
-				return loadedGame;
-			 }
+			 whichGame=(pressed_Button->cntrl->caption[0])-'0';
+			 pressed_Button->cntrl->pressedButton(&newGame,&ui_tree,&whichGame,&test_event);
+			 freeControlList(ui_tree);
+			 return newGame;
 			 break;
 		 default: //unhandled event
-			 printf("hi");
 			 break;
 		 }
 	}
