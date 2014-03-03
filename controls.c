@@ -199,6 +199,7 @@ control* new_window(int x, int y, int w, int h)
 	window->ownSurface=NULL;
 	window->caption=NULL;
 	window->pressedButton=NULL;
+	window->srfc=NULL;
 
 	return window;
 }
@@ -216,7 +217,8 @@ void draw_button(control *button, control *container)
 
 	if (button->ownSurface==NULL)
 	{
-		if ((surface = SDL_LoadBMP(button->img)) == NULL)
+		surface = SDL_LoadBMP(button->img);
+		if (surface == NULL)
 		{
 			err=SDL_GetError();
 			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
@@ -259,7 +261,8 @@ void draw_label(control *label, control *container)
 	SDL_Surface *surface;
 	if (label->ownSurface==NULL)
 	{
-		if ((surface = SDL_LoadBMP(label->img)) == NULL)////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		surface = SDL_LoadBMP(label->img);
+		if (surface == NULL)
 		{
 			err=SDL_GetError();
 			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
@@ -268,6 +271,7 @@ void draw_label(control *label, control *container)
 		surfaceNum++;
 		// update surface in button object for further use
 		label->srfc = container->srfc;
+		label->ownSurface=surface;
 	}
 	else{
 		surface=label->ownSurface;
@@ -293,8 +297,11 @@ void draw_label(control *label, control *container)
 void draw_window(control* window)
 {
 	SDL_WM_SetCaption("SDL Test", "SDL Test");
-	window->srfc = SDL_SetVideoMode(window->w,window->h,32,SDL_HWSURFACE|SDL_DOUBLEBUF);
-	surfaceNum++;
+	if (window->srfc==NULL)
+	{
+		window->srfc = SDL_SetVideoMode(window->w,window->h,32,SDL_HWSURFACE|SDL_DOUBLEBUF);
+		surfaceNum++;
+	}
 }
 
 /*add this functionality to window as well. use it to paiunt background in white*/
@@ -306,7 +313,8 @@ void draw_panel(control* panel, control *container)
 
 	if (panel->ownSurface==NULL)
 	{
-		if ((surface = SDL_CreateRGBSurface(SDL_HWSURFACE, panel->w, panel->h, 32, 0, 0, 0, 0)) == NULL)
+		surface = SDL_CreateRGBSurface(SDL_HWSURFACE, panel->w, panel->h, 32, 0, 0, 0, 0);
+		if (surface == NULL)
 		{
 			err=SDL_GetError();
 			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
