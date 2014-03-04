@@ -54,6 +54,20 @@ game* new_game(int game_id)
 
 		break;
 	case CONNECT4:
+		new_game_obj->get_name = get_name_C4;
+		new_game_obj->get_state_children = get_state_children_C4;
+		new_game_obj->get_difficulty_levels = get_difficulty_levels_C4;
+		new_game_obj->get_state_score = get_state_score_C4;
+		new_game_obj->panel_function = C4_panel_function;
+		new_game_obj->get_initial_state = get_initial_state_C4;
+		new_game_obj->rows =  CONNECT4_ROWS;
+		new_game_obj->cols = CONNECT4_COLS;
+		new_game_obj->cur_player= CONNECT4_PLAYER_1;
+		new_game_obj->handle_mouse_button_down= C4_handle_mouse_button_down;
+		new_game_obj->handle_computer_move=C4_handle_computer_turn;
+		new_game_obj->is_game_over=is_game_over_C4;
+		new_game_obj->is_multiplayer = 0;
+		new_game_obj->is_victory = is_victory_C4;
 		break;
 	default:
 		break;
@@ -79,12 +93,14 @@ void  quitGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_
 
 void  goToMainMenu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
 {
-	(*ui_tree)=game_init(cur_game);
+	(*ui_tree)=game_init(cur_game,MAIN_SIGN);
 }
 
 void  saveGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
 {
-	save_game_to_file("C:/Users/davidl/Documents/TTT.txt",(*cur_game)->board,(*cur_game)->cur_player,
+	char* fileLocation=(char *)malloc(36);
+	sprintf(fileLocation,"C:/Users/davidl/Documents/load%d.txt",*quit);
+	save_game_to_file(fileLocation,(*cur_game)->board,(*cur_game)->cur_player,
 						(*cur_game)->cols,(*cur_game)->rows,((*cur_game)->get_name()));
 }
 
@@ -144,11 +160,24 @@ void  chooseGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* tes
 	(*cur_game)->board=(*cur_game)->get_initial_state();
 }
 
+void  runLoadManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+	(*ui_tree)=game_init(cur_game,LOAD_SIGN);
+}
+
 void  loadGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
 {
-	int whichGame;
-	int *gameBoard;
-	gameBoard=load_game_from_file("C:/Users/davidl/Documents/TTT.txt",&whichGame);
+int whichGame;
+	int *gameBoard; 
+	char* fileLocation=(char *)malloc(36);
+	sprintf(fileLocation,"C:/Users/davidl/Documents/load%d.txt",*quit);
+	gameBoard=load_game_from_file(fileLocation,&whichGame);
+	free(fileLocation);
 	(*cur_game)=new_game(whichGame);
 	(*cur_game)->board=gameBoard;
+}
+
+void  runsaveManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+	(*ui_tree)=game_init(cur_game,SAVE_SIGN);
 }

@@ -22,7 +22,7 @@ void add_piece_to_board_C4(int* game_state,int column, int player)
 int *get_initial_state_C4()
 {
 	int i,j = 0;
-	game_matrix=(int *)calloc(GROWS*GROWS,sizeof(int));
+	game_matrix=(int *)calloc(GROWS*GCOLS,sizeof(int));
 	for (i =0; i < GROWS ; i++)
 	{
 		for (j=0; j< GROWS; j++)
@@ -30,6 +30,7 @@ int *get_initial_state_C4()
 			(game_matrix)[i*GCOLS+j] = 0; 
 		}
 	}
+	init_col_heights_C4();
 	return game_matrix;
 }
 
@@ -315,11 +316,112 @@ int is_game_over_C4(int* game_state)
 	return 0;
 }
 
-int is_victory_C4(int* game_state, int player)
+int is_victory_C4(int* game_state)
 {
 	int score=get_state_score_C4(game_state,0);
 	if (score==INT_MAX || score==INT_MIN){
 		return 1;
+	}
+	return 0;
+}
+
+element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event))
+{
+	control *C4_grid;
+	control *C4_button;
+	element_cntrl root, grid, temp;
+	linked_list_cntrl list;
+	int i,j;
+ 	
+	root = new_control_element(new_panel(0,0,600,600,255,255,255));
+	/*create panel children*/	
+	list = new_control_list();
+	/* grid surface - create control and element*/
+	C4_grid = new_button(0,0,600,600,"./gfx/reversi_board.bmp",0,0,0,0,NULL);
+	grid = new_control_element(C4_grid);
+	/* add grid to children list*/
+	add_control_element_to_list(list,grid);
+	/* update root children, and grid parent*/
+	set_list_as_children(list,root);
+	
+	/*create grid children*/
+	list = new_control_list();
+	for (i=0; i< CONNECT4_COLS; i++)
+	{
+		for(j=0; j< CONNECT4_ROWS; j++)
+		{
+			C4_button= NULL;
+			if (game_state[i*CONNECT4_ROWS + j] == CONNECT4_PLAYER_1)	
+			{
+				C4_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/reversi_piece_black.bmp",255,0,255,1,NULL);
+			}
+			else if (game_state[i*CONNECT4_ROWS + j] == CONNECT4_PLAYER_2)	
+			{
+				C4_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/reversi_piece_white.bmp",255,0,255,1,NULL);
+			}
+			else
+			{
+				C4_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
+				C4_button->pressedButton=makeMove;
+			}
+			/*add pieces to children list*/
+			if (C4_button != NULL)
+			{
+				temp = new_control_element(C4_button);
+				add_control_element_to_list(list,temp);
+			}
+		}
+	}
+	/*update parent-children*/
+	set_list_as_children(list,grid);
+
+	return root;
+}
+
+int C4_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state, int player)
+{
+	int x=0,y=0;
+	int comp_move,succes;
+	element_cntrl elem=NULL;
+	x=event->button.x;
+	y=event->button.y;
+	/* elem get's the elemnt to update (grid slot) */
+	find_element_by_coordinates(root,x,y,&elem);
+
+	if(is_game_over_C4(game_state))
+	{
+		return 0;
+	}
+	succes=C4_make_move(game_state,0,x/100,1);
+	if(succes==0)
+	{
+		return 0;
+	}
+	if (is_game_over_C4(game_state))
+	{
+		return 0;
+	}
+	return 1;
+}
+
+int	C4_handle_computer_turn(int* game_state, int depth)
+{
+	int comp_move;
+	comp_move = get_computer_move(game_state, 1, get_state_children_C4);
+	C4_make_move(game_state,0,comp_move,-1);
+	return 0;
+}
+
+int	C4_make_move(int* game_state, int row, int col, int player)
+{
+	int i;
+for (i = GROWS - 1; i >= 0; i--) // find appropriate row for column move
+	{
+		if (game_state[i*GCOLS + col] == 0)
+		{
+			game_state[i*GCOLS + col] = player;
+			return 1;
+		}
 	}
 	return 0;
 }

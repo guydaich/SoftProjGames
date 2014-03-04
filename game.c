@@ -37,7 +37,7 @@ int main( int argc, char* args[] )
 	int move_success = 0;
 
 	gui_init();
-	ui_tree=game_init(&cur_game);
+	ui_tree=game_init(&cur_game,MAIN_SIGN);
 
 	while(!quit)
     {
@@ -102,7 +102,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 
 	/*save*/
 	temp_control = new_button(675,120,330,80,"./gfx/btn_save.bmp",255,0,255,1,SAVE);
-	temp_control->pressedButton=saveGame;
+	temp_control->pressedButton=runsaveManu;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -127,6 +127,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 		temp_control = new_button(675,(i+4)*100+2,330,80,imageName,255,0,255,1,NULL);
 		temp_elem = new_control_element(temp_control);
 		add_control_element_to_list(list,temp_elem);
+		//free(imageName);
 	}
 
 	/*quit*/
@@ -145,12 +146,12 @@ element_cntrl mainMenuWindow(){
 	control* temp_control;
 	linked_list_cntrl list; 
 	
-	root = new_control_element(new_window(0,0,150,300));
+	root = new_control_element(new_window(0,0,150,400));
 	/*create panel children*/	
 	list = new_control_list();
 
 	/*button panel*/
-	temp_control = new_panel(0,0,200,300,255,255,255);
+	temp_control = new_panel(0,0,200,400,255,255,255);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 	set_list_as_children(list,root);
@@ -173,8 +174,13 @@ element_cntrl mainMenuWindow(){
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	temp_control = new_button(20,200,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,LOAD);
-	temp_control->pressedButton=loadGame;
+	/*temp_control = new_button(20,200,100,60,"./gfx/connect4.bmp",255,0,255,1,"3");
+	temp_control->pressedButton=chooseGame;
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);*/
+
+	temp_control = new_button(20,300,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,LOAD);
+	temp_control->pressedButton=runLoadManu;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -184,13 +190,21 @@ element_cntrl mainMenuWindow(){
 }
 
 //run window in which a game is chosen
-game* runMainMenu(){
+game* runMainMenu(int mainORLoad,game** prevGame){
 	element_cntrl ui_tree,pressed_Button=NULL;
 	int whichGame;
 	SDL_Event test_event; 
 	game *newGame=NULL;
 
-	ui_tree =mainMenuWindow();
+	if (mainORLoad==MAIN_SIGN){
+		ui_tree =mainMenuWindow();
+	}
+	else if (mainORLoad==LOAD_SIGN){
+		ui_tree=loadWindow();
+	}
+	else {
+		ui_tree=saveWindow();
+	}
 	draw_ui_tree(ui_tree);
     SDL_Flip( ui_tree->cntrl->srfc );
 
@@ -209,7 +223,13 @@ game* runMainMenu(){
 				 break;
 			 }
 			 whichGame=(pressed_Button->cntrl->caption[0])-'0';
-			 pressed_Button->cntrl->pressedButton(&newGame,&ui_tree,&whichGame,&test_event);
+			 if (mainORLoad==SAVE_SIGN){
+				 pressed_Button->cntrl->pressedButton(prevGame,&ui_tree,&whichGame,&test_event);
+				 newGame=*prevGame;
+			 }
+			 else {
+				 pressed_Button->cntrl->pressedButton(&newGame,&ui_tree,&whichGame,&test_event);
+			 }
 			 freeControlList(ui_tree);
 			 return newGame;
 			 break;
@@ -219,16 +239,15 @@ game* runMainMenu(){
 	}
 	}
 	freeControlList(ui_tree);
-
 	return NULL;
 }
 
 //go to main menu,choose game and initiate ui_tree
-element_cntrl game_init(game **cur_game)
+element_cntrl game_init(game **cur_game,int mainORLoad)
 {
 	element_cntrl ui_tree;
 
-	*cur_game=runMainMenu();
+	*cur_game=runMainMenu(mainORLoad,cur_game);
 	if (*cur_game==NULL){
 		exit(0);
 	}
@@ -248,6 +267,82 @@ element_cntrl draw_game (game *cur_game,element_cntrl prev_ui_tree)
 	draw_ui_tree(prev_ui_tree);
 	SDL_Flip( (prev_ui_tree->cntrl->srfc) );
 	return prev_ui_tree;
+}
+
+element_cntrl loadWindow(){
+	element_cntrl root, temp_elem;
+	control* temp_control;
+	linked_list_cntrl list; 
+	
+	root = new_control_element(new_window(0,0,150,400));
+	/*create panel children*/	
+	list = new_control_list();
+
+	/*button panel*/
+	temp_control = new_panel(0,0,200,400,255,255,255);
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+	set_list_as_children(list,root);
+
+	/*panel children*/
+	list = new_control_list();
+
+	/*label - paint first*/
+	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1);
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+
+	temp_control = new_button(20,20,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,"1");
+	temp_control->pressedButton=loadGame;
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+
+	temp_control = new_button(20,100,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,"2");
+	temp_control->pressedButton=loadGame;
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+
+	set_list_as_children(list,root->children->head);
+	return root;
+
+}
+
+element_cntrl saveWindow(){
+	element_cntrl root, temp_elem;
+	control* temp_control;
+	linked_list_cntrl list; 
+	
+	root = new_control_element(new_window(0,0,150,400));
+	/*create panel children*/	
+	list = new_control_list();
+
+	/*button panel*/
+	temp_control = new_panel(0,0,200,400,255,255,255);
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+	set_list_as_children(list,root);
+
+	/*panel children*/
+	list = new_control_list();
+
+	/*label - paint first*/
+	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1);
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+
+	temp_control = new_button(20,20,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,"1");
+	temp_control->pressedButton=saveGame;
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+
+	temp_control = new_button(20,100,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,"2");
+	temp_control->pressedButton=saveGame;
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+
+	set_list_as_children(list,root->children->head);
+	return root;
+
 }
 
 
