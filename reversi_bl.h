@@ -28,5 +28,6 @@ int				rv_is_game_over(int* game_state);
 int				rv_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state,int player);
 int				rv_is_victory(int* game_state);
 int				rv_handle_computer_turn(int* game_state, int depth);
+int				rv_player_has_moves(int* game_state, int player);
 
 #endif

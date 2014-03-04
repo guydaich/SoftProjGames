@@ -27,5 +27,10 @@ int				ttc_make_move(int* game_state, int row, int col, int player);
 int				ttc_is_game_over(int* game_state);
 int				ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state,int player);
 int				ttc_handle_computer_turn(int* game_state, int depth);
+int				ttc_is_any_victory(int* game_state);
+int				ttc_player_has_moves(int* game_state);
+
 
 #endif
+
+

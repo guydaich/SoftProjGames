@@ -34,7 +34,9 @@ game* new_game(int game_id)
 		new_game_obj->handle_computer_move=ttc_handle_computer_turn;
 		new_game_obj->is_game_over=ttc_is_game_over;
 		new_game_obj->is_multiplayer = 0;
-		new_game_obj->is_victory = ttc_is_victory;
+		new_game_obj->is_victory = ttc_is_any_victory;
+		new_game_obj->player_has_moves = rv_player_has_moves;
+
 		break;
 	case REVERSI:
 		new_game_obj->get_name = rv_get_name;
@@ -51,7 +53,7 @@ game* new_game(int game_id)
 		new_game_obj->is_game_over=rv_is_game_over;
 		new_game_obj->is_multiplayer = 0;
 		new_game_obj->is_victory = rv_is_victory;
-
+		new_game_obj->player_has_moves = rv_player_has_moves;
 		break;
 	case CONNECT4:
 		break;

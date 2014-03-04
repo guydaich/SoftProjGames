@@ -407,6 +407,7 @@ int rv_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_
 	{
 		return 0;
 	}
+	return 1;
 }
 
 int rv_handle_computer_turn(int* game_state, int depth)
