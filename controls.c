@@ -1,5 +1,7 @@
 #include "controls.h"
 
+void emptryButton(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
+
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
@@ -125,7 +127,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->draw=draw_label;
 	label->ownSurface=NULL;
 	label->caption=NULL;
-	label->pressedButton=NULL;
+	label->pressedButton=emptryButton;
 
 	return label;
 }
@@ -152,7 +154,7 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 	button->draw=draw_button;
 	button->caption=caption;
 	button->ownSurface=NULL;
-	button->pressedButton=NULL;
+	button->pressedButton=emptryButton;
 
 	return button;
 }
@@ -486,6 +488,11 @@ void freeControlList(element_cntrl node)
 	free(node);
 	controlElementNum--;
 
+}
+
+void emptryButton(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+{
+	return;
 }
 
 

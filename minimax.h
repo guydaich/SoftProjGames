@@ -68,7 +68,7 @@ vertex new_node(int move, int *game_state, int score);
 //int * copy_board_move(board_t from, int move, int player);
 vertex build_tree(int * game_matrix, int player, int maxDepth,linked_list (*create_children)(int *gameMatrix, int player));
 int recursive_tree_build(vertex root, int player, int depth, int max_depth,linked_list (*create_children)(int *gameMatrix, int player));
-//void fix_score(vertex root_node, int player);
+void fix_score(vertex root_node, int player);
 int calc_min_max_value(int new_score, int player, int prev_score);
 void killInfested(vertex infestedFather, int is_root);
 int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth);
