@@ -460,7 +460,10 @@ void freeControlList(element_cntrl node)
 			freeControlList(run);
 		}
 	}
-	SDL_FreeSurface(node->cntrl->ownSurface);
+	if (node->cntrl->ownSurface!=NULL)
+	{
+		SDL_FreeSurface(node->cntrl->ownSurface);
+	}
 	surfaceNum--;
 	node->cntrl->ownSurface=NULL;
 	if (node->cntrl->is_button==1)

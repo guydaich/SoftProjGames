@@ -5,6 +5,12 @@
 #include <stdlib.h>
 #include <limits.h>
 #include "minimax.h"
+#include "controls.h"
+
+#define CONNECT4_ROWS 6 
+#define CONNECT4_COLS 7
+#define CONNECT4_PLAYER_1 1
+#define CONNECT4_PLAYER_2 -1
 
 
 /* command parsing definitions */
@@ -20,14 +26,21 @@
 extern int boardCount;
 extern vertex mainRoot;
 
-char* get_name_C4();
-int *get_initial_state_C4();
-linked_list get_state_children_C4(int* matrix, int player);
-int get_state_score_C4(int* game_matrix,int player);
-int*  get_difficulty_levels_C4();
+char*			get_name_C4();
+int *			get_initial_state_C4();
+linked_list		get_state_children_C4(int* matrix, int player);
+int				get_state_score_C4(int* game_matrix,int player);
+int*			get_difficulty_levels_C4();
+void			C4_draw_function();
+element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event));
 
-int is_victory_C4(int* game_state, int player);
-int add_to_children_list_C4(linked_list list, int* game_state, int row, int col, int player);
-int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player);
-void add_piece_to_board_C4(int* game_state,int column, int player);
-int is_game_over_C4(int* game_state);
+void init_col_heights_C4();
+
+int				is_victory_C4(int* game_state);
+int				add_to_children_list_C4(linked_list list, int* game_state, int row, int col, int player);
+int *			copy_and_make_move_C4(board_t from,int move_row, int move_col, int player);
+void			add_piece_to_board_C4(int* game_state,int column, int player);
+int				C4_make_move(int* game_state, int row, int col, int player);
+int				is_game_over_C4(int* game_state);
+int				C4_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state,int player);
+int				C4_handle_computer_turn(int* game_state, int depth);
