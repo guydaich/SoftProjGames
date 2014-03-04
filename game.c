@@ -61,8 +61,11 @@ int main( int argc, char* args[] )
 	}
 	}
 	freeControlList(ui_tree);
-	free(cur_game);
-	gameNum--;
+	if (cur_game!=NULL)
+	{
+		free(cur_game);
+		gameNum--;
+	}
 
 	return 0;
 }
@@ -145,7 +148,8 @@ element_cntrl mainMenuWindow(){
 	element_cntrl root, temp_elem;
 	control* temp_control;
 	linked_list_cntrl list; 
-	
+	char* saveSlot;
+
 	root = new_control_element(new_window(0,0,150,400));
 	/*create panel children*/	
 	list = new_control_list();
@@ -164,12 +168,16 @@ element_cntrl mainMenuWindow(){
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	temp_control = new_button(20,20,100,60,"./gfx/TTC.bmp",255,0,255,1,"1");
+	saveSlot=(char*)malloc(2);///for the meanwhile a leak;
+	saveSlot[0]='1';
+	temp_control = new_button(20,20,100,60,"./gfx/TTC.bmp",255,0,255,1,saveSlot);
 	temp_control->pressedButton=chooseGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	temp_control = new_button(20,100,100,60,"./gfx/reversi.bmp",255,0,255,1,"2");
+	saveSlot=(char*)malloc(2);///for the meanwhile a leak;
+	saveSlot[0]='2';
+	temp_control = new_button(20,100,100,60,"./gfx/reversi.bmp",255,0,255,1,saveSlot);
 	temp_control->pressedButton=chooseGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
@@ -213,6 +221,7 @@ game* runMainMenu(int mainORLoad,game** prevGame){
 	while(SDL_PollEvent(&test_event)) {
 		if(test_event.type == SDL_QUIT){
 			quit=1;
+			//freeControlList(ui_tree);
 			break;
 		}
 		switch(test_event.type) {
@@ -249,7 +258,7 @@ element_cntrl game_init(game **cur_game,int mainORLoad)
 
 	*cur_game=runMainMenu(mainORLoad,cur_game);
 	if (*cur_game==NULL){
-		exit(0);
+		return NULL;
 	}
 	ui_tree = get_default_ui_tree((*cur_game));
 	return draw_game(*cur_game,ui_tree);
@@ -273,6 +282,7 @@ element_cntrl loadWindow(){
 	element_cntrl root, temp_elem;
 	control* temp_control;
 	linked_list_cntrl list; 
+	int i;
 	
 	root = new_control_element(new_window(0,0,150,400));
 	/*create panel children*/	
@@ -292,15 +302,17 @@ element_cntrl loadWindow(){
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	temp_control = new_button(20,20,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,"1");
-	temp_control->pressedButton=loadGame;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
-	temp_control = new_button(20,100,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,"2");
-	temp_control->pressedButton=loadGame;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
+	for (i=1;i<=5;i++)
+	{
+		char* saveSlot=(char*)malloc(2);///for the meanwhile a leak;
+		saveSlot[0]='0'+i;
+		//char* imageName=(char*)malloc(21);
+		//sprintf(imageName,"./gfx/btn_diff_%d.bmp",(i+1));
+		temp_control = new_button(20,20+(i-1)*80,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,saveSlot);
+		temp_control->pressedButton=loadGame;
+		temp_elem = new_control_element(temp_control);
+		add_control_element_to_list(list,temp_elem);
+	}
 
 	set_list_as_children(list,root->children->head);
 	return root;
@@ -310,7 +322,8 @@ element_cntrl loadWindow(){
 element_cntrl saveWindow(){
 	element_cntrl root, temp_elem;
 	control* temp_control;
-	linked_list_cntrl list; 
+	linked_list_cntrl list;
+	int i;
 	
 	root = new_control_element(new_window(0,0,150,400));
 	/*create panel children*/	
@@ -330,15 +343,17 @@ element_cntrl saveWindow(){
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	temp_control = new_button(20,20,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,"1");
-	temp_control->pressedButton=saveGame;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
-	temp_control = new_button(20,100,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,"2");
-	temp_control->pressedButton=saveGame;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
+	for (i=1;i<=5;i++)
+	{
+		char* saveSlot=(char*)malloc(2);///for the meanwhile a leak;
+		saveSlot[0]='0'+i;
+		//char* imageName=(char*)malloc(21);
+		//sprintf(imageName,"./gfx/btn_diff_%d.bmp",(i+1));
+		temp_control = new_button(20,20+(i-1)*80,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,saveSlot);
+		temp_control->pressedButton=saveGame;
+		temp_elem = new_control_element(temp_control);
+		add_control_element_to_list(list,temp_elem);
+	}
 
 	set_list_as_children(list,root->children->head);
 	return root;

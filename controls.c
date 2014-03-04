@@ -484,6 +484,10 @@ void freeControlList(element_cntrl node)
 	{
 		windowNum--;
 	}
+	if (node->cntrl->caption!=NULL && node->cntrl->caption[2]==NULL)//no const
+	{
+		free(node->cntrl->caption);
+	}
 	free(node->cntrl);
 	free(node);
 	controlElementNum--;

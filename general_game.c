@@ -95,6 +95,7 @@ void  quitGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_
 
 void  goToMainMenu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
 {
+	freeControlList(*ui_tree);
 	(*ui_tree)=game_init(cur_game,MAIN_SIGN);
 }
 
@@ -164,6 +165,7 @@ void  chooseGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* tes
 
 void  runLoadManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
 {
+	freeControlList(*ui_tree);
 	(*ui_tree)=game_init(cur_game,LOAD_SIGN);
 }
 
@@ -181,5 +183,6 @@ int whichGame;
 
 void  runsaveManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
 {
+	freeControlList(*ui_tree);
 	(*ui_tree)=game_init(cur_game,SAVE_SIGN);
 }
