@@ -15,8 +15,6 @@ element_cntrl mainMenuWindow();
 game* runMainMenu(int mainORLoad,game** prevGame);
 element_cntrl game_init(game **cur_game,int mainORLoad);
 element_cntrl draw_game (game *cur_game,element_cntrl prev_ui_tree);
-<<<<<<< HEAD
-=======
 element_cntrl loadWindow();
 element_cntrl saveWindow();
->>>>>>> refs/heads/david1
+
