@@ -37,8 +37,8 @@ int get_computer_move(int * game_matrix,int depth,linked_list (*create_children)
 	if (root == NULL){
 		exit(0);
 	}
-	//fix_score(root,-1);
-	alphaBeta(root,INT_MIN,INT_MAX,-1,0,depth);
+	fix_score(root,-1);
+	//alphaBeta(root,INT_MIN,INT_MAX,-1,0,depth);
 	cMove = getMove(root);
 	remove_tree(root, 1);
 	return cMove;

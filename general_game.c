@@ -76,7 +76,7 @@ game* new_game(int game_id)
 	}
 
 	new_game_obj->board = new_game_obj->get_initial_state();
-	new_game_obj->difficulty=new_game_obj->get_difficulty_levels()[0];
+	new_game_obj->difficulty=new_game_obj->get_difficulty_levels()[4];
 
 return new_game_obj;
 
@@ -145,7 +145,7 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_
 				}
 				else /* playing against computer */
 				{
-					(*cur_game)->handle_computer_move( (*cur_game)->board);
+					(*cur_game)->handle_computer_move( (*cur_game)->board,(*cur_game)->difficulty);
 					(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
 				}
 				return;

@@ -229,7 +229,7 @@ linked_list get_state_children_C4(int* matrix, int player)
 {
 	linked_list newList;
 	int move;
-	int child_player = -1 * player;		// player is opposite
+	int child_player = player;		// player is opposite
 
 	newList=new_list();
 
@@ -337,7 +337,7 @@ element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(void* cur_game
 	/*create panel children*/	
 	list = new_control_list();
 	/* grid surface - create control and element*/
-	C4_grid = new_button(0,0,600,600,"./gfx/reversi_board.bmp",0,0,0,0,NULL);
+	C4_grid = new_button(0,0,600,600,"./gfx/4inaline.bmp",0,0,0,0,NULL);
 	grid = new_control_element(C4_grid);
 	/* add grid to children list*/
 	add_control_element_to_list(list,grid);
@@ -351,17 +351,17 @@ element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(void* cur_game
 		for(j=0; j< CONNECT4_ROWS; j++)
 		{
 			C4_button= NULL;
-			if (game_state[i*CONNECT4_ROWS + j] == CONNECT4_PLAYER_1)	
+			if (game_state[i*CONNECT4_COLS + j] == CONNECT4_PLAYER_1)	
 			{
-				C4_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/reversi_piece_black.bmp",255,0,255,1,NULL);
+				C4_button=new_button((j)*100,(i)*100,100,100,"./gfx/redpiece.bmp",255,0,255,1,NULL);
 			}
-			else if (game_state[i*CONNECT4_ROWS + j] == CONNECT4_PLAYER_2)	
+			else if (game_state[i*CONNECT4_COLS + j] == CONNECT4_PLAYER_2)	
 			{
-				C4_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/reversi_piece_white.bmp",255,0,255,1,NULL);
+				C4_button=new_button((j)*100,(i)*100,100,100,"./gfx/bluepiece.bmp",255,0,255,1,NULL);
 			}
 			else
 			{
-				C4_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
+				C4_button=new_button((j)*100,(i)*100,100,100,"./gfx/empty_C4.bmp",255,0,255,1,NULL);
 				C4_button->pressedButton=makeMove;
 			}
 			/*add pieces to children list*/
@@ -407,8 +407,8 @@ int C4_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_
 int	C4_handle_computer_turn(int* game_state, int depth)
 {
 	int comp_move;
-	comp_move = get_computer_move(game_state, 1, get_state_children_C4);
-	C4_make_move(game_state,0,comp_move,-1);
+	comp_move = get_computer_move(game_state, depth, get_state_children_C4);
+	C4_make_move(game_state,0,comp_move-1,-1);
 	return 0;
 }
 

@@ -182,10 +182,12 @@ element_cntrl mainMenuWindow(){
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	/*temp_control = new_button(20,200,100,60,"./gfx/connect4.bmp",255,0,255,1,"3");
+	saveSlot=(char*)malloc(2);///for the meanwhile a leak;
+	saveSlot[0]='3';
+	temp_control = new_button(20,200,100,60,"./gfx/connect4.bmp",255,0,255,1,saveSlot);
 	temp_control->pressedButton=chooseGame;
 	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);*/
+	add_control_element_to_list(list,temp_elem);
 
 	temp_control = new_button(20,300,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,LOAD);
 	temp_control->pressedButton=runLoadManu;
