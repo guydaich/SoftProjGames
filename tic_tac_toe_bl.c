@@ -279,7 +279,7 @@ element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_gam
 	/*create panel children*/	
 	list = new_control_list();
 	/* grid surface - create control and element*/
-	ttc_grid = new_button(0,0,600,600,"./gfx/grid.bmp",0,0,0,0,NULL);
+	ttc_grid = new_button(0,0,600,600,"./gfx/ttc_board_mag.bmp",0,0,0,0,NULL);
 	grid = new_control_element(ttc_grid);
 	/* add grid to children list*/
 	add_control_element_to_list(list,grid);
@@ -295,15 +295,15 @@ element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_gam
 			ttc_button= NULL;
 			if (game_state[i*TIC_TAC_TOE_ROWS + j] == TTC_PLAYER_1)	
 			{
-				ttc_button=new_button(j*200,i*200,200,200,"./gfx/x.bmp",255,0,255,1,NULL);
+				ttc_button=new_button(j*200+50,i*200+50,200,200,"./gfx/ttc_x_mag.bmp",255,0,255,1,NULL);
 			}
 			else if (game_state[i*TIC_TAC_TOE_ROWS + j] == TTC_PLAYER_2)	
 			{
-				ttc_button=new_button(j*200,i*200,200,200,"./gfx/o.bmp",255,0,255,1,NULL);
+				ttc_button=new_button(j*200+50,i*200+50,200,200,"./gfx/ttc_o_mag.bmp",255,0,255,1,NULL);
 			}
 			else
 			{
-				ttc_button=new_button(j*200,i*200,200,200,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
+				ttc_button=new_button(j*200+50,i*200+50,200,200,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
 				ttc_button->pressedButton=makeMove;
 			}
 			/*add pieces to children list*/

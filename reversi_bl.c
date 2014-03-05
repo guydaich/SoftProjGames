@@ -259,33 +259,124 @@ int rv_make_move(int* game_state, int rows, int cols, int player)
    in one or more*/ 
 int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 {
-	int i,t_rows,t_cols, length;
+	int i,t_rows,t_cols, length,j;
 	int other = player*(-1); 
 
 	if (game_state[rows*REVERSI_ROWS+cols]!=0)
 	{
 		return 0;
 	}
-
-	/* for every possible direction */
+	/*
+	// for every possible direction 
 	for (i=0;i<REVERSI_ROWS; i++)
 	{
 		t_rows = rows + move_directions[i][0]; 
 		t_cols = cols + move_directions[i][1];
 
-		/* advance in this direction as long as enemy pieces are encountered */
+		// advance in this direction as long as enemy pieces are encountered 
 		while (game_state[t_rows*REVERSI_ROWS + t_cols] == other)
 		{
 			t_rows += move_directions[i][0]; 
 			t_cols += move_directions[i][1];	
-			/* if encoutered another piece - move is legal */
+			// if encoutered another piece - move is legal 
 			if (game_state[t_rows*REVERSI_ROWS + t_cols] == player)
 			{
 				return 1;
 			}
 		}
 	}
-	/*didn't encouter enemy piece - move illegal*/
+	//didn't encouter enemy piece - move illegal
+	return 0;
+	*/
+
+	//check row up
+	if (rows!=0 && game_state[(rows-1)*REVERSI_COLS + cols]==other)
+	{
+		for (i=rows-1; i>=0; i--)
+		{
+			if (game_state[(i)*REVERSI_COLS + cols]==player)
+			{
+				return 1;
+			}
+		}
+	}
+	//check row down
+	if (rows!=REVERSI_ROWS-1 && game_state[(rows+1)*REVERSI_COLS + cols]==other)
+	{
+		for (i=rows+1; i<REVERSI_ROWS; i++)
+		{
+			if (game_state[(i)*REVERSI_COLS + cols]==player)
+			{
+				return 1;
+			}
+		}
+	}
+	//check colnum right 
+	if (cols!=REVERSI_COLS-1 && game_state[(rows)*REVERSI_COLS + cols+1]==other)
+	{
+		for (i=cols+1; i<REVERSI_COLS; i++)
+		{
+			if (game_state[(rows)*REVERSI_COLS + i]==player)
+			{
+				return 1;
+			}
+		}
+	}
+	//check colnum left
+	if (cols!=0 && game_state[(rows)*REVERSI_COLS + cols-1]==other)
+	{
+		for (i=cols-1; i>=0; i--)
+		{
+			if (game_state[(rows)*REVERSI_COLS + i]==player)
+			{
+				return 1;
+			}
+		}
+	}
+	//check diaganal down right
+	if (cols!=REVERSI_COLS-1 && rows!=REVERSI_ROWS-1 && game_state[(rows+1)*REVERSI_COLS + cols+1]==other)
+	{
+		for (i=1; rows+i<REVERSI_ROWS && cols+i<REVERSI_COLS; i++)
+		{
+			if (game_state[(rows+i)*REVERSI_COLS + cols+i]==player)
+			{
+				return 1;
+			}
+		}
+	}
+	//check diaganal up right
+	if (cols!=REVERSI_COLS-1 && rows!=0 && game_state[(rows+1)*REVERSI_COLS + cols-1]==other)
+	{
+		for (i=1; rows-i>=0 && cols+i<REVERSI_COLS; i++)
+		{
+			if (game_state[(rows-i)*REVERSI_COLS + cols+i]==player)
+			{
+				return 1;
+			}
+		}
+	}
+	//check diaganal up left
+	if (cols!=0 && rows!=0 && game_state[(rows-1)*REVERSI_COLS + cols-1]==other)
+	{
+		for (i=1; rows-i>=0 && cols-i>=0; i++)
+		{
+			if (game_state[(rows-i)*REVERSI_COLS + cols-i]==player)
+			{
+				return 1;
+			}
+		}
+	}
+	//check diaganal up left
+	if (cols!=0 && rows!=REVERSI_ROWS-1 && game_state[(rows+1)*REVERSI_COLS + cols-1]==other)
+	{
+		for (i=1; rows-i<REVERSI_ROWS && cols-i>=0; i++)
+		{
+			if (game_state[(rows+i)*REVERSI_COLS + cols-i]==player)
+			{
+				return 1;
+			}
+		}
+	}
 	return 0;
 }
 

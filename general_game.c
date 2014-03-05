@@ -115,8 +115,8 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_
 				if (!move_success)
 					return; 
 
-				//(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
-				//SDL_Delay( 2000 );
+				(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
+				SDL_Delay( 2000 );
 				if ( (*cur_game)->is_game_over( (*cur_game)->board))
 					{
 						victory_state =  (*cur_game)->is_victory( (*cur_game)->board);
