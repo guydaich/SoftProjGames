@@ -334,7 +334,11 @@ int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game
 	{
 		return 0;
 	}
-	succes=ttc_make_move(game_state,y/200,x/200,1);
+	if (y<50 || x<50)
+	{
+		return 0;
+	}
+	succes=ttc_make_move(game_state,(y-50)/200,(x-50)/200,1);
 	if(succes==0)
 	{
 		return 0;

@@ -128,6 +128,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->ownSurface=NULL;
 	label->caption=NULL;
 	label->pressedButton=emptryButton;
+	label->srfc=NULL;
 
 	return label;
 }
@@ -155,6 +156,7 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 	button->caption=caption;
 	button->ownSurface=NULL;
 	button->pressedButton=emptryButton;
+	button->srfc=NULL;
 
 	return button;
 }
@@ -180,6 +182,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G)
 	panel->ownSurface=NULL;
 	panel->caption=NULL;
 	panel->pressedButton=NULL;
+	panel->srfc=NULL;
 
 	return panel;
 }

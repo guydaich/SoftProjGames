@@ -31,13 +31,14 @@ int gui_init()
 int main( int argc, char* args[] )
 {
 	element_cntrl ui_tree=NULL,pressed_Button=NULL; 
-	game *cur_game;
+	game *cur_game=NULL;
 	SDL_Event test_event; 
 	int victory_state = 0;
 	int move_success = 0;
 
 	gui_init();
-	ui_tree=game_init(&cur_game,MAIN_SIGN);
+	cur_game=runMainMenu(MAIN_SIGN,&cur_game);
+	ui_tree=game_init(&cur_game,DIFF_SIGN);
 
 	while(!quit)
     {
@@ -75,8 +76,6 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	element_cntrl root, temp_elem;
 	control* temp_control;
 	linked_list_cntrl list; 
-	int* diff;
-	int i;
 	
 	root = new_control_element(new_window(0,0,1000,700));
 	/*create panel children*/	
@@ -121,20 +120,14 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	/*difficulties*/
-	diff = cur_game->get_difficulty_levels();
-	for (i=0; i< 2; i++)
-	{
-		char* imageName=(char*)malloc(21);
-		sprintf(imageName,"./gfx/btn_diff_%d.bmp",(i+1));
-		temp_control = new_button(675,(i+4)*100+2,330,80,imageName,255,0,255,1,NULL);
-		temp_elem = new_control_element(temp_control);
-		add_control_element_to_list(list,temp_elem);
-		//free(imageName);
-	}
+	/*difficulties menu*/
+	temp_control = new_button(675,420,330,80,"./gfx/btn_diff_1.bmp",255,0,255,1,NULL);
+	temp_control->pressedButton=runDiffManu;
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
 
 	/*quit*/
-	temp_control = new_button(675,(i+4)*100+10,330,80,"./gfx/btn_quit.bmp",255,0,255,1,QUIT);
+	temp_control = new_button(675,520,330,80,"./gfx/btn_quit.bmp",255,0,255,1,QUIT);
 	temp_control->pressedButton=quitGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
@@ -212,8 +205,14 @@ game* runMainMenu(int mainORLoad,game** prevGame){
 	else if (mainORLoad==LOAD_SIGN){
 		ui_tree=loadWindow();
 	}
-	else {
+	else if (mainORLoad==SAVE_SIGN){
 		ui_tree=saveWindow();
+	}
+	else {
+		ui_tree=diffWindow(*prevGame);
+		if (prevGame==NULL){
+			return NULL;
+		}
 	}
 	draw_ui_tree(ui_tree);
     SDL_Flip( ui_tree->cntrl->srfc );
@@ -234,7 +233,7 @@ game* runMainMenu(int mainORLoad,game** prevGame){
 				 break;
 			 }
 			 whichGame=(pressed_Button->cntrl->caption[0])-'0';
-			 if (mainORLoad==SAVE_SIGN){
+			 if (mainORLoad==SAVE_SIGN || mainORLoad==DIFF_SIGN){
 				 pressed_Button->cntrl->pressedButton(prevGame,&ui_tree,&whichGame,&test_event);
 				 newGame=*prevGame;
 			 }
@@ -310,7 +309,7 @@ element_cntrl loadWindow(){
 		saveSlot[0]='0'+i;
 		//char* imageName=(char*)malloc(21);
 		//sprintf(imageName,"./gfx/btn_diff_%d.bmp",(i+1));
-		temp_control = new_button(20,20+(i-1)*80,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,saveSlot);
+		temp_control = new_button(20,20+(i-1)*80,100,60,"./gfx/slotOne.bmp",255,0,255,1,saveSlot);
 		temp_control->pressedButton=loadGame;
 		temp_elem = new_control_element(temp_control);
 		add_control_element_to_list(list,temp_elem);
@@ -351,8 +350,53 @@ element_cntrl saveWindow(){
 		saveSlot[0]='0'+i;
 		//char* imageName=(char*)malloc(21);
 		//sprintf(imageName,"./gfx/btn_diff_%d.bmp",(i+1));
-		temp_control = new_button(20,20+(i-1)*80,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,saveSlot);
+		temp_control = new_button(20,20+(i-1)*80,100,60,"./gfx/slotOne.bmp",255,0,255,1,saveSlot);
 		temp_control->pressedButton=saveGame;
+		temp_elem = new_control_element(temp_control);
+		add_control_element_to_list(list,temp_elem);
+	}
+
+	set_list_as_children(list,root->children->head);
+	return root;
+
+}
+
+
+element_cntrl diffWindow(game *cur_game){
+	element_cntrl root, temp_elem;
+	control* temp_control;
+	linked_list_cntrl list;
+	int i;
+	
+	if (cur_game==NULL){
+		return;
+	}
+	root = new_control_element(new_window(0,0,150,400));
+	/*create panel children*/	
+	list = new_control_list();
+
+	/*button panel*/
+	temp_control = new_panel(0,0,200,400,255,255,255);
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+	set_list_as_children(list,root);
+
+	/*panel children*/
+	list = new_control_list();
+
+	/*label - paint first*/
+	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1);
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+
+	for (i=1;i<=cur_game->difficulty_num;i++)
+	{
+		char* saveSlot=(char*)malloc(2);///for the meanwhile a leak;
+		saveSlot[0]='0'+i;
+		//char* imageName=(char*)malloc(21);
+		//sprintf(imageName,"./gfx/btn_diff_%d.bmp",(i+1));
+		temp_control = new_button(20,10+(i-1)*50,100,60,"./gfx/btn_diff_2.bmp",255,0,255,1,saveSlot);
+		temp_control->pressedButton=setDifficalty;
 		temp_elem = new_control_element(temp_control);
 		add_control_element_to_list(list,temp_elem);
 	}

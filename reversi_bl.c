@@ -505,6 +505,10 @@ int rv_handle_computer_turn(int* game_state, int depth)
 {
 	int comp_move;
 	comp_move = get_computer_move(game_state, 2, rv_get_state_children);
+	if (!rv_is_valid_move(game_state,-1,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS)){
+		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		comp_move=-1;
+	}
 	rv_make_move(game_state,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS,-1);
 	return 0;
 }

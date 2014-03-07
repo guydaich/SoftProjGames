@@ -14,8 +14,8 @@ void save_game_to_file(char* filename, int *game_state, int player, int cols, in
 	}
 	fprintf(file, "%s\n",gameName);//print Game name
 	fprintf(file, "%d\n",player);//print player
-	for(i=0;i<cols;i++){
-		for(j=0;j<rows;j++){
+	for(i=0;i<rows;i++){
+		for(j=0;j<cols;j++){
 			fprintf(file,"%d ",game_state[i*cols+j]);
 		}
 		fprintf(file, "\n");
@@ -66,7 +66,7 @@ void fill_matrix_loaded(FILE *file,int *gameMatrix,int cols,int rows){
 	for(i=0;i<rows;i++){
 		for(j=0;j<cols;j++){
 			fscanf(file,"%d ",&temp);
-			gameMatrix[i*(rows)+j]=temp;
+			gameMatrix[i*(cols)+j]=temp;
 		}
 	}
 }

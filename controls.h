@@ -66,7 +66,7 @@ void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl 
 
 /* control functions */
 void draw_ui_tree(element_cntrl root);
-void draw_button(control* button);
+void draw_button(control *button, control *container);
 void draw_label(control *label, control *container);
 void draw_window(control* window);
 void draw_panel(control* panel);

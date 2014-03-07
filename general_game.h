@@ -21,6 +21,7 @@ typedef struct _general_game
 	int cur_player; 
 	int difficulty;
 	int is_multiplayer;
+	int difficulty_num;
 
 	/*general function*/
 	char*			(*get_name)();
@@ -32,7 +33,7 @@ typedef struct _general_game
 	int				(*handle_mouse_button_down)(SDL_Event *event,element_cntrl root, int* game_state, int player);
 	int				(*player_has_moves)(int* game_state, int player);
 	int				(*is_game_over)(int* game_state);
-	int				(*is_victory)(int* game_state);
+	int				(*is_victory)(int* game_state,int player);
 	int				(*handle_computer_move)(int* game_state, int depth);
 
 
@@ -49,5 +50,6 @@ void  chooseGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* tes
 void  runLoadManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
 void  loadGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
 void  runsaveManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
+void  runDiffManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
 
 #endif
