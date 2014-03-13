@@ -63,6 +63,7 @@ void deleteList(element head,int is_nodes);
 void remove_tree(vertex root, int is_root);
 void remove_bad_subtree(vertex bad_subtree_root, int is_root);
 vertex new_node(int move, int *game_state, int score);
+void free_node(vertex node);
 
 /*minimax functions*/
 //int * copy_board_move(board_t from, int move, int player);

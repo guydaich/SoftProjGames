@@ -4,15 +4,17 @@ int *reversi_board;
 int reversi_diffficulties[] = {1,2,3,4};
 /* all possible {delta_x,delta_y} directions on board*/
 int move_directions[8][2] = {{1,1},{-1,-1},{1,-1},{-1,1},{0,1},{1,0},{-1,0},{0,-1}};
+/*region score matrix*/
 int region_scores[REVERSI_ROWS][REVERSI_COLS] = 
-				{	{10, -5, 5, 5, 5, 5, -5, 10},
-					{-5, -5, -1, -1, -1, -1, -5, -5},
-					{ 5, -1, 1, 1, 1, 1, -1, 5},
-					{ 5, -1, 1, 1, 1, 1, -1, 5},
-					{ 5, -1, 1, 1, 1, 1, -1, 5},
-					{ 5, -1, 1, 1, 1, 1, -1, 5},
-					{-5, -5, -1, -1, -1, -1, -5, -5},
-					{10, -5, 5, 5, 5, 5, -5, 10}	};
+				{{R5, R4, R3, R3, R3, R3, R4, R5},
+				{R4, R4, R2, R2, R2, R2, R4, R4},
+				{R3, R2, R1, R1, R1, R1, R2, R3},
+				{R3, R2, R1, R1, R1, R1, R2, R3},
+				{R3, R2, R1, R1, R1, R1, R2, R3},
+				{R3, R2, R1, R1, R1, R1, R2, R3},
+				{R4, R4, R2, R2, R2, R2, R4, R4},
+				{R5, R4, R3, R3, R3, R3, R4, R5}};
+
 
 char* rv_get_name()
 {
@@ -24,24 +26,39 @@ int* rv_get_initial_state()
 	int* initial_board = (int*)calloc(REVERSI_ROWS*REVERSI_COLS,sizeof(int));
 	
 	int i=0,j=0;
-	for (i=0; i< REVERSI_ROWS; i++)
-	{
-		for(j=0; j  <REVERSI_COLS; j++)
-		{
-			initial_board[i*REVERSI_ROWS + j] = 0; 
+	for (i=0; i< REVERSI_ROWS; i++){
+		for(j=0; j  <REVERSI_COLS; j++){
+			initial_board[i*REVERSI_ROWS + j] = REVERSI_NO_PLAYER; 
 		}
 	}
 	
-	// initial pieces
-	initial_board[3*REVERSI_ROWS + 3] = 1;
-	initial_board[4*REVERSI_ROWS + 3] = -1;
-	initial_board[4*REVERSI_ROWS + 4] = 1;
-	initial_board[3*REVERSI_ROWS + 4] = -1;
+	/* initial piece layout */
+	initial_board[PLAYER_1_START_1] = REVERSI_PLAYER_1;
+	initial_board[PLAYER_2_START_1] = REVERSI_PLAYER_2;
+	initial_board[PLAYER_1_START_2] = REVERSI_PLAYER_1;
+	initial_board[PLAYER_2_START_2] = REVERSI_PLAYER_2;
 
 	return initial_board;
 }
 
 /* creates a node and element for each child-state, and adds to list*/
+int rv_make_node(int* game_state, int row, int col, int player)
+{
+	int* moved_state;
+	vertex node;
+	element new_elem,prev_tail;
+
+	moved_state = rv_copy_and_make_move(game_state,row,col,player);
+	node = new_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state,player));
+
+	/*check for errors*/
+	if (node == NULL)
+	{
+		free(moved_state);
+		return 0;
+	}
+}
+
 int rv_add_to_children_list(linked_list list, int* game_state, int row, int col, int player)
 {
 	int* moved_state;

@@ -187,99 +187,18 @@ vertex new_node(int move, int *game_state, int score)
 	return new_node;
 }
 
-
-/* adds children to a node in the process of building the tree
-int create_children(vertex parent, int player,int isRoot)
+/*frees memory allocated for the node*/
+void free_node(vertex node)
 {
-	element new_elem_mv;
-	vertex node_mv;
-	int* moved;
-	int move;
-	int child_player = -1 * player;		// player is opposite
+	if (node->game_state != NULL){
+		free(node->game_state); 
+	}
+	free(node);
+	return;
+}
 
-	if (parent->score == INT_MAX ||
-		parent->score == INT_MIN)		//if victory achieved stop building
-	{
-		return 1;							//return
-	}
 
-	for (move = 1; move < 8; move++)
-	{
-		if (((parent->game_state))[move - 1] != 0)	// if game doesn't allow this move
-		{
-			continue;								// continue to next move
-		}
 
-		// make new identical board
-		 moved = 
-		 	copy_board_move(parent->game_state, move - 1, child_player);
-		 if (moved == NULL){
-			 remove_bad_subtree(parent, isRoot);
-			 return -1;
-		 }
-		// create new node
-		node_mv = make_node(move, moved, scoring_function(moved));
-		if (node_mv == NULL){
-			remove_bad_subtree(parent, isRoot);
-			return -1;
-		}
-		new_elem_mv = new_element();
-		if (new_elem_mv == NULL){
-			remove_bad_subtree(parent, isRoot);
-			return -1;
-		}
-		new_elem_mv->node = node_mv;
-
-		if (parent->edges->head == NULL)
-		{	//if the list is empty the add new_elem_mv to list
-			parent->edges->head = new_elem_mv;
-			parent->edges->tail = new_elem_mv;
-		}
-		else
-		{	//if list not empty,set new element as tail
-			element prevTail = parent->edges->tail;
-			prevTail->next = new_elem_mv;
-			new_elem_mv->prev = prevTail;
-			parent->edges->tail = new_elem_mv;
-		}
-	}
-	return 1;
-}*/
-
-/*removes tree by freeing all the memory previously allocated
-void remove_tree(vertex root, int is_root)
-{
-	element cur_elem = NULL, prev_elem=NULL;
-	for (cur_elem = root->edges->head; cur_elem != NULL && 
-	cur_elem->next != NULL ; cur_elem = cur_elem->next)	//iterate over edges
-	{
-		remove_tree(cur_elem->node, 0);		// recursively call deletion on each child
-		prev_elem = cur_elem->prev;			// choose previous sibling
-		if (prev_elem != NULL)
-		{
-			free(prev_elem);				// free him, after his children were freed
-		}
-	}
-	if (cur_elem != NULL && prev_elem!=NULL)
-	{
-		remove_tree(cur_elem->node, 0);		// GUY: what's going one here?
-		free(cur_elem->prev);
-		free(cur_elem);
-	}
-	else{
-		if (cur_elem != NULL){
-			remove_tree(cur_elem->node, 0);
-			free(cur_elem);
-		}
-	}
-	free(root->edges);
-	if (is_root == 0)	//we won't free the root game state, to not hurt the board
-		//GUY: but the board itself wasn't allocated here....
-	{
-		free(root->game_state);
-	}
-	free(root);
-}*/
 
 void remove_tree(vertex root, int is_root)
 {
@@ -308,39 +227,6 @@ void deleteList(element head,int is_nodes){
 	free(head);
 	numE--;
 }
-
-
-/*make a copy of the board
-int * copy_board_move(board_t from, int move, int player) 
-{
-	int i, j;
-	int *new_board_ptr = // allocate new board
-		(int*)calloc(GROWS*GCOLS, sizeof(int));	
-	
-	// handle calloc error
-	if (new_board_ptr == NULL)
-	{
-		perror("Error: standard function calloc has failed");
-		return NULL;
-	}
-	for (i = 0; i < GROWS; i++)		// copy board
-	{
-		for (j = 0; j < GCOLS; j++)
-		{
-			new_board_ptr[i*GCOLS + j] = (from)[i*GCOLS + j];
-		}
-	}
-	
-	for (i = GROWS - 1; i >= 0; i--) // find appropriate row for column move
-	{
-		if (new_board_ptr[i*GCOLS + move] == 0)
-		{
-			new_board_ptr[i*GCOLS + move] = player;
-			break;
-		}
-	}
-	return new_board_ptr;
-}*/
 
 
 /* Calculates Scoring for a Board*/
@@ -615,3 +501,127 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth)
 	}
 }
 
+/* adds children to a node in the process of building the tree
+int create_children(vertex parent, int player,int isRoot)
+{
+	element new_elem_mv;
+	vertex node_mv;
+	int* moved;
+	int move;
+	int child_player = -1 * player;		// player is opposite
+
+	if (parent->score == INT_MAX ||
+		parent->score == INT_MIN)		//if victory achieved stop building
+	{
+		return 1;							//return
+	}
+
+	for (move = 1; move < 8; move++)
+	{
+		if (((parent->game_state))[move - 1] != 0)	// if game doesn't allow this move
+		{
+			continue;								// continue to next move
+		}
+
+		// make new identical board
+		 moved = 
+		 	copy_board_move(parent->game_state, move - 1, child_player);
+		 if (moved == NULL){
+			 remove_bad_subtree(parent, isRoot);
+			 return -1;
+		 }
+		// create new node
+		node_mv = make_node(move, moved, scoring_function(moved));
+		if (node_mv == NULL){
+			remove_bad_subtree(parent, isRoot);
+			return -1;
+		}
+		new_elem_mv = new_element();
+		if (new_elem_mv == NULL){
+			remove_bad_subtree(parent, isRoot);
+			return -1;
+		}
+		new_elem_mv->node = node_mv;
+
+		if (parent->edges->head == NULL)
+		{	//if the list is empty the add new_elem_mv to list
+			parent->edges->head = new_elem_mv;
+			parent->edges->tail = new_elem_mv;
+		}
+		else
+		{	//if list not empty,set new element as tail
+			element prevTail = parent->edges->tail;
+			prevTail->next = new_elem_mv;
+			new_elem_mv->prev = prevTail;
+			parent->edges->tail = new_elem_mv;
+		}
+	}
+	return 1;
+}*/
+
+/*removes tree by freeing all the memory previously allocated
+void remove_tree(vertex root, int is_root)
+{
+	element cur_elem = NULL, prev_elem=NULL;
+	for (cur_elem = root->edges->head; cur_elem != NULL && 
+	cur_elem->next != NULL ; cur_elem = cur_elem->next)	//iterate over edges
+	{
+		remove_tree(cur_elem->node, 0);		// recursively call deletion on each child
+		prev_elem = cur_elem->prev;			// choose previous sibling
+		if (prev_elem != NULL)
+		{
+			free(prev_elem);				// free him, after his children were freed
+		}
+	}
+	if (cur_elem != NULL && prev_elem!=NULL)
+	{
+		remove_tree(cur_elem->node, 0);		// GUY: what's going one here?
+		free(cur_elem->prev);
+		free(cur_elem);
+	}
+	else{
+		if (cur_elem != NULL){
+			remove_tree(cur_elem->node, 0);
+			free(cur_elem);
+		}
+	}
+	free(root->edges);
+	if (is_root == 0)	//we won't free the root game state, to not hurt the board
+		//GUY: but the board itself wasn't allocated here....
+	{
+		free(root->game_state);
+	}
+	free(root);
+}*/
+
+/*make a copy of the board
+int * copy_board_move(board_t from, int move, int player) 
+{
+	int i, j;
+	int *new_board_ptr = // allocate new board
+		(int*)calloc(GROWS*GCOLS, sizeof(int));	
+	
+	// handle calloc error
+	if (new_board_ptr == NULL)
+	{
+		perror("Error: standard function calloc has failed");
+		return NULL;
+	}
+	for (i = 0; i < GROWS; i++)		// copy board
+	{
+		for (j = 0; j < GCOLS; j++)
+		{
+			new_board_ptr[i*GCOLS + j] = (from)[i*GCOLS + j];
+		}
+	}
+	
+	for (i = GROWS - 1; i >= 0; i--) // find appropriate row for column move
+	{
+		if (new_board_ptr[i*GCOLS + move] == 0)
+		{
+			new_board_ptr[i*GCOLS + move] = player;
+			break;
+		}
+	}
+	return new_board_ptr;
+}*/

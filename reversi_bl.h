@@ -8,8 +8,21 @@
 #define REVERSI_ROWS 8 
 #define REVERSI_COLS 8
 #define REVERSI_NAME "Reversi"
+#define REVERSI_NO_PLAYER 0
 #define REVERSI_PLAYER_1 1
 #define REVERSI_PLAYER_2 -1
+#define PLAYER_1_START_1 3*REVERSI_ROWS + 3
+#define PLAYER_2_START_1 4*REVERSI_ROWS + 3
+#define PLAYER_1_START_2 4*REVERSI_ROWS + 4
+#define PLAYER_2_START_2 3*REVERSI_ROWS + 4
+
+#define R5 10
+#define R4 -5
+#define R3 5
+#define R2 -1
+#define R1 1
+
+
 
 
 /* functions */

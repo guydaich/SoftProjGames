@@ -3,6 +3,8 @@
 
 #include <SDL.h>
 #include <SDL_video.h>
+#include <SDL_ttf.h>
+
 
 /* generic control struct */
 typedef struct _control{
@@ -70,7 +72,7 @@ void draw_button(control *button, control *container);
 void draw_label(control *label, control *container);
 void draw_window(control* window);
 void draw_panel(control* panel);
-control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans);
+control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption);
 control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption);
 control* new_window(int x, int y, int w, int h);
 control* new_panel(int x, int y, int w, int h,int R, int G, int B);

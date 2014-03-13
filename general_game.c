@@ -1,4 +1,9 @@
-
+/* general_game.c
+*  this serves a a general game class. it is instantiated when a game is chosen	
+*  (directly, loaded, etc.), with an appropriarte game. it's members and methods 
+*  are updated with game-specific values, and pointers to game-specific function
+*  implementations 
+*/
 #include "general_game.h"
 #include "game.h"
 

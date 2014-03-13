@@ -106,7 +106,7 @@ void draw_ui_tree(element_cntrl root)
 
 /*init functions*/
 
-control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans)
+control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans, char* caption)
 {
 	// allocate button
 	control *label = (control*)malloc(sizeof(control));
@@ -126,7 +126,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->img = img;
 	label->draw=draw_label;
 	label->ownSurface=NULL;
-	label->caption=NULL;
+	label->caption=caption;
 	label->pressedButton=emptryButton;
 	label->srfc=NULL;
 
@@ -264,6 +264,12 @@ void draw_label(control *label, control *container)
 	
 	// load pic
 	SDL_Surface *surface;
+	TTF_Font *font;
+	   SDL_Surface *text;
+   SDL_Color text_color = {255, 255, 255};
+
+
+
 	if (label->ownSurface==NULL)
 	{
 		surface = SDL_LoadBMP(label->img);
@@ -296,6 +302,37 @@ void draw_label(control *label, control *container)
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 		SDL_FreeSurface(surface);
 	}
+
+   TTF_Init();
+	font = TTF_OpenFont("arial.ttf", 12);
+	err=TTF_GetError();
+   if (font == NULL)
+   {
+      //cerr << "TTF_OpenFont() Failed: " << TTF_GetError() << endl;
+      TTF_Quit();
+      SDL_Quit();
+      exit(1);
+   }
+
+   // Write text to surface
+   text = TTF_RenderText_Solid(font, label->caption, text_color);
+
+   if (text == NULL)
+   {
+     // cerr << "TTF_RenderText_Solid() Failed: " << TTF_GetError() << endl;
+      TTF_Quit();
+      SDL_Quit();
+      exit(1);
+   }
+
+      // Apply the text to the display
+      if (SDL_BlitSurface(text, NULL, container->srfc, NULL) != 0)
+      {
+         //cerr << "SDL_BlitSurface() Failed: " << SDL_GetError() << endl;
+      }
+
+
+
 }
 
 
@@ -409,7 +446,7 @@ int get_rect(SDL_Rect *rect, control *child, control *parent)
 void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl *target)
 {
 	element_cntrl cur_elem;
-	// fix this! use buttons in lowest level only
+	/*if is a button and a tree leaf*/
 	if (root->cntrl->is_button && root->children == NULL)
 	{
 		if ((x >= root->cntrl->x && x <= (root->cntrl->x + root->cntrl->w) &&
@@ -420,18 +457,16 @@ void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl 
 		}
 	}
 
-	if (root->children == NULL)
-	{
+	if (root->children == NULL){
 		return;
 	}
-	else
-	{
-		for (cur_elem = root->children->head; cur_elem!= NULL ;cur_elem=cur_elem->next)
-			{
+	else{
+		for (cur_elem = root->children->head; 
+			cur_elem!= NULL ;cur_elem=cur_elem->next){
 				find_element_by_coordinates(cur_elem,x,y,target);
 			}
 	}
-
+	return;
 }
 
 void clear_game_panel(element_cntrl ui_tree)
@@ -451,26 +486,27 @@ void clear_game_panel(element_cntrl ui_tree)
 
 void freeControlList(element_cntrl node)
 {
-	element_cntrl run,nextNode;
+	element_cntrl cur_elem,next_elem;
 
-	if (node==NULL)
-	{
+	if (node == NULL){
 		return;
 	}
-	if (node->children!=NULL)
-	{
-		for (run=node->children->head;run!=NULL;run=nextNode)
-		{
-			nextNode=run->next;
-			freeControlList(run);
+
+	/*free node children*/
+	if (node->children != NULL){
+		for (cur_elem=node->children->head;
+			cur_elem != NULL; cur_elem=next_elem){
+			next_elem=cur_elem->next;
+			freeControlList(cur_elem);
 		}
 	}
-	if (node->cntrl->ownSurface!=NULL)
-	{
+
+	/*free SDL surface associated with control*/
+	if (node->cntrl->ownSurface != NULL){
 		SDL_FreeSurface(node->cntrl->ownSurface);
 	}
-	surfaceNum--;
-	node->cntrl->ownSurface=NULL;
+	node->cntrl->ownSurface = NULL;
+	/*
 	if (node->cntrl->is_button==1)
 	{
 		buttomNum--;
@@ -486,14 +522,19 @@ void freeControlList(element_cntrl node)
 	if (node->cntrl->is_window==1)
 	{
 		windowNum--;
-	}
-	if (node->cntrl->caption!=NULL && node->cntrl->caption[2]==NULL)//no const
+	}*/
+	
+	/*free node caption*/
+	if (node->cntrl->caption != NULL 
+		&& node->cntrl->caption[2] == NULL)
 	{
 		free(node->cntrl->caption);
 	}
+	/*free control and node*/
 	free(node->cntrl);
 	free(node);
-	controlElementNum--;
+
+	//controlElementNum--;
 
 }
 

@@ -92,7 +92,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	list = new_control_list();
 
 	/*label - paint first*/
-	temp_control = new_label(650,0,330,80,"./gfx/button_label.bmp",255,0,255,1);
+	temp_control = new_label(650,0,330,80,"./gfx/button_label.bmp",255,0,255,1,"this is a text");
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -157,7 +157,7 @@ element_cntrl mainMenuWindow(){
 	list = new_control_list();
 
 	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1);
+	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -299,7 +299,7 @@ element_cntrl loadWindow(){
 	list = new_control_list();
 
 	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1);
+	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -340,7 +340,7 @@ element_cntrl saveWindow(){
 	list = new_control_list();
 
 	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1);
+	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -385,7 +385,7 @@ element_cntrl diffWindow(game *cur_game){
 	list = new_control_list();
 
 	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1);
+	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
