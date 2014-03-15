@@ -2,8 +2,6 @@
 
 #define DEBUG 1
 
-void emptryButton(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
-
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
@@ -273,6 +271,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->caption=caption;
 	label->pressedButton=emptryButton;
 	label->srfc=NULL;
+	label->buttonChoise=0;
 
 	return label;
 }
@@ -301,6 +300,7 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 	button->ownSurface=NULL;
 	button->pressedButton=emptryButton;
 	button->srfc=NULL;
+	button->buttonChoise=0;
 
 	return button;
 }
@@ -327,6 +327,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G)
 	panel->caption=NULL;
 	panel->pressedButton=NULL;
 	panel->srfc=NULL;
+	panel->buttonChoise=0;
 
 	return panel;
 }
@@ -349,6 +350,7 @@ control* new_window(int x, int y, int w, int h)
 	window->caption=NULL;
 	window->pressedButton=NULL;
 	window->srfc=NULL;
+	window->buttonChoise=0;
 
 	return window;
 }
@@ -523,6 +525,19 @@ void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl 
 			return;
 		}
 	}
+	//if out of bounds-return
+	if(x< root->cntrl->x){
+		return;
+	}
+	if(y<root->cntrl->y){
+		return;
+	}
+	if (x > (root->cntrl->x + root->cntrl->w)){
+		return;
+	}
+	if (y > (root->cntrl->y + root->cntrl->h)){
+		return;
+	}
 
 	if (root->children == NULL){
 		return;
@@ -605,7 +620,7 @@ void freeControlList(element_cntrl node)
 
 }
 
-void emptryButton(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void emptryButton(void* cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	return;
 }

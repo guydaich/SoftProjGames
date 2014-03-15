@@ -11,11 +11,16 @@ extern int windowNum;
 
 #define RESTART "restart"
 #define QUIT "quit"
+#define CANCEL "cancel"
 #define MAIN_MENU "mainMenu"
 #define SAVE "save"
 #define LOAD "load"
 #define DIFF "Difficulties"
 #define PAUSE "Pause"
+#define CHOOSE_GAME "choose game"
+#define DIFFICALTY "difficalty"
+#define SAVE_SLOT "save_slot"
+#define LOAD_SLOT "load_slot"
 
 
 int gui_init()
@@ -39,7 +44,7 @@ int main( int argc, char* args[] )
 	int move_success = 0;
 
 	gui_init();
-	cur_game=runMainMenu(MAIN_SIGN,&cur_game);
+	cur_game=runWindow(START_SIGN,&cur_game);
 	ui_tree=game_init(&cur_game,DIFF_SIGN);
 
 	while(!quit)
@@ -75,7 +80,7 @@ int main( int argc, char* args[] )
 
 element_cntrl get_default_ui_tree(game *cur_game)
 {
-	element_cntrl root, temp_elem;
+	element_cntrl root;
 	control* temp_control;
 	linked_list_cntrl list; 
 	
@@ -85,140 +90,76 @@ element_cntrl get_default_ui_tree(game *cur_game)
 
 	/*button panel*/
 	temp_control = new_panel(600,0,400,1000,255,255,255);
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
+	addNewControlToList(temp_control,list);
 	set_list_as_children(list,root);
-
 
 	/*panel children*/
 	list = new_control_list();
 
 	/*label - paint first*/
 	temp_control = new_label(650,0,330,80,"./gfx/button_label.bmp",255,0,255,1,"this is a text");
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
+	addNewControlToList(temp_control,list);
 
 	/*restart*/
-	temp_control = new_button(675,20,200,65,"./gfx/generic_button.bmp",255,0,255,1,RESTART);
-	temp_control->pressedButton=restartGame;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
+	newButtonGeneric(list,675,20,RESTART,restartGame,0);
 	/*save*/
-	temp_control = new_button(675,120,330,80,"./gfx/generic_button.bmp",255,0,255,1,SAVE);
-	temp_control->pressedButton=runsaveManu;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
-
+	newButtonGeneric(list,675,120,SAVE,runsaveManu,0);
 	/*pause- unpause*/
-	temp_control = new_button(675,220,330,80,"./gfx/generic_button.bmp",255,0,255,1,PAUSE);
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
+	newButtonGeneric(list,675,220,PAUSE,emptryButton,0);
 	/*main menu*/
-	temp_control = new_button(675,320,330,80,"./gfx/generic_button.bmp",255,0,255,1,MAIN_MENU);
-	temp_control->pressedButton=goToMainMenu;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
+	newButtonGeneric(list,675,320,MAIN_MENU,goToMainMenu,0);
 	/*difficulties menu*/
-	temp_control = new_button(675,420,330,80,"./gfx/generic_button.bmp",255,0,255,1,DIFF);
-	temp_control->pressedButton=runDiffManu;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
+	newButtonGeneric(list,675,420,DIFF,runDiffManu,0);
 	/*quit*/
-	temp_control = new_button(675,520,330,80,"./gfx/generic_button.bmp",255,0,255,1,QUIT);
-	temp_control->pressedButton=quitGame;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-	
+	newButtonGeneric(list,675,420,QUIT,quitGame,0);	
 	/* set buttons as panel children*/
 	set_list_as_children(list,root->children->head);
 	return root;
 }
 
-element_cntrl mainMenuWindow(){
-	element_cntrl root, temp_elem;
-	control* temp_control;
-	linked_list_cntrl list; 
-	char* saveSlot;
-
-	root = new_control_element(new_window(0,0,150,400));
-	/*create panel children*/	
-	list = new_control_list();
-
-	/*button panel*/
-	temp_control = new_panel(0,0,200,400,255,255,255);
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-	set_list_as_children(list,root);
-
-	/*panel children*/
-	list = new_control_list();
-
-	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/generic_button.bmp",255,0,255,1,"panel");
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
-	saveSlot=(char*)malloc(2);///for the meanwhile a leak;
-	saveSlot[0]='1';
-	temp_control = new_button(20,20,100,60,"./gfx/generic_button.bmp",255,0,255,1,saveSlot);
-	temp_control->pressedButton=chooseGame;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
-	saveSlot=(char*)malloc(2);///for the meanwhile a leak;
-	saveSlot[0]='2';
-	temp_control = new_button(20,100,100,60,"./gfx/generic_button.bmp",255,0,255,1,saveSlot);
-	temp_control->pressedButton=chooseGame;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
-	saveSlot=(char*)malloc(2);///for the meanwhile a leak;
-	saveSlot[0]='3';
-	temp_control = new_button(20,200,100,60,"./gfx/generic_button.bmp",255,0,255,1,saveSlot);
-	temp_control->pressedButton=chooseGame;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
-	temp_control = new_button(20,300,100,60,"./gfx/generic_button.bmp",255,0,255,1,LOAD);
-	temp_control->pressedButton=runLoadManu;
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
-	set_list_as_children(list,root->children->head);
-	return root;
-
-}
-
 //run window in which a game is chosen
-game* runMainMenu(int mainORLoad,game** prevGame){
+game* runWindow(int mainORLoad,game** prevGame){
 	element_cntrl ui_tree,pressed_Button=NULL;
-	int whichGame;
+	int whichGame,iterationNum=1;
 	SDL_Event test_event; 
 	game *newGame=NULL;
+	void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event)=emptryButton;
+	char* captionStart;
 
-	if (mainORLoad==MAIN_SIGN){
-		ui_tree =mainMenuWindow();
-	}
-	else if (mainORLoad==LOAD_SIGN){
-		ui_tree=loadWindow();
-	}
-	else if (mainORLoad==SAVE_SIGN){
-		ui_tree=saveWindow();
+	if (mainORLoad==START_SIGN){
+		ui_tree=startWindow();
 	}
 	else {
-		ui_tree=diffWindow(*prevGame);
-		if (prevGame==NULL){
-			return NULL;
+		if (mainORLoad==MAIN_SIGN){
+			buttonAction=chooseGame;
+			iterationNum=4;
+			captionStart=(char *)LOAD_SLOT;//casting from const char *
 		}
+		else if (mainORLoad==LOAD_SIGN){
+			buttonAction=loadGame;
+			iterationNum=5;
+			captionStart=(char *)LOAD_SLOT;//casting from const char *
+		}
+		else if (mainORLoad==SAVE_SIGN){
+			buttonAction=saveGame;
+			iterationNum=5;
+			captionStart=(char *)SAVE_SLOT;//casting from const char *
+		}
+		else {
+			if (*prevGame==NULL){
+				return NULL;
+			}
+			buttonAction=setDifficalty;
+			iterationNum=(*prevGame)->difficulty_num;
+			captionStart=(char *)DIFFICALTY;//casting from const char *
+		}
+		ui_tree=choiseWindow(iterationNum,buttonAction,captionStart);
 	}
-	draw_ui_tree(ui_tree);
-    SDL_Flip( ui_tree->cntrl->srfc );
-
+	if (!quit){
+		draw_ui_tree(ui_tree);
+		SDL_Flip( ui_tree->cntrl->srfc );
+	}
+	
 	while(!quit)
     {
 	while(SDL_PollEvent(&test_event)) {
@@ -234,7 +175,7 @@ game* runMainMenu(int mainORLoad,game** prevGame){
 			 {
 				 break;
 			 }
-			 whichGame=(pressed_Button->cntrl->caption[0])-'0';
+			 whichGame=pressed_Button->cntrl->buttonChoise;
 			 if (mainORLoad==SAVE_SIGN || mainORLoad==DIFF_SIGN){
 				 pressed_Button->cntrl->pressedButton(prevGame,&ui_tree,&whichGame,&test_event);
 				 newGame=*prevGame;
@@ -259,7 +200,7 @@ element_cntrl game_init(game **cur_game,int mainORLoad)
 {
 	element_cntrl ui_tree;
 
-	*cur_game=runMainMenu(mainORLoad,cur_game);
+	*cur_game=runWindow(mainORLoad,cur_game);
 	if (*cur_game==NULL){
 		return NULL;
 	}
@@ -281,131 +222,82 @@ element_cntrl draw_game (game *cur_game,element_cntrl prev_ui_tree)
 	return prev_ui_tree;
 }
 
-element_cntrl loadWindow(){
+element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event),char* captionStart){
 	element_cntrl root, temp_elem;
+	control* temp_control;
+	linked_list_cntrl list;
+	int i;
+	
+	root = new_control_element(new_window(0,0,150,400));
+	/*create panel children*/	
+	list = new_control_list();
+
+	/*button panel*/
+	temp_control = new_panel(0,0,200,400,255,255,255);
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+	set_list_as_children(list,root);
+
+	/*panel children*/
+	list = new_control_list();
+
+	/*label - paint first*/
+	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
+	temp_elem = new_control_element(temp_control);
+	add_control_element_to_list(list,temp_elem);
+
+	for (i=1;i<=iterationNum;i++)
+	{
+		char* buttonName=(char*)malloc(strlen(captionStart)+3);//for the meanwhile a leak;
+		sprintf(buttonName,"%s %d",captionStart,i);
+		newButtonGeneric(list,20,20+(i-1)*50,buttonName,buttonAction,i);
+	}
+	free(captionStart);
+	set_list_as_children(list,root->children->head);
+	return root;
+
+}
+
+element_cntrl startWindow(){
+	element_cntrl root;
 	control* temp_control;
 	linked_list_cntrl list; 
-	int i;
-	
+
 	root = new_control_element(new_window(0,0,150,400));
 	/*create panel children*/	
 	list = new_control_list();
 
 	/*button panel*/
 	temp_control = new_panel(0,0,200,400,255,255,255);
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
+	addNewControlToList(temp_control,list);
 	set_list_as_children(list,root);
 
 	/*panel children*/
 	list = new_control_list();
 
 	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
+	temp_control = new_label(0,0,100,80,"./gfx/button_label.bmp",255,0,255,1,"panel");
+	addNewControlToList(temp_control,list);
 
-	for (i=1;i<=5;i++)
-	{
-		char* saveSlot=(char*)malloc(2);///for the meanwhile a leak;
-		saveSlot[0]='0'+i;
-		//char* imageName=(char*)malloc(21);
-		//sprintf(imageName,"./gfx/btn_diff_%d.bmp",(i+1));
-		temp_control = new_button(20,20+(i-1)*80,100,60,"./gfx/slotOne.bmp",255,0,255,1,saveSlot);
-		temp_control->pressedButton=loadGame;
-		temp_elem = new_control_element(temp_control);
-		add_control_element_to_list(list,temp_elem);
-	}
+	newButtonGeneric(list,20,20,CHOOSE_GAME,goToMainMenu,0);
+	newButtonGeneric(list,20,100,LOAD,runLoadManu,0);
+	newButtonGeneric(list,20,200,CANCEL,quitGame,0);
 
 	set_list_as_children(list,root->children->head);
 	return root;
 
 }
 
-element_cntrl saveWindow(){
-	element_cntrl root, temp_elem;
+void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int buttonChoise){
 	control* temp_control;
-	linked_list_cntrl list;
-	int i;
-	
-	root = new_control_element(new_window(0,0,150,400));
-	/*create panel children*/	
-	list = new_control_list();
-
-	/*button panel*/
-	temp_control = new_panel(0,0,200,400,255,255,255);
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-	set_list_as_children(list,root);
-
-	/*panel children*/
-	list = new_control_list();
-
-	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
-	for (i=1;i<=5;i++)
-	{
-		char* saveSlot=(char*)malloc(2);///for the meanwhile a leak;
-		saveSlot[0]='0'+i;
-		//char* imageName=(char*)malloc(21);
-		//sprintf(imageName,"./gfx/btn_diff_%d.bmp",(i+1));
-		temp_control = new_button(20,20+(i-1)*80,100,60,"./gfx/slotOne.bmp",255,0,255,1,saveSlot);
-		temp_control->pressedButton=saveGame;
-		temp_elem = new_control_element(temp_control);
-		add_control_element_to_list(list,temp_elem);
-	}
-
-	set_list_as_children(list,root->children->head);
-	return root;
-
+	temp_control = new_button(x,y,200,65,"./gfx/generic_button.bmp",255,0,255,1,caption);
+	temp_control->buttonChoise=buttonChoise;
+	temp_control->pressedButton=pressedButton;
+	addNewControlToList(temp_control,fathersList);
 }
 
-
-element_cntrl diffWindow(game *cur_game){
-	element_cntrl root, temp_elem;
-	control* temp_control;
-	linked_list_cntrl list;
-	int i;
-	
-	if (cur_game==NULL){
-		return;
-	}
-	root = new_control_element(new_window(0,0,150,400));
-	/*create panel children*/	
-	list = new_control_list();
-
-	/*button panel*/
-	temp_control = new_panel(0,0,200,400,255,255,255);
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-	set_list_as_children(list,root);
-
-	/*panel children*/
-	list = new_control_list();
-
-	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
-	temp_elem = new_control_element(temp_control);
-	add_control_element_to_list(list,temp_elem);
-
-	for (i=1;i<=cur_game->difficulty_num;i++)
-	{
-		char* saveSlot=(char*)malloc(2);///for the meanwhile a leak;
-		saveSlot[0]='0'+i;
-		//char* imageName=(char*)malloc(21);
-		//sprintf(imageName,"./gfx/btn_diff_%d.bmp",(i+1));
-		temp_control = new_button(20,10+(i-1)*50,100,60,"./gfx/btn_diff_2.bmp",255,0,255,1,saveSlot);
-		temp_control->pressedButton=setDifficalty;
-		temp_elem = new_control_element(temp_control);
-		add_control_element_to_list(list,temp_elem);
-	}
-
-	set_list_as_children(list,root->children->head);
-	return root;
-
+void addNewControlToList(control* control,linked_list_cntrl fathersList){
+	element_cntrl temp_elem;
+	temp_elem = new_control_element(control);
+	add_control_element_to_list(fathersList,temp_elem);
 }
-
-

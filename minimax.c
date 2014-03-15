@@ -11,8 +11,6 @@ int numOfElemmalList;
 int numOfNodemal;
 int numE;
 
-
-
 /* ---- Interface functions ---- */
 
 /* returns a suggested move foe the player, according to minimax */
@@ -37,8 +35,7 @@ int get_computer_move(int * game_matrix,int depth,linked_list (*create_children)
 	if (root == NULL){
 		exit(0);
 	}
-	fix_score(root,-1);
-	//alphaBeta(root,INT_MIN,INT_MAX,-1,0,depth);
+	alphaBeta(root,INT_MIN,INT_MAX,-1,0,depth);
 	cMove = getMove(root);
 	remove_tree(root, 1);
 	return cMove;
@@ -60,8 +57,6 @@ int getMove(vertex root)
 }
 /* ---- END Interface function ---- */
 
-/* Data Structure Functions */
-/* assign a root and calls recursive tree construction */
 vertex build_tree(int * game_matrix, int player, int maxDepth,linked_list (*create_children)(int *gameMatrix, int player))
 {
 	//int error;
@@ -73,7 +68,6 @@ vertex build_tree(int * game_matrix, int player, int maxDepth,linked_list (*crea
 	new_children=create_children(root->game_state, player);	// children belong to opposite player
 	root->edges=new_children;
 	if (0 == -1){								// problem with std function
-		remove_bad_subtree(root, 1);						// remove bad 
 		return NULL;
 	}
 	recursive_tree_build(root, -1 * player, 1, maxDepth,create_children);	// construct tree	
@@ -196,9 +190,6 @@ void free_node(vertex node)
 	free(node);
 	return;
 }
-
-
-
 
 void remove_tree(vertex root, int is_root)
 {
@@ -344,124 +335,6 @@ int scoring_function(int* game_matrix)	//asume game_matrix=2D array[GROWS][GCOLS
 	return totalScore;
 }
 
-/* calculates recursivle the score bottom up, from leaves*/
-void fix_score(vertex root_node, int player)
-{
-	int min_max_value;
-	int list_not_empty = 0;
-	element cur_elem;
-	vertex cur_node;
-
-	for (cur_elem = root_node->edges->head;
-		cur_elem != NULL; cur_elem = cur_elem->next) // itertate over edges
-	{
-		cur_node = cur_elem->node;
-		fix_score(cur_node, -1 * player);
-
-		if (list_not_empty == 0) 			// minmax of one the elem itself
-		{
-			min_max_value = cur_node->score;
-			list_not_empty = 1;
-		}
-		else
-		{
-			min_max_value = calc_min_max_value(
-					cur_node->score, player, min_max_value);
-		}
-	}
-
-	if (list_not_empty == 1)	// final assignment
-	{
-		root_node->score = min_max_value;
-	}
-}
-
-
-
-/* decides  where to minimize or maximize, according to player */
-int calc_min_max_value(int new_score, int player, int prev_score)
-{
-	if (player == COMPUTER)
-	{
-		if (prev_score > new_score)
-		{
-			return new_score;
-		}
-		else
-		{
-			return prev_score;
-		}
-	}
-	else
-	{
-		if (prev_score < new_score)
-		{
-			return new_score;
-		}
-		else
-		{
-			return prev_score;
-		}
-	}
-}
-
-/* ---- END Evaluation functions ---- */
-
-/* in case of a bad allocation, remove the children of a that vertex*/
-void remove_bad_subtree(vertex bad_subtree_root, int is_root)
-{
-	element cur_elem = NULL, prev_elem = NULL;
-	// case 1: there are more than 2 children
-	for (cur_elem = bad_subtree_root->edges->head;  //iterate over edges
-		cur_elem != NULL && cur_elem->next != NULL ; cur_elem = cur_elem->next)			
-	{
-		prev_elem = cur_elem->prev;			// choose previous sibling
-		if (prev_elem != NULL)
-		{
-			if (prev_elem->node != NULL){
-				if (prev_elem->node->game_state != NULL){
-					free(prev_elem->node->game_state);
-				}
-				if (prev_elem->node->edges != NULL){
-					free(prev_elem->node->edges);
-				}
-				free(prev_elem->node);
-			}
-			free(prev_elem);				// free him, after his children were freed
-		}
-	}
-	// case 2: there are 2 children
-	if (cur_elem != NULL && prev_elem != NULL)
-	{
-		free(cur_elem->prev);
-		if (cur_elem->node != NULL){
-			if (cur_elem->node->game_state != NULL){
-				free(cur_elem->node->game_state);
-			}
-			if (cur_elem->node->edges != NULL){
-				free(cur_elem->node->edges);
-			}
-			free(cur_elem->node);
-		}
-		free(cur_elem);
-	}
-	// case 1: one child
-	else{
-		if (cur_elem->node != NULL){
-			if (cur_elem->node->game_state != NULL){
-				free(cur_elem->node->game_state);
-			}
-			if (cur_elem->node->edges != NULL){
-				free(cur_elem->node->edges);
-			}
-			free(cur_elem->node);
-		}
-		if (cur_elem != NULL){
-			free(cur_elem);
-		}
-	}
-}
-
 int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth){
 	int aboveAlpha=alpha,aboveBeta=beta;
 	int temp;
@@ -500,128 +373,3 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth)
 		return aboveBeta;
 	}
 }
-
-/* adds children to a node in the process of building the tree
-int create_children(vertex parent, int player,int isRoot)
-{
-	element new_elem_mv;
-	vertex node_mv;
-	int* moved;
-	int move;
-	int child_player = -1 * player;		// player is opposite
-
-	if (parent->score == INT_MAX ||
-		parent->score == INT_MIN)		//if victory achieved stop building
-	{
-		return 1;							//return
-	}
-
-	for (move = 1; move < 8; move++)
-	{
-		if (((parent->game_state))[move - 1] != 0)	// if game doesn't allow this move
-		{
-			continue;								// continue to next move
-		}
-
-		// make new identical board
-		 moved = 
-		 	copy_board_move(parent->game_state, move - 1, child_player);
-		 if (moved == NULL){
-			 remove_bad_subtree(parent, isRoot);
-			 return -1;
-		 }
-		// create new node
-		node_mv = make_node(move, moved, scoring_function(moved));
-		if (node_mv == NULL){
-			remove_bad_subtree(parent, isRoot);
-			return -1;
-		}
-		new_elem_mv = new_element();
-		if (new_elem_mv == NULL){
-			remove_bad_subtree(parent, isRoot);
-			return -1;
-		}
-		new_elem_mv->node = node_mv;
-
-		if (parent->edges->head == NULL)
-		{	//if the list is empty the add new_elem_mv to list
-			parent->edges->head = new_elem_mv;
-			parent->edges->tail = new_elem_mv;
-		}
-		else
-		{	//if list not empty,set new element as tail
-			element prevTail = parent->edges->tail;
-			prevTail->next = new_elem_mv;
-			new_elem_mv->prev = prevTail;
-			parent->edges->tail = new_elem_mv;
-		}
-	}
-	return 1;
-}*/
-
-/*removes tree by freeing all the memory previously allocated
-void remove_tree(vertex root, int is_root)
-{
-	element cur_elem = NULL, prev_elem=NULL;
-	for (cur_elem = root->edges->head; cur_elem != NULL && 
-	cur_elem->next != NULL ; cur_elem = cur_elem->next)	//iterate over edges
-	{
-		remove_tree(cur_elem->node, 0);		// recursively call deletion on each child
-		prev_elem = cur_elem->prev;			// choose previous sibling
-		if (prev_elem != NULL)
-		{
-			free(prev_elem);				// free him, after his children were freed
-		}
-	}
-	if (cur_elem != NULL && prev_elem!=NULL)
-	{
-		remove_tree(cur_elem->node, 0);		// GUY: what's going one here?
-		free(cur_elem->prev);
-		free(cur_elem);
-	}
-	else{
-		if (cur_elem != NULL){
-			remove_tree(cur_elem->node, 0);
-			free(cur_elem);
-		}
-	}
-	free(root->edges);
-	if (is_root == 0)	//we won't free the root game state, to not hurt the board
-		//GUY: but the board itself wasn't allocated here....
-	{
-		free(root->game_state);
-	}
-	free(root);
-}*/
-
-/*make a copy of the board
-int * copy_board_move(board_t from, int move, int player) 
-{
-	int i, j;
-	int *new_board_ptr = // allocate new board
-		(int*)calloc(GROWS*GCOLS, sizeof(int));	
-	
-	// handle calloc error
-	if (new_board_ptr == NULL)
-	{
-		perror("Error: standard function calloc has failed");
-		return NULL;
-	}
-	for (i = 0; i < GROWS; i++)		// copy board
-	{
-		for (j = 0; j < GCOLS; j++)
-		{
-			new_board_ptr[i*GCOLS + j] = (from)[i*GCOLS + j];
-		}
-	}
-	
-	for (i = GROWS - 1; i >= 0; i--) // find appropriate row for column move
-	{
-		if (new_board_ptr[i*GCOLS + move] == 0)
-		{
-			new_board_ptr[i*GCOLS + move] = player;
-			break;
-		}
-	}
-	return new_board_ptr;
-}*/

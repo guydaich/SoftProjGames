@@ -9,6 +9,8 @@
 
 int gameNum=0;
 
+extern int quit;
+
 /* inits a new game */
 game* new_game(int game_id)
 {
@@ -89,18 +91,18 @@ return new_game_obj;
 
 }
 
-void  restartGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  restartGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	(*cur_game)->board=(*cur_game)->get_initial_state();
 	(*ui_tree)=draw_game(*cur_game,*ui_tree);
 }
 
-void  quitGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  quitGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
-	*quit=1;
+	quit=1;
 }
 
-void  goToMainMenu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  goToMainMenu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	freeControlList(*ui_tree);
 	if ((*cur_game)!=NULL)
@@ -108,19 +110,19 @@ void  goToMainMenu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* t
 		free((*cur_game));
 		gameNum--;
 	}
-	(*cur_game)=runMainMenu(MAIN_SIGN,cur_game);
+	(*cur_game)=runWindow(MAIN_SIGN,cur_game);
 	(*ui_tree)=game_init(cur_game,DIFF_SIGN);
 }
 
-void  saveGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  saveGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	char* fileLocation=(char *)malloc(36);
-	sprintf(fileLocation,"C:/Users/davidl/Documents/load%d.txt",*quit);
+	sprintf(fileLocation,"C:/Users/David/Documents/load%d.txt",*choice);
 	save_game_to_file(fileLocation,(*cur_game)->board,(*cur_game)->cur_player,
 						(*cur_game)->cols,(*cur_game)->rows,((*cur_game)->get_name()));
 }
 
-void  makeMove(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  makeMove(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 		element_cntrl temp_elem;
 		control* temp_control;
@@ -167,6 +169,7 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_
 						else
 						{
 							/*TODO: handle tie*/
+							return;
 						}
 						/*TODO: handle game over*/
 						draw_button(temp_elem->cntrl,temp_elem->parent->cntrl);
@@ -175,18 +178,18 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_
 				return;
 }
 
-void  setDifficalty(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  setDifficalty(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
-	(*cur_game)->difficulty=((*cur_game)->get_difficulty_levels())[*quit-1];
+	(*cur_game)->difficulty=((*cur_game)->get_difficulty_levels())[*choice-1];
 }
 
-void  chooseGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  chooseGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
-	(*cur_game)=new_game(*quit);
+	(*cur_game)=new_game(*choice);
 	(*cur_game)->board=(*cur_game)->get_initial_state();
 }
 
-void  runLoadManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  runLoadManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	freeControlList(*ui_tree);
 	if ((*cur_game)!=NULL)
@@ -194,29 +197,29 @@ void  runLoadManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* te
 		free((*cur_game));
 		gameNum--;
 	}
-	(*cur_game)=runMainMenu(LOAD_SIGN,cur_game);
+	(*cur_game)=runWindow(LOAD_SIGN,cur_game);
 	(*ui_tree)=NULL;//important
 }
 
-void  loadGame(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  loadGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 int whichGame;
 	int *gameBoard; 
 	char* fileLocation=(char *)malloc(36);
-	sprintf(fileLocation,"C:/Users/davidl/Documents/load%d.txt",*quit);
+	sprintf(fileLocation,"C:/Users/David/Documents/load%d.txt",*choice);
 	gameBoard=load_game_from_file(fileLocation,&whichGame);
 	free(fileLocation);
 	(*cur_game)=new_game(whichGame);
 	(*cur_game)->board=gameBoard;
 }
 
-void  runsaveManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  runsaveManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	freeControlList(*ui_tree);
 	(*ui_tree)=game_init(cur_game,SAVE_SIGN);
 }
 
-void  runDiffManu(game** cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event)
+void  runDiffManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	freeControlList(*ui_tree);
 	(*ui_tree)=game_init(cur_game,DIFF_SIGN);
