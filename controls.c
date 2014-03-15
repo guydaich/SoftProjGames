@@ -1,5 +1,7 @@
 #include "controls.h"
 
+#define DEBUG 1
+
 void emptryButton(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
 
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
@@ -11,6 +13,148 @@ int labelNum=0;
 int panelNum=0;
 int windowNum=0;
 int surfaceNum=0;
+
+
+/*gets current control, and parent control, return valid rectangle*/
+int get_rect(SDL_Rect *rect, control *child, control *parent)
+{
+
+	if (parent == NULL)
+	{
+		rect->x = child->x;
+		rect->y = child->x;
+		rect->h = child->h;
+		rect->w = child->w;
+		return 0;
+	}
+
+	/* child x inside container borders*/
+	if ((child->x) >= (parent->x) && (child->x) <= (parent->x + parent->w))
+	{
+		rect->x = child->x;
+		rect->w = MIN(child->w,parent->w);
+	}
+	/*child x before parent x - paint what's possible*/
+	else if ((child->x) < (parent->x))
+	{
+		rect->x = parent->x;
+		/*the new position is the parents - paint as much as possible
+		rect->w = MIN(child->w - parent->x, parent->w);*/
+		rect->w = parent->w;
+	}
+	/*child after parent - can't paint*/
+	else if ((child->x) > (parent->x + parent->w))
+	{
+		rect->x = child->x;
+		rect->y = child->y;
+		rect->w = 0;
+		rect->h = 0;
+		return 0;
+	}
+
+	/* child x inside container borders*/
+	if ((child->y) >= (parent->y) && (child->y) <= (parent->y + parent->h))
+	{
+		rect->y = child->y;
+		rect->h = MIN(child->h,parent->h);
+	}
+	/*child x before parent x - paint what's possible*/
+	else if ((child->y) < (parent->y))
+	{
+		rect->y = parent->y;
+		/*the new position is the parents - paint as much as possible
+		rect->w = MIN(child->w - parent->x, parent->w);*/
+		rect->h = parent->h;
+	}
+	/*child after parent - can't paint*/
+	else if ((child->y) > (parent->y + parent->w))
+	{
+		rect->x = child->x;
+		rect->y = child->y;
+		rect->w = 0;
+		rect->h = 0;
+		return 0;
+	}
+	return 1;
+}
+
+void get_text_position(SDL_Rect *rect_source, char* text,TTF_Font *font, SDL_Rect *rect_dest)
+{
+
+	int w,h;
+	if (TTF_SizeText(font,text,&w,&h)) {
+    // perhaps print the current TTF_GetError()
+		return;
+	} 
+	rect_dest->w = w; 
+	rect_dest->h = h; 
+	rect_dest->x = rect_source->x + (rect_source->w - w)/2;
+	rect_dest->y = rect_source->y + (rect_source->h - h)/2;
+
+
+}
+
+int is_valid_rect(SDL_Rect *rect)
+{
+	/*basic*/
+	if (rect->h < 0 || rect->w  < 0 || rect->x  < 0 || rect->y  < 0 ){
+		return 1; 
+	}
+	/* relative to parent - TODO */
+	return 0;
+}
+
+void make_rect(SDL_Rect *rect, int h, int w, int x, int y)
+{
+
+	rect->h = h;
+	rect->w = w;
+	rect->x = x;
+	rect->y = y;
+	return; 
+}
+
+void draw_caption_to_control(control *cntrl)
+{
+	char* err; 
+	TTF_Font *font;
+	SDL_Surface *text;
+	SDL_Color text_color = {255, 255, 255};
+	SDL_Rect text_rect = {0,0,0,0};
+	SDL_Rect soure_rect = {0,0,0,0};
+
+	if (cntrl->caption == NULL)	
+		return;
+
+	if (cntrl->caption == NULL)
+		return;
+
+	make_rect(&soure_rect, cntrl->h,cntrl->w,cntrl->x,cntrl->y);
+	//if (!is_valid_rect(&soure_rect))
+	//	return; 
+
+	TTF_Init();
+	
+	if ((font = TTF_OpenFont("arial.ttf", 12)) == NULL) {
+		err=TTF_GetError();
+		return;
+	}
+	
+	get_text_position(&soure_rect, cntrl->caption, font, &text_rect);
+	if ((text = TTF_RenderText_Solid(font, cntrl->caption, text_color))==NULL){
+		err=TTF_GetError();
+		return;
+	}
+
+	if (SDL_BlitSurface(text, NULL, cntrl->srfc, &text_rect) != 0){
+		err=TTF_GetError();
+		return;
+	}
+	
+	return; 
+}
+
+
 
 /* return pointer to element containing pointer to give control*/
 element_cntrl new_control_element(control* cntrl)
@@ -239,6 +383,11 @@ void draw_button(control *button, control *container)
 		surface=button->ownSurface;
 	}
 
+	if (DEBUG)
+	{
+		button->h = surface->h;
+		button->w = surface->w;
+	}
 	get_rect(&rect,button,container);
 
 		// set transparancy according to button R,G,B values
@@ -253,6 +402,12 @@ void draw_button(control *button, control *container)
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 		SDL_FreeSurface(surface);
 	}
+	
+	if (button->caption != NULL)
+	{
+		draw_caption_to_control(button);	
+	}
+	
 }
 
 
@@ -260,13 +415,11 @@ void draw_label(control *label, control *container)
 {
 	// build rect
 	SDL_Rect rect = {0,0,0,0}; 
+	
 	char *err; 
 	
 	// load pic
 	SDL_Surface *surface;
-	TTF_Font *font;
-	   SDL_Surface *text;
-   SDL_Color text_color = {255, 255, 255};
 
 
 
@@ -303,36 +456,10 @@ void draw_label(control *label, control *container)
 		SDL_FreeSurface(surface);
 	}
 
-   TTF_Init();
-	font = TTF_OpenFont("arial.ttf", 12);
-	err=TTF_GetError();
-   if (font == NULL)
-   {
-      //cerr << "TTF_OpenFont() Failed: " << TTF_GetError() << endl;
-      TTF_Quit();
-      SDL_Quit();
-      exit(1);
-   }
-
-   // Write text to surface
-   text = TTF_RenderText_Solid(font, label->caption, text_color);
-
-   if (text == NULL)
-   {
-     // cerr << "TTF_RenderText_Solid() Failed: " << TTF_GetError() << endl;
-      TTF_Quit();
-      SDL_Quit();
-      exit(1);
-   }
-
-      // Apply the text to the display
-      if (SDL_BlitSurface(text, NULL, container->srfc, NULL) != 0)
-      {
-         //cerr << "SDL_BlitSurface() Failed: " << SDL_GetError() << endl;
-      }
-
-
-
+	if (label->caption != NULL)
+	{
+		draw_caption_to_control(label);	
+	}
 }
 
 
@@ -371,7 +498,8 @@ void draw_panel(control* panel, control *container)
 		surface=panel->ownSurface;
 	}
 	get_rect(&rect,panel,container);
-	if (SDL_FillRect(container->srfc,&rect, SDL_MapRGB(surface->format, panel->R, panel->G, panel->B)) != 0)
+	if (SDL_FillRect(container->srfc,&rect, 
+		SDL_MapRGB(surface->format, panel->R, panel->G, panel->B)) != 0)
 	{
 		err=SDL_GetError();
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
@@ -380,68 +508,7 @@ void draw_panel(control* panel, control *container)
 }
 
 
-/*gets current control, and parent control, return valid rectangle*/
-int get_rect(SDL_Rect *rect, control *child, control *parent)
-{
 
-	if (parent == NULL)
-	{
-		rect->x = child->x;
-		rect->y = child->x;
-		rect->h = child->h;
-		rect->w = child->w;
-		return 0;
-	}
-
-	/* child x inside container borders*/
-	if ((child->x) >= (parent->x) && (child->x) <= (parent->x + parent->w))
-	{
-		rect->x = child->x;
-		rect->w = MIN(child->w,parent->w);
-	}
-	/*child x before parent x - paint what's possible*/
-	else if ((child->x) < (parent->x))
-	{
-		rect->x = parent->x;
-		/*the new position is the parents - paint as much as possible
-		rect->w = MIN(child->w - parent->x, parent->w);*/
-		rect->w = parent->w;
-	}
-	/*child after parent - can't paint*/
-	else if ((child->x) > (parent->x + parent->w))
-	{
-		rect->x = child->x;
-		rect->y = child->y;
-		rect->w = 0;
-		rect->h = 0;
-		return 0;
-	}
-
-	/* child x inside container borders*/
-	if ((child->y) >= (parent->y) && (child->y) <= (parent->y + parent->h))
-	{
-		rect->y = child->y;
-		rect->h = MIN(child->h,parent->h);
-	}
-	/*child x before parent x - paint what's possible*/
-	else if ((child->y) < (parent->y))
-	{
-		rect->y = parent->y;
-		/*the new position is the parents - paint as much as possible
-		rect->w = MIN(child->w - parent->x, parent->w);*/
-		rect->h = parent->h;
-	}
-	/*child after parent - can't paint*/
-	else if ((child->y) > (parent->y + parent->w))
-	{
-		rect->x = child->x;
-		rect->y = child->y;
-		rect->w = 0;
-		rect->h = 0;
-		return 0;
-	}
-	return 1;
-}
 
 void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl *target)
 {

@@ -33,6 +33,7 @@ typedef struct _control{
 	SDL_Surface *srfc;
 	SDL_Surface *ownSurface;
 	void (*pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event);
+	char* control_caption; 
 
 } control;
 

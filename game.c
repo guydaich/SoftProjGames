@@ -14,6 +14,8 @@ extern int windowNum;
 #define MAIN_MENU "mainMenu"
 #define SAVE "save"
 #define LOAD "load"
+#define DIFF "Difficulties"
+#define PAUSE "Pause"
 
 
 int gui_init()
@@ -97,37 +99,37 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	add_control_element_to_list(list,temp_elem);
 
 	/*restart*/
-	temp_control = new_button(675,20,200,65,"./gfx/btn_restart.bmp",255,0,255,1,RESTART);
+	temp_control = new_button(675,20,200,65,"./gfx/generic_button.bmp",255,0,255,1,RESTART);
 	temp_control->pressedButton=restartGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
 	/*save*/
-	temp_control = new_button(675,120,330,80,"./gfx/btn_save.bmp",255,0,255,1,SAVE);
+	temp_control = new_button(675,120,330,80,"./gfx/generic_button.bmp",255,0,255,1,SAVE);
 	temp_control->pressedButton=runsaveManu;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
 
 	/*pause- unpause*/
-	temp_control = new_button(675,220,330,80,"./gfx/btn_unpause.bmp",255,0,255,1,NULL);
+	temp_control = new_button(675,220,330,80,"./gfx/generic_button.bmp",255,0,255,1,PAUSE);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
 	/*main menu*/
-	temp_control = new_button(675,320,330,80,"./gfx/btn_menu.bmp",255,0,255,1,MAIN_MENU);
+	temp_control = new_button(675,320,330,80,"./gfx/generic_button.bmp",255,0,255,1,MAIN_MENU);
 	temp_control->pressedButton=goToMainMenu;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
 	/*difficulties menu*/
-	temp_control = new_button(675,420,330,80,"./gfx/btn_diff_1.bmp",255,0,255,1,NULL);
+	temp_control = new_button(675,420,330,80,"./gfx/generic_button.bmp",255,0,255,1,DIFF);
 	temp_control->pressedButton=runDiffManu;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
 	/*quit*/
-	temp_control = new_button(675,520,330,80,"./gfx/btn_quit.bmp",255,0,255,1,QUIT);
+	temp_control = new_button(675,520,330,80,"./gfx/generic_button.bmp",255,0,255,1,QUIT);
 	temp_control->pressedButton=quitGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
@@ -157,32 +159,32 @@ element_cntrl mainMenuWindow(){
 	list = new_control_list();
 
 	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
+	temp_control = new_label(0,0,100,80,"./gfx/generic_button.bmp",255,0,255,1,"panel");
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
 	saveSlot=(char*)malloc(2);///for the meanwhile a leak;
 	saveSlot[0]='1';
-	temp_control = new_button(20,20,100,60,"./gfx/TTC.bmp",255,0,255,1,saveSlot);
+	temp_control = new_button(20,20,100,60,"./gfx/generic_button.bmp",255,0,255,1,saveSlot);
 	temp_control->pressedButton=chooseGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
 	saveSlot=(char*)malloc(2);///for the meanwhile a leak;
 	saveSlot[0]='2';
-	temp_control = new_button(20,100,100,60,"./gfx/reversi.bmp",255,0,255,1,saveSlot);
+	temp_control = new_button(20,100,100,60,"./gfx/generic_button.bmp",255,0,255,1,saveSlot);
 	temp_control->pressedButton=chooseGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
 	saveSlot=(char*)malloc(2);///for the meanwhile a leak;
 	saveSlot[0]='3';
-	temp_control = new_button(20,200,100,60,"./gfx/connect4.bmp",255,0,255,1,saveSlot);
+	temp_control = new_button(20,200,100,60,"./gfx/generic_button.bmp",255,0,255,1,saveSlot);
 	temp_control->pressedButton=chooseGame;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
-	temp_control = new_button(20,300,100,60,"./gfx/mainMenuLoad.bmp",255,0,255,1,LOAD);
+	temp_control = new_button(20,300,100,60,"./gfx/generic_button.bmp",255,0,255,1,LOAD);
 	temp_control->pressedButton=runLoadManu;
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
