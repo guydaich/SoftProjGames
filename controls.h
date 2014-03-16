@@ -22,6 +22,9 @@ typedef struct _control{
 	int y;
 	int h;
 	int w;
+	int offsetx;
+	int offsety;
+	SDL_Rect *destination_rect;
 	/*image path */
 	char *img; 
 	/* colors for tranparancy */
@@ -32,6 +35,7 @@ typedef struct _control{
 	/*surface to blit to, always window*/
 	SDL_Surface *srfc;
 	SDL_Surface *ownSurface;
+	SDL_Surface *text_surface;
 	void (*pressedButton)(void* cur_game,void* ui_tree,int *choise,void* test_event);
 	int buttonChoise;
 
