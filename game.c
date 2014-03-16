@@ -44,8 +44,7 @@ int main( int argc, char* args[] )
 	int move_success = 0;
 
 	gui_init();
-	cur_game=runWindow(START_SIGN,&cur_game);
-	ui_tree=game_init(&cur_game,DIFF_SIGN);
+	runStartManu(&cur_game,&ui_tree,&quit,&test_event);
 
 	while(!quit)
     {
@@ -107,7 +106,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	/*pause- unpause*/
 	newButtonGeneric(list,675,220,PAUSE,emptryButton,0);
 	/*main menu*/
-	newButtonGeneric(list,675,320,MAIN_MENU,goToMainMenu,0);
+	newButtonGeneric(list,675,320,MAIN_MENU,runStartManu,0);
 	/*difficulties menu*/
 	newButtonGeneric(list,675,420,DIFF,runDiffManu,0);
 	/*quit*/

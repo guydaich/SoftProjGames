@@ -51,5 +51,6 @@ void  runLoadManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* 
 void  loadGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event);
 void  runsaveManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event);
 void  runDiffManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event);
+void  runStartManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event);
 
 #endif

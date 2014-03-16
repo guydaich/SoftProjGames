@@ -111,7 +111,7 @@ void  goToMainMenu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event*
 		gameNum--;
 	}
 	(*cur_game)=runWindow(MAIN_SIGN,cur_game);
-	(*ui_tree)=game_init(cur_game,DIFF_SIGN);
+	(*ui_tree)=NULL;
 }
 
 void  saveGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
@@ -199,6 +199,18 @@ void  runLoadManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* 
 	}
 	(*cur_game)=runWindow(LOAD_SIGN,cur_game);
 	(*ui_tree)=NULL;//important
+}
+
+void  runStartManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+{
+	freeControlList(*ui_tree);
+	if ((*cur_game)!=NULL)
+	{
+		free((*cur_game));
+		gameNum--;
+	}
+	(*cur_game)=runWindow(START_SIGN,cur_game);
+	(*ui_tree)=game_init(cur_game,DIFF_SIGN);//important
 }
 
 void  loadGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
