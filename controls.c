@@ -13,69 +13,95 @@ int windowNum=0;
 int surfaceNum=0;
 
 
-/*gets current control, and parent control, return valid rectangle*/
-int get_rect(SDL_Rect *rect, control *child, control *parent)
+
+
+/*creates a rectangle, according to control size, position and panel boundaries*/
+void get_rect(SDL_Rect *rect_dest, control *cntrl, control *parent_panel)
 {
+	rect_dest->x = cntrl->x + parent_panel->x;
+	rect_dest->y = cntrl->y + parent_panel->y;
+	rect_dest->w = MIN(cntrl->w, parent_panel->w - cntrl->x);
+	rect_dest->h = MIN(cntrl->h, parent_panel->h - cntrl->y);
 
-	if (parent == NULL)
-	{
-		rect->x = child->x;
-		rect->y = child->x;
-		rect->h = child->h;
-		rect->w = child->w;
-		return 0;
-	}
-
-	/* child x inside container borders*/
-	if ((child->x) >= (parent->x) && (child->x) <= (parent->x + parent->w))
-	{
-		rect->x = child->x;
-		rect->w = MIN(child->w,parent->w);
-	}
-	/*child x before parent x - paint what's possible*/
-	else if ((child->x) < (parent->x))
-	{
-		rect->x = parent->x;
-		/*the new position is the parents - paint as much as possible
-		rect->w = MIN(child->w - parent->x, parent->w);*/
-		rect->w = parent->w;
-	}
-	/*child after parent - can't paint*/
-	else if ((child->x) > (parent->x + parent->w))
-	{
-		rect->x = child->x;
-		rect->y = child->y;
-		rect->w = 0;
-		rect->h = 0;
-		return 0;
-	}
-
-	/* child x inside container borders*/
-	if ((child->y) >= (parent->y) && (child->y) <= (parent->y + parent->h))
-	{
-		rect->y = child->y;
-		rect->h = MIN(child->h,parent->h);
-	}
-	/*child x before parent x - paint what's possible*/
-	else if ((child->y) < (parent->y))
-	{
-		rect->y = parent->y;
-		/*the new position is the parents - paint as much as possible
-		rect->w = MIN(child->w - parent->x, parent->w);*/
-		rect->h = parent->h;
-	}
-	/*child after parent - can't paint*/
-	else if ((child->y) > (parent->y + parent->w))
-	{
-		rect->x = child->x;
-		rect->y = child->y;
-		rect->w = 0;
-		rect->h = 0;
-		return 0;
-	}
-	return 1;
 }
 
+
+/* loads image as surface and saves control surface and associated metrics*/
+void handle_control_surface_load_image(control *cntrl, control *container)
+{
+	SDL_Surface *surface; 
+	SDL_Rect *rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
+	
+	char *err; 
+
+	if (cntrl->ownSurface == NULL){
+		if ((surface = SDL_LoadBMP(cntrl->img)) == NULL)
+		{
+			err=SDL_GetError();
+			printf("ERROR: to load t image: %s\n", SDL_GetError());
+			SDL_FreeSurface(surface);
+		}
+		cntrl->srfc = container->srfc;
+		cntrl->ownSurface=surface;
+		
+		/*find rect according to parent*/
+		get_rect(rect,cntrl,container);
+		
+		/*find picture proportions*/
+		cntrl->h = surface->h;
+		cntrl->w = surface->w;
+			
+		/*update to final position on board */
+		cntrl->offsetx = rect->x;
+		cntrl->offsety = rect->y;
+		
+		cntrl->destination_rect = rect;
+
+		/*set transparancy*/
+		if (cntrl->is_transparant){
+			SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
+				SDL_MapRGB(surface->format, cntrl->R, cntrl->G, cntrl->B));
+		}
+	}
+
+}
+
+/* creates colored rect surface and saves control surface and associated metrics*/
+void handle_control_surface_load_rect(control *cntrl, control *container)
+{
+	SDL_Surface *surface; 
+	SDL_Rect *rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
+	char *err; 
+
+	if (cntrl->ownSurface==NULL)
+	{
+		
+		if ((surface = SDL_CreateRGBSurface(SDL_HWSURFACE, cntrl->w, cntrl->h, 32, 0, 0, 0, 0)) == NULL)
+		{
+			err=SDL_GetError();
+			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
+			SDL_FreeSurface(surface);
+		}
+		
+		/*fill surface with defualt panel color*/
+		cntrl->srfc = container->srfc;
+		cntrl->ownSurface=surface;
+
+		cntrl->h = surface->h;
+		cntrl->w = surface->w;
+
+		get_rect(rect,cntrl,container);
+		cntrl->offsetx = rect->x;
+		cntrl->offsety = rect->y;
+
+		cntrl->destination_rect = rect;
+
+	}
+	
+}
+
+
+/*gets a rectnagle for the text, in the middle of parent rect*/
 void get_text_position(SDL_Rect *rect_source, char* text,TTF_Font *font, SDL_Rect *rect_dest)
 {
 
@@ -88,8 +114,6 @@ void get_text_position(SDL_Rect *rect_source, char* text,TTF_Font *font, SDL_Rec
 	rect_dest->h = h; 
 	rect_dest->x = rect_source->x + (rect_source->w - w)/2;
 	rect_dest->y = rect_source->y + (rect_source->h - h)/2;
-
-
 }
 
 int is_valid_rect(SDL_Rect *rect)
@@ -112,46 +136,53 @@ void make_rect(SDL_Rect *rect, int h, int w, int x, int y)
 	return; 
 }
 
+/*draws control->caption text to control*/
 void draw_caption_to_control(control *cntrl)
 {
 	char* err; 
 	TTF_Font *font;
-	SDL_Surface *text;
+	SDL_Surface *surface;
 	SDL_Color text_color = {255, 255, 255};
 	SDL_Rect text_rect = {0,0,0,0};
 	SDL_Rect soure_rect = {0,0,0,0};
 
+
 	if (cntrl->caption == NULL)	
 		return;
 
-	if (cntrl->caption == NULL)
-		return;
-
-	make_rect(&soure_rect, cntrl->h,cntrl->w,cntrl->x,cntrl->y);
+	/*make all text Calculations*/
+	make_rect(&soure_rect, cntrl->h,cntrl->w,cntrl->offsetx,cntrl->offsety);
 	//if (!is_valid_rect(&soure_rect))
 	//	return; 
 
 	TTF_Init();
 	
-	if ((font = TTF_OpenFont("arial.ttf", 12)) == NULL) {
+	if ((font = TTF_OpenFont("arial.ttf", 16)) == NULL) {
 		err=TTF_GetError();
 		return;
 	}
 	
 	get_text_position(&soure_rect, cntrl->caption, font, &text_rect);
-	if ((text = TTF_RenderText_Solid(font, cntrl->caption, text_color))==NULL){
-		err=TTF_GetError();
-		return;
+
+	/*if text surface wan't previously loaded*/
+	if (cntrl->text_surface == NULL)
+	{
+		if ((surface = TTF_RenderText_Blended(font, cntrl->caption, text_color))==NULL){
+			err=TTF_GetError();
+			SDL_FreeSurface(surface);
+			return;
+		}
+		cntrl->text_surface = surface; 
 	}
 
-	if (SDL_BlitSurface(text, NULL, cntrl->srfc, &text_rect) != 0){
+	/* Blit surface*/
+	if (SDL_BlitSurface(cntrl->text_surface, NULL, cntrl->srfc, &text_rect) != 0){
 		err=TTF_GetError();
 		return;
 	}
 	
 	return; 
 }
-
 
 
 /* return pointer to element containing pointer to give control*/
@@ -272,6 +303,8 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->pressedButton=emptryButton;
 	label->srfc=NULL;
 	label->buttonChoise=0;
+	label->text_surface=NULL;
+	label->destination_rect=NULL;
 
 	return label;
 }
@@ -300,7 +333,9 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 	button->ownSurface=NULL;
 	button->pressedButton=emptryButton;
 	button->srfc=NULL;
+	button->text_surface=NULL;
 	button->buttonChoise=0;
+	button->destination_rect=NULL;
 
 	return button;
 }
@@ -328,6 +363,8 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G)
 	panel->pressedButton=NULL;
 	panel->srfc=NULL;
 	panel->buttonChoise=0;
+	panel->text_surface = NULL;
+	panel->destination_rect=NULL;
 
 	return panel;
 }
@@ -351,6 +388,8 @@ control* new_window(int x, int y, int w, int h)
 	window->pressedButton=NULL;
 	window->srfc=NULL;
 	window->buttonChoise=0;
+	window->text_surface = NULL;
+	window->destination_rect=NULL;
 
 	return window;
 }
@@ -359,52 +398,21 @@ control* new_window(int x, int y, int w, int h)
 /* drawing function*/
 void draw_button(control *button, control *container)
 {
-	// build rect
+
 	SDL_Rect rect = {0,0,0,0}; 
-	char *err; 
-	
-	// load pic
 	SDL_Surface *surface;
+	char *err; 
 
-	if (button->ownSurface==NULL)
-	{
-		surface = SDL_LoadBMP(button->img);
-		if (surface == NULL)
-		{
-			err=SDL_GetError();
-			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-			SDL_FreeSurface(surface);
-		}
-		surfaceNum++;
-		// update surface in button object for further use
-		button->srfc = container->srfc;
-		// get rectangle according to container constraints
-		button->ownSurface=surface;
-	}
-	else{
-		surface=button->ownSurface;
-	}
+	handle_control_surface_load_image(button,container);
 
-	if (DEBUG)
-	{
-		button->h = surface->h;
-		button->w = surface->w;
-	}
-	get_rect(&rect,button,container);
-
-		// set transparancy according to button R,G,B values
-		if (button->is_transparant){
-			SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(surface->format, button->R, button->G, button->B));
-		}
-	
-	
-	if (SDL_BlitSurface(surface,NULL, container->srfc, &rect) != 0)
-	{
+	/* Blit */
+	if (SDL_BlitSurface(button->ownSurface,NULL, container->srfc, button->destination_rect) != 0){
 		char *x= SDL_GetError();
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 		SDL_FreeSurface(surface);
 	}
 	
+	/*add caption*/
 	if (button->caption != NULL)
 	{
 		draw_caption_to_control(button);	
@@ -415,43 +423,13 @@ void draw_button(control *button, control *container)
 
 void draw_label(control *label, control *container)
 {
-	// build rect
-	SDL_Rect rect = {0,0,0,0}; 
-	
 	char *err; 
-	
-	// load pic
+	SDL_Rect rect = {0,0,0,0}; 	
 	SDL_Surface *surface;
 
-
-
-	if (label->ownSurface==NULL)
-	{
-		surface = SDL_LoadBMP(label->img);
-		if (surface == NULL)
-		{
-			err=SDL_GetError();
-			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-			SDL_FreeSurface(surface);
-		}
-		surfaceNum++;
-		// update surface in button object for further use
-		label->srfc = container->srfc;
-		label->ownSurface=surface;
-	}
-	else{
-		surface=label->ownSurface;
-	}
-	// get rectangle according to container constraints
-	get_rect(&rect,label,container);
-
-	/* set transparancy according to button R,G,B values*/
-	if (label->is_transparant)
-		SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
-		SDL_MapRGB(surface->format, label->R, label->G, label->B));
-
+	handle_control_surface_load_image(label,container);
 	
-	if (SDL_BlitSurface(surface,NULL, container->srfc, &rect) != 0)
+	if (SDL_BlitSurface(label->ownSurface,NULL, container->srfc, label->destination_rect) != 0)
 	{
 		char *x= SDL_GetError();
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
@@ -472,6 +450,10 @@ void draw_window(control* window)
 	{
 		window->srfc = SDL_SetVideoMode(window->w,window->h,32,SDL_HWSURFACE|SDL_DOUBLEBUF);
 		surfaceNum++;
+		window->x = 0; 
+		window->y = 0; 
+		window->offsetx = 0; 
+		window->offsety = 0; 
 	}
 }
 
@@ -482,26 +464,11 @@ void draw_panel(control* panel, control *container)
 	char *err; 
 	SDL_Rect rect;
 
-	if (panel->ownSurface==NULL)
-	{
-		surface = SDL_CreateRGBSurface(SDL_HWSURFACE, panel->w, panel->h, 32, 0, 0, 0, 0);
-		if (surface == NULL)
-		{
-			err=SDL_GetError();
-			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-			SDL_FreeSurface(surface);
-		}
-		surfaceNum++;
-		/*fill surface with defualt panel color*/
-		panel->srfc = container->srfc;
-		panel->ownSurface=surface;
-	}
-	else {
-		surface=panel->ownSurface;
-	}
-	get_rect(&rect,panel,container);
-	if (SDL_FillRect(container->srfc,&rect, 
-		SDL_MapRGB(surface->format, panel->R, panel->G, panel->B)) != 0)
+	handle_control_surface_load_rect(panel,container);
+
+	/* blit panel surface*/
+	if (SDL_FillRect(container->srfc,panel->destination_rect, 
+		SDL_MapRGB(panel->ownSurface->format, panel->R, panel->G, panel->B)) != 0)
 	{
 		err=SDL_GetError();
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
@@ -510,32 +477,31 @@ void draw_panel(control* panel, control *container)
 }
 
 
-
-
+/*BFS on UI tree, to find elemnt, according to final (offset) coordinates*/
 void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl *target)
 {
 	element_cntrl cur_elem;
 	/*if is a button and a tree leaf*/
 	if (root->cntrl->is_button && root->children == NULL)
 	{
-		if ((x >= root->cntrl->x && x <= (root->cntrl->x + root->cntrl->w) &&
-			(y >= root->cntrl->y && y <= (root->cntrl->y + root->cntrl->h))))
+		if ((x >= root->cntrl->offsetx && x <= (root->cntrl->offsetx + root->cntrl->w) &&
+			(y >= root->cntrl->offsety && y <= (root->cntrl->offsety + root->cntrl->h))))
 		{
 			*target = root; 
 			return;
 		}
 	}
 	//if out of bounds-return
-	if(x< root->cntrl->x){
+	if(x< root->cntrl->offsetx){
 		return;
 	}
-	if(y<root->cntrl->y){
+	if(y<root->cntrl->offsety){
 		return;
 	}
-	if (x > (root->cntrl->x + root->cntrl->w)){
+	if (x > (root->cntrl->offsetx + root->cntrl->w)){
 		return;
 	}
-	if (y > (root->cntrl->y + root->cntrl->h)){
+	if (y > (root->cntrl->offsety + root->cntrl->h)){
 		return;
 	}
 
@@ -566,6 +532,8 @@ void clear_game_panel(element_cntrl ui_tree)
 	ui_tree->children->tail=pre_tail;
 }
 
+/* Recursively free all Dynamically Allocated Memory : 
+ * SDL objects, strings, and data structure */
 void freeControlList(element_cntrl node)
 {
 	element_cntrl cur_elem,next_elem;
@@ -588,6 +556,13 @@ void freeControlList(element_cntrl node)
 		SDL_FreeSurface(node->cntrl->ownSurface);
 	}
 	node->cntrl->ownSurface = NULL;
+	if (node->cntrl->text_surface != NULL){
+		SDL_FreeSurface(node->cntrl->text_surface);
+	}
+	if (node->cntrl->destination_rect != NULL){
+		free(node->cntrl->destination_rect);
+	}
+
 	/*
 	if (node->cntrl->is_button==1)
 	{

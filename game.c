@@ -88,7 +88,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	list = new_control_list();
 
 	/*button panel*/
-	temp_control = new_panel(600,0,400,1000,255,255,255);
+	temp_control = new_panel(700,0,300,1000,255,255,255);
 	addNewControlToList(temp_control,list);
 	set_list_as_children(list,root);
 
@@ -96,19 +96,19 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	list = new_control_list();
 
 	/*label - paint first*/
-	temp_control = new_label(650,0,330,80,"./gfx/button_label.bmp",255,0,255,1,"this is a text");
+	temp_control = new_label(0,0,0,0,"./gfx/button_label.bmp",255,0,255,1,"this is a text");
 	addNewControlToList(temp_control,list);
 
 	/*restart*/
-	newButtonGeneric(list,675,20,RESTART,restartGame,0);
+	newButtonGeneric(list,25,20,RESTART,restartGame,0);
 	/*save*/
-	newButtonGeneric(list,675,120,SAVE,runsaveManu,0);
+	newButtonGeneric(list,25,120,SAVE,runsaveManu,0);
 	/*pause- unpause*/
-	newButtonGeneric(list,675,220,PAUSE,emptryButton,0);
+	newButtonGeneric(list,25,220,PAUSE,emptryButton,0);
 	/*main menu*/
-	newButtonGeneric(list,675,320,MAIN_MENU,runStartManu,0);
+	newButtonGeneric(list,25,320,MAIN_MENU,runStartManu,0);
 	/*difficulties menu*/
-	newButtonGeneric(list,675,420,DIFF,runDiffManu,0);
+	newButtonGeneric(list,25,420,DIFF,runDiffManu,0);
 	/*quit*/
 	newButtonGeneric(list,675,420,QUIT,quitGame,0);	
 	/* set buttons as panel children*/
@@ -251,7 +251,7 @@ element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,
 		sprintf(buttonName,"%s %d",captionStart,i);
 		newButtonGeneric(list,20,20+(i-1)*50,buttonName,buttonAction,i);
 	}
-	free(captionStart);
+	//free(captionStart);
 	set_list_as_children(list,root->children->head);
 	return root;
 
