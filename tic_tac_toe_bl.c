@@ -336,7 +336,7 @@ int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game
 	{
 		return 0;
 	}
-	succes=ttc_make_move(game_state,(y-50)/200,(x-50)/200,1);
+	succes=ttc_make_move(game_state,(y-50)/200,(x-50)/200,player);
 	if(succes==0)
 	{
 		return 0;
@@ -348,10 +348,15 @@ int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game
 	return 1;
 }
 
-int	ttc_handle_computer_turn(int* game_state, int depth)
+int	ttc_handle_computer_turn(int* game_state, int depth,int player)
 {
 	int comp_move;
-	comp_move = get_computer_move(game_state, 9, ttc_get_state_children);
-	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,-1);
+	if (player==-1){
+		comp_move = get_computer_move(game_state, 9, ttc_get_state_children);
+	}
+	else {
+		comp_move=get_suggested_move(game_state,9, ttc_get_state_children);
+	}
+	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,player);
 	return 0;
 }

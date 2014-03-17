@@ -8,6 +8,7 @@ extern int controlElementNum;
 extern int buttomNum;
 extern int panelNum;
 extern int windowNum;
+int isTwoComputers=0;
 
 #define RESTART "restart"
 #define QUIT "quit"
@@ -21,6 +22,7 @@ extern int windowNum;
 #define DIFFICALTY "difficalty"
 #define SAVE_SLOT "save_slot"
 #define LOAD_SLOT "load_slot"
+#define GAME_NAME "game"
 
 
 int gui_init()
@@ -42,30 +44,36 @@ int main( int argc, char* args[] )
 	SDL_Event test_event; 
 	int victory_state = 0;
 	int move_success = 0;
+	int pause=0;
 
 	gui_init();
-	runStartManu(&cur_game,&ui_tree,&quit,&test_event);
+	runStartManu(&cur_game,&ui_tree,&pause,&test_event);
 
 	while(!quit)
     {
-	while(SDL_PollEvent(&test_event)) {
-		if(test_event.type == SDL_QUIT){
-			quit=1;
-			break;
-		}
-		 switch(test_event.type) {
-		 case SDL_MOUSEBUTTONDOWN:
+		while(SDL_PollEvent(&test_event)) {
+			if(test_event.type == SDL_QUIT){
+				quit=1;
+				break;
+			}
+			switch(test_event.type) {
+			case SDL_MOUSEBUTTONDOWN:
 				find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
 				if(pressed_Button==NULL)
 				{
 					 break;
 				}
-				pressed_Button->cntrl->pressedButton(&cur_game,&ui_tree,&quit,&test_event);
+				pressed_Button->cntrl->pressedButton(&cur_game,&ui_tree,&pause,&test_event);
 				break;
-		 default: //unhandled event
-			 break;
-		 }
-	}
+			default: //unhandled event
+				break;
+			}
+			if (cur_game->is_multiplayer==1 && pause==0){
+				cur_game->handle_computer_move(cur_game->board,cur_game->difficulty,cur_game->cur_player);
+				(cur_game)->cur_player = (-1)*(cur_game)->cur_player;
+				(ui_tree)=draw_game(cur_game,ui_tree);
+			}
+		}
 	}
 	freeControlList(ui_tree);
 	if (cur_game!=NULL)
@@ -104,13 +112,13 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	/*save*/
 	newButtonGeneric(list,25,120,SAVE,runsaveManu,0);
 	/*pause- unpause*/
-	newButtonGeneric(list,25,220,PAUSE,emptryButton,0);
+	newButtonGeneric(list,25,220,PAUSE,setUnpause,0);
 	/*main menu*/
 	newButtonGeneric(list,25,320,MAIN_MENU,runStartManu,0);
 	/*difficulties menu*/
 	newButtonGeneric(list,25,420,DIFF,runDiffManu,0);
 	/*quit*/
-	newButtonGeneric(list,675,420,QUIT,quitGame,0);	
+	newButtonGeneric(list,675,520,QUIT,quitGame,0);	
 	/* set buttons as panel children*/
 	set_list_as_children(list,root->children->head);
 	return root;
@@ -131,8 +139,8 @@ game* runWindow(int mainORLoad,game** prevGame){
 	else {
 		if (mainORLoad==MAIN_SIGN){
 			buttonAction=chooseGame;
-			iterationNum=4;
-			captionStart=(char *)LOAD_SLOT;//casting from const char *
+			iterationNum=3;
+			captionStart=(char *)GAME_NAME;//casting from const char *
 		}
 		else if (mainORLoad==LOAD_SIGN){
 			buttonAction=loadGame;
@@ -142,6 +150,11 @@ game* runWindow(int mainORLoad,game** prevGame){
 		else if (mainORLoad==SAVE_SIGN){
 			buttonAction=saveGame;
 			iterationNum=5;
+			captionStart=(char *)SAVE_SLOT;//casting from const char *
+		}
+		else if (mainORLoad==AI_SIGN){
+			buttonAction=setmultiplayer;
+			iterationNum=4;
 			captionStart=(char *)SAVE_SLOT;//casting from const char *
 		}
 		else {
@@ -175,7 +188,7 @@ game* runWindow(int mainORLoad,game** prevGame){
 				 break;
 			 }
 			 whichGame=pressed_Button->cntrl->buttonChoise;
-			 if (mainORLoad==SAVE_SIGN || mainORLoad==DIFF_SIGN){
+			 if (mainORLoad==SAVE_SIGN || mainORLoad==DIFF_SIGN || mainORLoad==AI_SIGN){
 				 pressed_Button->cntrl->pressedButton(prevGame,&ui_tree,&whichGame,&test_event);
 				 newGame=*prevGame;
 			 }
@@ -252,6 +265,7 @@ element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,
 		newButtonGeneric(list,20,20+(i-1)*50,buttonName,buttonAction,i);
 	}
 	//free(captionStart);
+	newButtonGeneric(list,20,300,CANCEL,quitGame,0);
 	set_list_as_children(list,root->children->head);
 	return root;
 

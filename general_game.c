@@ -94,6 +94,10 @@ return new_game_obj;
 void  restartGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	(*cur_game)->board=(*cur_game)->get_initial_state();
+	(*cur_game)->cur_player=1;
+	if ((*cur_game)->is_multiplayer==3){
+		*choice=1;
+	}
 	(*ui_tree)=draw_game(*cur_game,*ui_tree);
 }
 
@@ -124,63 +128,57 @@ void  saveGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* tes
 
 void  makeMove(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
-		element_cntrl temp_elem;
-		control* temp_control;
-		int move_success = 0,victory_state;
-		move_success = (*cur_game)->handle_mouse_button_down(test_event, (*ui_tree), (*cur_game)->board, (*cur_game)->cur_player);
-				
-				if (!move_success)
-					return; 
+	element_cntrl temp_elem;
+	int move_success = 0;
+	if (*choice==1){
+		return;
+	}
+	move_success = (*cur_game)->handle_mouse_button_down(test_event, (*ui_tree), (*cur_game)->board, (*cur_game)->cur_player);		
+	if (!move_success)
+		return; 
+	//(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
+	//SDL_Delay( 1000 );
+	(*cur_game)->cur_player = (-1)*(*cur_game)->cur_player;
+	if ( !(*cur_game)->is_game_over( (*cur_game)->board)){
+		if ((*cur_game)->is_multiplayer==2 || (*cur_game)->is_multiplayer==3){// playing against computer
+			(*cur_game)->handle_computer_move( (*cur_game)->board,(*cur_game)->difficulty,(*cur_game)->cur_player);
+			(*cur_game)->cur_player = (-1)*  (*cur_game)->cur_player;
+		}	
+	}
+	(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
 
-				//(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
-				//SDL_Delay( 1000 );
-				if ( !(*cur_game)->is_game_over( (*cur_game)->board)){
-					if ( (*cur_game)->is_multiplayer==1)
-					{
-						/*if other player can make a move - switch to him*/
-						if ( (*cur_game)->player_has_moves( (*cur_game)->board,(-1)* (*cur_game)->cur_player))
-						{
-							 (*cur_game)->cur_player = (-1)*  (*cur_game)->cur_player;
-						}
-					}
-				else /* playing against computer */
-				{
-					(*cur_game)->handle_computer_move( (*cur_game)->board,(*cur_game)->difficulty);
-
-				}	
-				}
-				(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
-				if ( (*cur_game)->is_game_over( (*cur_game)->board)){
-						if ((*cur_game)->is_victory( (*cur_game)->board,1) == 1)
-						{
-							temp_control = new_button(300,480,200,40,"./gfx/victoryOne.bmp",255,0,255,1,NULL);
-							temp_control->pressedButton=restartGame;
-							temp_elem = new_control_element(temp_control);
-							add_control_element_to_list((*ui_tree)->children,temp_elem);
-						}
-						if ((*cur_game)->is_victory( (*cur_game)->board,-1) == 1)
-						{
-							temp_control = new_button(300,480,200,40,"./gfx/victoryTwo.bmp",255,0,255,1,NULL);
-							temp_control->pressedButton=restartGame;
-							temp_elem = new_control_element(temp_control);
-							add_control_element_to_list((*ui_tree)->children,temp_elem);
-							temp_elem->parent=(*ui_tree);
-						}
-						else
-						{
-							/*TODO: handle tie*/
-							return;
-						}
-						/*TODO: handle game over*/
-						draw_button(temp_elem->cntrl,temp_elem->parent->cntrl);
-						SDL_Flip((*ui_tree)->cntrl->srfc);
-				}
-				return;
+	if ( (*cur_game)->is_game_over( (*cur_game)->board)){
+		if ((*cur_game)->is_victory( (*cur_game)->board,1) == 1){
+			newButtonGeneric((*ui_tree)->children,300,480,"victoryOne",restartGame,0);
+			(*ui_tree)->children->tail->parent=(*ui_tree);//temp_elem->parent=(*ui_tree);
+			temp_elem=(*ui_tree)->children->tail;
+		}
+		else if ((*cur_game)->is_victory( (*cur_game)->board,-1) == 1){
+			newButtonGeneric((*ui_tree)->children,300,480,"victoryTwo",restartGame,0);
+			(*ui_tree)->children->tail->parent=(*ui_tree);//temp_elem->parent=(*ui_tree);
+			temp_elem=(*ui_tree)->children->tail;
+		}
+		else
+		{
+			newButtonGeneric((*ui_tree)->children,300,480,"draw",restartGame,0);
+			(*ui_tree)->children->tail->parent=(*ui_tree);//temp_elem->parent=(*ui_tree);
+			temp_elem=(*ui_tree)->children->tail;
+		}
+		//TODO: handle game over
+		draw_button(temp_elem->cntrl,temp_elem->parent->cntrl);
+		SDL_Flip((*ui_tree)->cntrl->srfc);
+	}
+	return;
 }
 
 void  setDifficalty(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	(*cur_game)->difficulty=((*cur_game)->get_difficulty_levels())[*choice-1];
+}
+
+void  setmultiplayer(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+{
+	(*cur_game)->is_multiplayer=*choice;
 }
 
 void  chooseGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
@@ -210,6 +208,10 @@ void  runStartManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event*
 		gameNum--;
 	}
 	(*cur_game)=runWindow(START_SIGN,cur_game);
+	(*cur_game)=runWindow(AI_SIGN,cur_game);
+	if ((*cur_game)->is_multiplayer==1 || (*cur_game)->is_multiplayer==3){
+		*choice=1;
+	}
 	(*ui_tree)=game_init(cur_game,DIFF_SIGN);//important
 }
 
@@ -235,4 +237,13 @@ void  runDiffManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* 
 {
 	freeControlList(*ui_tree);
 	(*ui_tree)=game_init(cur_game,DIFF_SIGN);
+}
+
+void  setUnpause(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event){
+	*choice=!(*choice);// form 1 to 0 and 0 to 1
+	if ((*cur_game)->is_multiplayer==3 && (*cur_game)->cur_player==1){
+		(*cur_game)->handle_computer_move((*cur_game)->board,(*cur_game)->difficulty,(*cur_game)->cur_player);
+		(*cur_game)->cur_player = (-1)*(*cur_game)->cur_player;
+	}
+	(*ui_tree)=draw_game(*cur_game,*ui_tree);
 }

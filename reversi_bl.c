@@ -518,15 +518,20 @@ int rv_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_
 	return 1;
 }
 
-int rv_handle_computer_turn(int* game_state, int depth)
+int rv_handle_computer_turn(int* game_state, int depth,int player)
 {
 	int comp_move;
-	comp_move = get_computer_move(game_state, 2, rv_get_state_children);
-	if (!rv_is_valid_move(game_state,-1,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS)){
+	if (player==-1){
+		comp_move = get_computer_move(game_state, depth, rv_get_state_children);
+	}
+	else {
+		comp_move=get_suggested_move(game_state,depth, rv_get_state_children);
+	}
+	if (!rv_is_valid_move(game_state,player,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS)){
 		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		comp_move=-1;
 	}
-	rv_make_move(game_state,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS,-1);
+	rv_make_move(game_state,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS,player);
 	return 0;
 }
 

@@ -34,7 +34,7 @@ typedef struct _general_game
 	int				(*player_has_moves)(int* game_state, int player);
 	int				(*is_game_over)(int* game_state);
 	int				(*is_victory)(int* game_state,int player);
-	int				(*handle_computer_move)(int* game_state, int depth);
+	int				(*handle_computer_move)(int* game_state, int depth,int player);
 
 
 } game;
@@ -52,5 +52,7 @@ void  loadGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* tes
 void  runsaveManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event);
 void  runDiffManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event);
 void  runStartManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event);
+void  setmultiplayer(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event);
+void  setUnpause(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event);
 
 #endif

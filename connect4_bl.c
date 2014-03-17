@@ -392,23 +392,28 @@ int C4_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_
 	{
 		return 0;
 	}
-	succes=C4_make_move(game_state,0,x/100,1);
+	succes=C4_make_move(game_state,0,x/100,player);
 	if(succes==0)
 	{
 		return 0;
 	}
-	if (is_game_over_C4(game_state))
+	/*if (is_game_over_C4(game_state))
 	{
 		return 0;
-	}
+	}*/
 	return 1;
 }
 
-int	C4_handle_computer_turn(int* game_state, int depth)
+int	C4_handle_computer_turn(int* game_state, int depth, int player)
 {
 	int comp_move;
-	comp_move = get_computer_move(game_state, depth, get_state_children_C4);
-	C4_make_move(game_state,0,comp_move-1,-1);
+	if (player==-1){
+		comp_move = get_computer_move(game_state, depth, get_state_children_C4);
+	}
+	else {
+		comp_move=get_suggested_move(game_state,depth, get_state_children_C4);
+	}
+	C4_make_move(game_state,0,comp_move-1,player);
 	return 0;
 }
 

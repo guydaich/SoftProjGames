@@ -4,6 +4,7 @@
 #include "controls.h"
 #include "save_game.h"
 
+#define AI_SIGN 6
 #define START_SIGN 5
 #define DIFF_SIGN 4
 #define SAVE_SIGN 3
@@ -17,9 +18,6 @@ element_cntrl mainMenuWindow();
 game* runWindow(int mainORLoad,game** prevGame);
 element_cntrl game_init(game **cur_game,int mainORLoad);
 element_cntrl draw_game (game *cur_game,element_cntrl prev_ui_tree);
-element_cntrl loadWindow();
-element_cntrl saveWindow();
-element_cntrl diffWindow();
 element_cntrl startWindow();
 void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int buttonChoise);
 element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event),char* captionStart);

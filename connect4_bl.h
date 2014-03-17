@@ -43,4 +43,4 @@ void			add_piece_to_board_C4(int* game_state,int column, int player);
 int				C4_make_move(int* game_state, int row, int col, int player);
 int				is_game_over_C4(int* game_state);
 int				C4_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state,int player);
-int				C4_handle_computer_turn(int* game_state, int depth);
+int				C4_handle_computer_turn(int* game_state, int depth,int player);
