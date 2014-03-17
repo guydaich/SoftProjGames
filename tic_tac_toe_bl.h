@@ -5,11 +5,6 @@
 #include "minimax.h"
 #include "controls.h"
 
-#define TIC_TAC_TOE_ROWS 3 
-#define TIC_TAC_TOE_COLS 3
-#define TTC_PLAYER_1 1
-#define TTC_PLAYER_2 -1
-
 /* functions */
 char*			ttc_get_name();
 int*			ttc_get_initial_state();

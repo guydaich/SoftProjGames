@@ -13,8 +13,6 @@ int windowNum=0;
 int surfaceNum=0;
 
 
-
-
 /*creates a rectangle, according to control size, position and panel boundaries*/
 void get_rect(SDL_Rect *rect_dest, control *cntrl, control *parent_panel)
 {
@@ -26,8 +24,8 @@ void get_rect(SDL_Rect *rect_dest, control *cntrl, control *parent_panel)
 }
 
 
-/* loads image as surface and saves control surface and associated metrics*/
-void handle_control_surface_load_image(control *cntrl, control *container)
+/* loads image/rect as surface and saves control surface and associated metrics*/
+void handle_control_surface_load(control *cntrl, control *container)
 {
 	SDL_Surface *surface; 
 	SDL_Rect *rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
@@ -35,13 +33,27 @@ void handle_control_surface_load_image(control *cntrl, control *container)
 	char *err; 
 
 	if (cntrl->ownSurface == NULL){
-		surface = SDL_LoadBMP(cntrl->img);
-		if (surface == NULL)
+		if (cntrl->is_bg_img)
 		{
-			err=SDL_GetError();
-			printf("ERROR: to load t image: %s\n", SDL_GetError());
-			SDL_FreeSurface(surface);
+			surface = SDL_LoadBMP(cntrl->img);
+			if (surface == NULL)
+			{
+				err=SDL_GetError();
+				SDL_FreeSurface(surface);
+				return;
+			}
 		}
+		else if (cntrl->is_bg_rect)
+		{
+			surface = SDL_CreateRGBSurface(SDL_HWSURFACE, cntrl->w, cntrl->h, 32, 0, 0, 0, 0);
+			if (surface == NULL)
+			{
+				err=SDL_GetError();
+				SDL_FreeSurface(surface);
+				return;
+			}
+		}
+		
 		cntrl->srfc = container->srfc;
 		cntrl->ownSurface=surface;
 		
@@ -61,44 +73,10 @@ void handle_control_surface_load_image(control *cntrl, control *container)
 		/*set transparancy*/
 		if (cntrl->is_transparant){
 			SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
-				SDL_MapRGB(surface->format, cntrl->R, cntrl->G, cntrl->B));
+				SDL_MapRGB(surface->format, MAGNETAR, MAGNETAG, MAGNETAB));
 		}
 	}
 
-}
-
-/* creates colored rect surface and saves control surface and associated metrics*/
-void handle_control_surface_load_rect(control *cntrl, control *container)
-{
-	SDL_Surface *surface; 
-	SDL_Rect *rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
-	char *err; 
-
-	if (cntrl->ownSurface==NULL)
-	{
-		
-		if ((surface = SDL_CreateRGBSurface(SDL_HWSURFACE, cntrl->w, cntrl->h, 32, 0, 0, 0, 0)) == NULL)
-		{
-			err=SDL_GetError();
-			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-			SDL_FreeSurface(surface);
-		}
-		
-		/*fill surface with defualt panel color*/
-		cntrl->srfc = container->srfc;
-		cntrl->ownSurface=surface;
-
-		cntrl->h = surface->h;
-		cntrl->w = surface->w;
-
-		get_rect(rect,cntrl,container);
-		cntrl->offsetx = rect->x;
-		cntrl->offsety = rect->y;
-
-		cntrl->destination_rect = rect;
-
-	}
-	
 }
 
 
@@ -306,12 +284,16 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->buttonChoise=0;
 	label->text_surface=NULL;
 	label->destination_rect=NULL;
+	label->is_grid=0;
+	label->is_bg_img =1;
+	label->is_bg_rect =0;
+
 
 	return label;
 }
 
 
-control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption)
+control* new_button(int x, int y, char *img, int is_trans ,char *caption, int is_grid)
 {
 	// allocate button
 	control *button = (control*)malloc(sizeof(control));
@@ -322,12 +304,12 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 	button->is_window = 0;
 	button->x = x;
 	button->y = y;
-	button->w = w;
-	button->h = h;	
+	button->w = 0;
+	button->h = 0;	
 	button->is_transparant = is_trans;
-	button->R = R;
-	button->B = B;
-	button->G = G;
+	button->R = 0;
+	button->B = 0;
+	button->G = 0;
 	button->img = img;
 	button->draw=draw_button;
 	button->caption=caption;
@@ -337,6 +319,11 @@ control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, 
 	button->text_surface=NULL;
 	button->buttonChoise=0;
 	button->destination_rect=NULL;
+	button->is_grid=is_grid;
+	button->is_bg_img =1;
+	button->is_bg_rect =0;
+
+
 
 	return button;
 }
@@ -366,6 +353,9 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G)
 	panel->buttonChoise=0;
 	panel->text_surface = NULL;
 	panel->destination_rect=NULL;
+	panel->is_grid=0;
+	panel->is_bg_img =0;
+	panel->is_bg_rect =1;
 
 	return panel;
 }
@@ -391,6 +381,10 @@ control* new_window(int x, int y, int w, int h)
 	window->buttonChoise=0;
 	window->text_surface = NULL;
 	window->destination_rect=NULL;
+	window->is_grid=0;
+	window->is_bg_img =0;
+	window->is_bg_rect =0;
+
 
 	return window;
 }
@@ -404,7 +398,7 @@ void draw_button(control *button, control *container)
 	SDL_Surface *surface;
 	char *err; 
 
-	handle_control_surface_load_image(button,container);
+	handle_control_surface_load(button,container);
 
 	/* Blit */
 	if (SDL_BlitSurface(button->ownSurface,NULL, container->srfc, button->destination_rect) != 0){
@@ -428,7 +422,7 @@ void draw_label(control *label, control *container)
 	SDL_Rect rect = {0,0,0,0}; 	
 	SDL_Surface *surface;
 
-	handle_control_surface_load_image(label,container);
+	handle_control_surface_load(label,container);
 	
 	if (SDL_BlitSurface(label->ownSurface,NULL, container->srfc, label->destination_rect) != 0)
 	{
@@ -465,7 +459,7 @@ void draw_panel(control* panel, control *container)
 	char *err; 
 	SDL_Rect rect;
 
-	handle_control_surface_load_rect(panel,container);
+	handle_control_surface_load(panel,container);
 
 	/* blit panel surface*/
 	if (SDL_FillRect(container->srfc,panel->destination_rect, 
@@ -483,7 +477,25 @@ void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl 
 {
 	element_cntrl cur_elem;
 	/*if is a button and a tree leaf*/
-	if (root->cntrl->is_button && root->children == NULL)
+	if ((root->cntrl->is_grid))
+	{
+		if ((x >= root->cntrl->offsetx && x <= (root->cntrl->offsetx + root->cntrl->w) &&
+			(y >= root->cntrl->offsety && y <= (root->cntrl->offsety + root->cntrl->h))))
+		{
+			*target = NULL; 
+			for (cur_elem = root->children->head; 
+			cur_elem!= NULL ;cur_elem=cur_elem->next){
+				find_element_by_coordinates(cur_elem,x,y,target);
+			}
+			if (*target == NULL)
+			{
+				*target = root;
+			}
+			return;		
+		}
+		
+	}
+	else if (root->cntrl->is_button && root->children == NULL)
 	{
 		if ((x >= root->cntrl->offsetx && x <= (root->cntrl->offsetx + root->cntrl->w) &&
 			(y >= root->cntrl->offsety && y <= (root->cntrl->offsety + root->cntrl->h))))
@@ -522,10 +534,13 @@ void clear_game_panel(element_cntrl ui_tree)
 {
 	element_cntrl game_panel,pre_tail;
 
-	if(ui_tree->children==NULL ||ui_tree->children->head==ui_tree->children->tail)//if there is no previous game panel
+	/*no previous game elements*/
+	if(ui_tree->children==NULL ||
+		ui_tree->children->head==ui_tree->children->tail) 
 	{
 		return;
 	}
+	
 	pre_tail=ui_tree->children->tail->prev;
 	game_panel=ui_tree->children->tail; //assumption!
 	freeControlList(game_panel);

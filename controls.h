@@ -5,6 +5,9 @@
 #include <SDL_video.h>
 #include <SDL_ttf.h>
 
+#define MAGNETAR 255
+#define MAGNETAG 0
+#define MAGNETAB 255
 
 /* generic control struct */
 typedef struct _control{
@@ -38,6 +41,11 @@ typedef struct _control{
 	SDL_Surface *text_surface;
 	void (*pressedButton)(void* cur_game,void* ui_tree,int *choise,void* test_event);
 	int buttonChoise;
+	/*if is grid - when pressed, will act like a lowest-level button*/
+	int is_grid; 
+	/*flags for loading background from image or painting RGB rect*/
+	int is_bg_img; 
+	int is_bg_rect;
 
 } control;
 
@@ -78,7 +86,7 @@ void draw_label(control *label, control *container);
 void draw_window(control* window);
 void draw_panel(control* panel);
 control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption);
-control* new_button(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption);
+control* new_button(int x, int y, char *img, int is_trans,char *caption, int is_grid);
 control* new_window(int x, int y, int w, int h);
 control* new_panel(int x, int y, int w, int h,int R, int G, int B);
 

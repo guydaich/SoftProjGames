@@ -10,19 +10,19 @@ extern int panelNum;
 extern int windowNum;
 int isTwoComputers=0;
 
-#define RESTART "restart"
-#define QUIT "quit"
-#define CANCEL "cancel"
-#define MAIN_MENU "mainMenu"
-#define SAVE "save"
-#define LOAD "load"
+#define RESTART "Rsestart"
+#define QUIT "Quit"
+#define CANCEL "Cancel"
+#define MAIN_MENU "Main Menu"
+#define SAVE "Save Game"
+#define LOAD "Load Game"
 #define DIFF "Difficulties"
 #define PAUSE "Pause"
-#define CHOOSE_GAME "choose game"
-#define DIFFICALTY "difficalty"
-#define SAVE_SLOT "save_slot"
-#define LOAD_SLOT "load_slot"
-#define GAME_NAME "game"
+#define CHOOSE_GAME "Choose Game"
+#define DIFFICALTY "Difficulty"
+#define SAVE_SLOT "Save Slot"
+#define LOAD_SLOT "Load Slot"
+#define GAME_NAME "Game"
 
 
 int gui_init()
@@ -30,6 +30,11 @@ int gui_init()
 	
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) 
 	{
+		printf("ERROR: unable to init SDL: %s\n",SDL_GetError());
+		return 0;
+	}
+
+	if (TTF_Init() < 0){
 		printf("ERROR: unable to init SDL: %s\n",SDL_GetError());
 		return 0;
 	}
@@ -303,7 +308,7 @@ element_cntrl startWindow(){
 
 void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int buttonChoise){
 	control* temp_control;
-	temp_control = new_button(x,y,200,65,"./gfx/generic_button.bmp",255,0,255,1,caption);
+	temp_control = new_button(x,y,"./gfx/generic_button.bmp",1,caption,0);
 	temp_control->buttonChoise=buttonChoise;
 	temp_control->pressedButton=pressedButton;
 	addNewControlToList(temp_control,fathersList);
@@ -313,4 +318,9 @@ void addNewControlToList(control* control,linked_list_cntrl fathersList){
 	element_cntrl temp_elem;
 	temp_elem = new_control_element(control);
 	add_control_element_to_list(fathersList,temp_elem);
+}
+
+void add_button()
+{
+
 }

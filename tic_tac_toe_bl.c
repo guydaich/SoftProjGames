@@ -1,4 +1,5 @@
 #include "tic_tac_toe_bl.h"
+#include "ttc_ui.h"
 
 char* TIC_TAC_TOE_NAME = "Tic-Tac-Toe";
 int* tic_tac_toe_board=NULL;
@@ -265,57 +266,18 @@ int ttc_is_victory(int* game_state, int player)
 	return 0;
 }
 
-element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event))
-{ 
-	control *ttc_grid;
-	control *ttc_button;
-	element_cntrl root, grid, temp;
-	linked_list_cntrl list;
-	int i,j;
- 	
-	root = new_control_element(new_panel(0,0,600,600,255,255,255));
-	/*create panel children*/	
-	list = new_control_list();
-	/* grid surface - create control and element*/
-	ttc_grid = new_button(0,0,600,600,"./gfx/ttc_board_mag.bmp",0,0,0,0,NULL);
-	grid = new_control_element(ttc_grid);
-	/* add grid to children list*/
-	add_control_element_to_list(list,grid);
-	/* update root children, and grid parent*/
-	set_list_as_children(list,root);
-	
-	/*create grid children*/
-	list = new_control_list();
-	for (i=0; i< TIC_TAC_TOE_COLS; i++)
-	{
-		for(j=0; j< TIC_TAC_TOE_ROWS; j++)
-		{
-			ttc_button= NULL;
-			if (game_state[i*TIC_TAC_TOE_ROWS + j] == TTC_PLAYER_1)	
-			{
-				ttc_button=new_button(j*200+50,i*200+50,200,200,"./gfx/ttc_x_mag.bmp",255,0,255,1,NULL);
-			}
-			else if (game_state[i*TIC_TAC_TOE_ROWS + j] == TTC_PLAYER_2)	
-			{
-				ttc_button=new_button(j*200+50,i*200+50,200,200,"./gfx/ttc_o_mag.bmp",255,0,255,1,NULL);
-			}
-			else
-			{
-				ttc_button=new_button(j*200+50,i*200+50,200,200,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
-				ttc_button->pressedButton=makeMove;
-			}
-			/*add pieces to children list*/
-			if (ttc_button != NULL)
-			{
-				temp = new_control_element(ttc_button);
-				add_control_element_to_list(list,temp);
-			}
-		}
-	}
-	/*update parent-children*/
-	set_list_as_children(list,grid);
 
-	return root;
+int	ttc_handle_computer_turn(int* game_state, int depth,int player)
+{
+	int comp_move;
+	if (player==-1){
+		comp_move = get_computer_move(game_state, 9, ttc_get_state_children);
+	}
+	else {
+		comp_move=get_suggested_move(game_state,9, ttc_get_state_children);
+	}
+	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,player);
+	return 0;
 }
 
 int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state, int player)
@@ -332,12 +294,12 @@ int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game
 	{
 		return 0;
 	}
-	if (y<50 || x<50)
+	if (y < TTC_YOFFSET || x < TTC_XOFFSET)
 	{
 		return 0;
 	}
-	succes=ttc_make_move(game_state,(y-50)/200,(x-50)/200,player);
-	if(succes==0)
+	succes=ttc_make_move(game_state,(y-TTC_YOFFSET)/TTC_HBTN,(x-TTC_XOFFSET)/TTC_WBTN,player);
+	if(succes == 0)
 	{
 		return 0;
 	}
@@ -346,17 +308,4 @@ int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game
 		return 0;
 	}*/
 	return 1;
-}
-
-int	ttc_handle_computer_turn(int* game_state, int depth,int player)
-{
-	int comp_move;
-	if (player==-1){
-		comp_move = get_computer_move(game_state, 9, ttc_get_state_children);
-	}
-	else {
-		comp_move=get_suggested_move(game_state,9, ttc_get_state_children);
-	}
-	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,player);
-	return 0;
 }

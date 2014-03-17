@@ -6,6 +6,7 @@
 #include "tic_tac_toe_bl.h"
 #include "reversi_bl.h"
 #include "connect4_bl.h"
+#include "ttc_ui.h"
 
 #define TTC 1
 #define REVERSI 2

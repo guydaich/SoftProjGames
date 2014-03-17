@@ -457,7 +457,7 @@ element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(void* cur_game
 	/*create panel children*/	
 	list = new_control_list();
 	/* grid surface - create control and element*/
-	rv_grid = new_button(0,0,600,600,"./gfx/reversi_board.bmp",0,0,0,0,NULL);
+	rv_grid = new_button(0,0,"./gfx/reversi_board.bmp",1,"",1);
 	grid = new_control_element(rv_grid);
 	/* add grid to children list*/
 	add_control_element_to_list(list,grid);
@@ -473,17 +473,17 @@ element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(void* cur_game
 			rv_button= NULL;
 			if (game_state[i*REVERSI_ROWS + j] == REVERSI_PLAYER_1)	
 			{
-				rv_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/reversi_piece_black.bmp",255,0,255,1,NULL);
+				rv_button=new_button(50+(j)*75,50+(i)*75,"./gfx/reversi_piece_black.bmp",1,"",0);
 			}
 			else if (game_state[i*REVERSI_ROWS + j] == REVERSI_PLAYER_2)	
 			{
-				rv_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/reversi_piece_white.bmp",255,0,255,1,NULL);
+				rv_button=new_button(50+(j)*75,50+(i)*75,"./gfx/reversi_piece_white.bmp",1,"",0);
 			}
-			else
+			/*else
 			{
-				rv_button=new_button(50+(j)*75,50+(i)*75,75,75,"./gfx/ttc_empty.bmp",255,0,255,1,NULL);
+				rv_button=new_button(50+(j)*75,50+(i)*75,"./gfx/ttc_empty.bmp",1,"",0);
 				rv_button->pressedButton=makeMove;
-			}
+			}*/
 			/*add pieces to children list*/
 			if (rv_button != NULL)
 			{
