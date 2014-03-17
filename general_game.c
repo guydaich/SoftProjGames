@@ -209,6 +209,9 @@ void  runStartManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event*
 	}
 	(*cur_game)=runWindow(START_SIGN,cur_game);
 	(*cur_game)=runWindow(AI_SIGN,cur_game);
+	if (*cur_game==NULL){
+		return;
+	}
 	if ((*cur_game)->is_multiplayer==1 || (*cur_game)->is_multiplayer==3){
 		*choice=1;
 	}

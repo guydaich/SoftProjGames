@@ -333,11 +333,11 @@ element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(void* cur_game
 	linked_list_cntrl list;
 	int i,j;
  	
-	root = new_control_element(new_panel(0,0,600,600,255,255,255));
+	root = new_control_element(new_panel(0,0,700,700,255,255,255));
 	/*create panel children*/	
 	list = new_control_list();
 	/* grid surface - create control and element*/
-	C4_grid = new_button(0,0,600,600,"./gfx/C4area.bmp",0,0,0,0,NULL);
+	C4_grid = new_button(0,0,600,600,"./gfx/C4board.bmp",0,0,0,0,NULL);
 	grid = new_control_element(C4_grid);
 	/* add grid to children list*/
 	add_control_element_to_list(list,grid);
@@ -353,15 +353,15 @@ element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(void* cur_game
 			C4_button= NULL;
 			if (game_state[i*CONNECT4_COLS + j] == CONNECT4_PLAYER_1)	
 			{
-				C4_button=new_button((j)*100,(i)*100+45,90,90,"./gfx/redpiece.bmp",255,0,255,1,NULL);
+				C4_button=new_button((j)*88+28+8,(i)*88+28+50,88,88,"./gfx/redC4.bmp",255,0,255,1,NULL);
 			}
 			else if (game_state[i*CONNECT4_COLS + j] == CONNECT4_PLAYER_2)	
 			{
-				C4_button=new_button((j)*100,(i)*100+45,90,90,"./gfx/bluepiece.bmp",255,0,255,1,NULL);
+				C4_button=new_button((j)*88+28+8,(i)*88+28+50,88,88,"./gfx/blueC4.bmp",255,0,255,1,NULL);
 			}
 			else
 			{
-				C4_button=new_button((j)*100,(i)*100+45,90,90,"./gfx/empty_C4.bmp",255,0,255,1,NULL);
+				C4_button=new_button((j)*88+28+8,(i)*88+28+50,88,88,"./gfx/emptyC4.bmp",255,0,255,1,NULL);
 				C4_button->pressedButton=makeMove;
 			}
 			/*add pieces to children list*/

@@ -123,7 +123,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	/*difficulties menu*/
 	newButtonGeneric(list,25,420,DIFF,runDiffManu,0);
 	/*quit*/
-	newButtonGeneric(list,675,520,QUIT,quitGame,0);	
+	newButtonGeneric(list,25,520,QUIT,quitGame,0);	
 	/* set buttons as panel children*/
 	set_list_as_children(list,root->children->head);
 	return root;

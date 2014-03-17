@@ -39,6 +39,7 @@ void handle_control_surface_load(control *cntrl, control *container)
 			if (surface == NULL)
 			{
 				err=SDL_GetError();
+			printf("ERROR: to load t image: %s\n", SDL_GetError());
 				SDL_FreeSurface(surface);
 				return;
 			}
@@ -540,7 +541,6 @@ void clear_game_panel(element_cntrl ui_tree)
 	{
 		return;
 	}
-	
 	pre_tail=ui_tree->children->tail->prev;
 	game_panel=ui_tree->children->tail; //assumption!
 	freeControlList(game_panel);
