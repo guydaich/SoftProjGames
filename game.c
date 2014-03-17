@@ -319,8 +319,3 @@ void addNewControlToList(control* control,linked_list_cntrl fathersList){
 	temp_elem = new_control_element(control);
 	add_control_element_to_list(fathersList,temp_elem);
 }
-
-void add_button()
-{
-
-}

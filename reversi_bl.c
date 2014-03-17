@@ -458,6 +458,7 @@ element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(void* cur_game
 	list = new_control_list();
 	/* grid surface - create control and element*/
 	rv_grid = new_button(0,0,"./gfx/reversi_board.bmp",1,"",1);
+	rv_grid->pressedButton=makeMove;
 	grid = new_control_element(rv_grid);
 	/* add grid to children list*/
 	add_control_element_to_list(list,grid);
