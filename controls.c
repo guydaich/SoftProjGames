@@ -35,7 +35,8 @@ void handle_control_surface_load_image(control *cntrl, control *container)
 	char *err; 
 
 	if (cntrl->ownSurface == NULL){
-		if ((surface = SDL_LoadBMP(cntrl->img)) == NULL)
+		surface = SDL_LoadBMP(cntrl->img);
+		if (surface == NULL)
 		{
 			err=SDL_GetError();
 			printf("ERROR: to load t image: %s\n", SDL_GetError());
@@ -360,7 +361,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G)
 	panel->draw = draw_panel;// drawing funct
 	panel->ownSurface=NULL;
 	panel->caption=NULL;
-	panel->pressedButton=NULL;
+	panel->pressedButton=emptryButton;
 	panel->srfc=NULL;
 	panel->buttonChoise=0;
 	panel->text_surface = NULL;
@@ -385,7 +386,7 @@ control* new_window(int x, int y, int w, int h)
 	window->draw = draw_window;// drawing funct
 	window->ownSurface=NULL;
 	window->caption=NULL;
-	window->pressedButton=NULL;
+	window->pressedButton=emptryButton;
 	window->srfc=NULL;
 	window->buttonChoise=0;
 	window->text_surface = NULL;
