@@ -1,8 +1,9 @@
 ﻿#include "game.h"
-#include "reversi_bl.h"
 
 int quit=0;
 extern char* TIC_TAC_TOE_NAME;
+extern char* REVERSI_NAME;
+extern char* Connect4_NAME;
 extern int gameNum;
 extern int controlElementNum;
 extern int buttomNum;
@@ -23,6 +24,10 @@ int isTwoComputers=0;
 #define SAVE_SLOT "Save Slot"
 #define LOAD_SLOT "Load Slot"
 #define GAME_NAME "Game"
+#define AI_1 "AI Vs AI"
+#define AI_2 "Human Vs AI"
+#define AI_3 "AI Vs Human"
+#define AI_4 "Human Vs Human"
 
 
 int gui_init()
@@ -136,41 +141,14 @@ game* runWindow(int mainORLoad,game** prevGame){
 	SDL_Event test_event; 
 	game *newGame=NULL;
 	void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event)=emptryButton;
-	char* captionStart;
+	char** captionArray;
 
 	if (mainORLoad==START_SIGN){
 		ui_tree=startWindow();
 	}
 	else {
-		if (mainORLoad==MAIN_SIGN){
-			buttonAction=chooseGame;
-			iterationNum=3;
-			captionStart=(char *)GAME_NAME;//casting from const char *
-		}
-		else if (mainORLoad==LOAD_SIGN){
-			buttonAction=loadGame;
-			iterationNum=5;
-			captionStart=(char *)LOAD_SLOT;//casting from const char *
-		}
-		else if (mainORLoad==SAVE_SIGN){
-			buttonAction=saveGame;
-			iterationNum=5;
-			captionStart=(char *)SAVE_SLOT;//casting from const char *
-		}
-		else if (mainORLoad==AI_SIGN){
-			buttonAction=setmultiplayer;
-			iterationNum=4;
-			captionStart=(char *)SAVE_SLOT;//casting from const char *
-		}
-		else {
-			if (*prevGame==NULL){
-				return NULL;
-			}
-			buttonAction=setDifficalty;
-			iterationNum=(*prevGame)->difficulty_num;
-			captionStart=(char *)DIFFICALTY;//casting from const char *
-		}
-		ui_tree=choiseWindow(iterationNum,buttonAction,captionStart);
+		captionArray=initialazeChoiseWindow(&buttonAction,&iterationNum,prevGame,mainORLoad);
+		ui_tree=choiseWindow(iterationNum,buttonAction,captionArray);
 	}
 	if (!quit){
 		draw_ui_tree(ui_tree);
@@ -239,18 +217,18 @@ element_cntrl draw_game (game *cur_game,element_cntrl prev_ui_tree)
 	return prev_ui_tree;
 }
 
-element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event),char* captionStart){
+element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event),char** captionStart){
 	element_cntrl root, temp_elem;
 	control* temp_control;
 	linked_list_cntrl list;
 	int i;
 	
-	root = new_control_element(new_window(0,0,150,400));
+	root = new_control_element(new_window(0,0,250,500));
 	/*create panel children*/	
 	list = new_control_list();
 
 	/*button panel*/
-	temp_control = new_panel(0,0,200,400,255,255,255);
+	temp_control = new_panel(0,0,250,500,255,255,255);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 	set_list_as_children(list,root);
@@ -265,12 +243,10 @@ element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,
 
 	for (i=1;i<=iterationNum;i++)
 	{
-		char* buttonName=(char*)malloc(strlen(captionStart)+3);//for the meanwhile a leak;
-		sprintf(buttonName,"%s %d",captionStart,i);
-		newButtonGeneric(list,20,20+(i-1)*50,buttonName,buttonAction,i);
+		newButtonGeneric(list,20,20+(i-1)*50,captionStart[i-1],buttonAction,i);
 	}
-	//free(captionStart);
-	newButtonGeneric(list,20,300,CANCEL,quitGame,0);
+	free(captionStart);
+	newButtonGeneric(list,20,400,CANCEL,quitGame,0);
 	set_list_as_children(list,root->children->head);
 	return root;
 
@@ -286,7 +262,7 @@ element_cntrl startWindow(){
 	list = new_control_list();
 
 	/*button panel*/
-	temp_control = new_panel(0,0,200,400,255,255,255);
+	temp_control = new_panel(0,0,150,400,255,255,255);
 	addNewControlToList(temp_control,list);
 	set_list_as_children(list,root);
 
@@ -318,4 +294,66 @@ void addNewControlToList(control* control,linked_list_cntrl fathersList){
 	element_cntrl temp_elem;
 	temp_elem = new_control_element(control);
 	add_control_element_to_list(fathersList,temp_elem);
+}
+
+char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int *iterationNum,game **prevGame,int flag){
+	char** captionArray;
+	char* buttonName;
+	int i;
+
+	if (flag==MAIN_SIGN){
+		*pressedButton=chooseGame;
+		*iterationNum=3;
+		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
+		captionArray[0]=(char *)TIC_TAC_TOE_NAME;//casting from const char *
+		captionArray[1]=(char *)REVERSI_NAME;
+		captionArray[2]=(char *)Connect4_NAME;
+	}
+	else if (flag==LOAD_SIGN){
+		*pressedButton=loadGame;
+		*iterationNum=5;
+		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
+		for (i=0;i<*iterationNum;i++){
+			captionArray[i]=(char *)LOAD_SLOT;
+			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
+			sprintf(buttonName,"%s %d",captionArray[i],i);
+			free(captionArray[i]);
+		}
+	}
+	else if (flag==SAVE_SIGN){
+		*pressedButton=saveGame;
+		*iterationNum=5;
+		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
+		for (i=0;i<*iterationNum;i++){
+			captionArray[i]=(char *)SAVE_SLOT;
+			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
+			sprintf(buttonName,"%s %d",captionArray[i],i);
+			free(captionArray[i]);
+		}
+	}
+	else if (flag==AI_SIGN){
+		*pressedButton=setmultiplayer;
+		*iterationNum=4;
+		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
+		captionArray[0]=(char *)AI_1;//casting from const char *
+		captionArray[1]=(char *)AI_2;
+		captionArray[2]=(char *)AI_3;
+		captionArray[3]=(char *)AI_4;
+	}
+	else {
+		if (*prevGame==NULL){
+			return NULL;
+		}
+		*pressedButton=setDifficalty;
+		*iterationNum=(*prevGame)->difficulty_num;
+		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
+
+		for (i=0;i<*iterationNum;i++){
+			captionArray[i]=(char *)DIFFICALTY;
+			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
+			sprintf(buttonName,"%s %d",captionArray[i],i);
+			free(captionArray[i]);
+		}
+	}
+	return captionArray;
 }

@@ -1,6 +1,7 @@
 #include "reversi_bl.h"
 
 int *reversi_board; 
+char *REVERSI_NAME="Reversi";
 int reversi_diffficulties[] = {1,2,3,4};
 /* all possible {delta_x,delta_y} directions on board*/
 int move_directions[8][2] = {{1,1},{-1,-1},{1,-1},{-1,1},{0,1},{1,0},{-1,0},{0,-1}};

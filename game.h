@@ -20,6 +20,7 @@ element_cntrl game_init(game **cur_game,int mainORLoad);
 element_cntrl draw_game (game *cur_game,element_cntrl prev_ui_tree);
 element_cntrl startWindow();
 void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int buttonChoise);
-element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event),char* captionStart);
+element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event),char** captionStart);
 void addNewControlToList(control* control,linked_list_cntrl fathersList);
+char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int *iterationNum,game **prevGame,int flag);
 

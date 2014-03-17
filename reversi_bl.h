@@ -7,7 +7,6 @@
 
 #define REVERSI_ROWS 8 
 #define REVERSI_COLS 8
-#define REVERSI_NAME "Reversi"
 #define REVERSI_NO_PLAYER 0
 #define REVERSI_PLAYER_1 1
 #define REVERSI_PLAYER_2 -1
