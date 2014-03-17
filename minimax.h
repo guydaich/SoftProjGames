@@ -51,27 +51,19 @@ int get_suggested_move(int * game_matrix, int depth,linked_list (*create_childre
 int get_computer_move(int * gameMatrix,int depth,linked_list (*create_children)(int *gameMatrix, int player));
 int getMove(vertex root);
 
-/* evaluation functions */
-//int scoring_function(int* game_matrix);
-
 /*data structure functions*/
 vertex make_node(int move, int *game_mtx_ptr, int score);
 linked_list new_list();
 element new_element();
-//int create_children(vertex parent, int player, int isRoot);
 void deleteList(element head,int is_nodes);
 void remove_tree(vertex root, int is_root);
-void remove_bad_subtree(vertex bad_subtree_root, int is_root);
 vertex new_node(int move, int *game_state, int score);
 void free_node(vertex node);
 
 /*minimax functions*/
-//int * copy_board_move(board_t from, int move, int player);
 vertex build_tree(int * game_matrix, int player, int maxDepth,linked_list (*create_children)(int *gameMatrix, int player));
 int recursive_tree_build(vertex root, int player, int depth, int max_depth,linked_list (*create_children)(int *gameMatrix, int player));
-void fix_score(vertex root_node, int player);
 int calc_min_max_value(int new_score, int player, int prev_score);
-void killInfested(vertex infestedFather, int is_root);
 int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth);
 
 #endif
