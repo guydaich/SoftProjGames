@@ -11,24 +11,6 @@ extern int panelNum;
 extern int windowNum;
 int isTwoComputers=0;
 
-#define RESTART "Rsestart"
-#define QUIT "Quit"
-#define CANCEL "Cancel"
-#define MAIN_MENU "Main Menu"
-#define SAVE "Save Game"
-#define LOAD "Load Game"
-#define DIFF "Difficulties"
-#define PAUSE "Pause"
-#define CHOOSE_GAME "Choose Game"
-#define DIFFICALTY "Difficulty"
-#define SAVE_SLOT "Save Slot"
-#define LOAD_SLOT "Load Slot"
-#define GAME_NAME "Game"
-#define AI_1 "AI Vs AI"
-#define AI_2 "Human Vs AI"
-#define AI_3 "AI Vs Human"
-#define AI_4 "Human Vs Human"
-
 
 int gui_init()
 {
@@ -78,10 +60,11 @@ int main( int argc, char* args[] )
 			default: //unhandled event
 				break;
 			}
-			if (cur_game->is_multiplayer==1 && pause==0){
+			if (cur_game!=NULL && cur_game->is_multiplayer==1 && pause==0){
 				cur_game->handle_computer_move(cur_game->board,cur_game->difficulty,cur_game->cur_player);
 				(cur_game)->cur_player = (-1)*(cur_game)->cur_player;
 				(ui_tree)=draw_game(cur_game,ui_tree);
+				pause=1;
 			}
 		}
 	}
@@ -257,21 +240,21 @@ element_cntrl startWindow(){
 	control* temp_control;
 	linked_list_cntrl list; 
 
-	root = new_control_element(new_window(0,0,150,400));
+	root = new_control_element(new_window(0,0,200,400));
 	/*create panel children*/	
 	list = new_control_list();
 
 	/*button panel*/
-	temp_control = new_panel(0,0,150,400,255,255,255);
+	temp_control = new_panel(0,0,200,400,255,255,255);
 	addNewControlToList(temp_control,list);
 	set_list_as_children(list,root);
 
 	/*panel children*/
 	list = new_control_list();
 
-	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/button_label.bmp",255,0,255,1,"panel");
-	addNewControlToList(temp_control,list);
+	//label - paint first
+	//temp_control = new_label(0,0,100,80,"./gfx/button_label.bmp",255,0,255,1,"panel");
+	//addNewControlToList(temp_control,list);
 
 	newButtonGeneric(list,20,20,CHOOSE_GAME,goToMainMenu,0);
 	newButtonGeneric(list,20,100,LOAD,runLoadManu,0);
@@ -318,6 +301,7 @@ char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tre
 			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
 			sprintf(buttonName,"%s %d",captionArray[i],i);
 			free(captionArray[i]);
+			captionArray[i]=buttonName;
 		}
 	}
 	else if (flag==SAVE_SIGN){
@@ -329,6 +313,7 @@ char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tre
 			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
 			sprintf(buttonName,"%s %d",captionArray[i],i);
 			free(captionArray[i]);
+			captionArray[i]=buttonName;
 		}
 	}
 	else if (flag==AI_SIGN){
@@ -347,12 +332,12 @@ char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tre
 		*pressedButton=setDifficalty;
 		*iterationNum=(*prevGame)->difficulty_num;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
-
 		for (i=0;i<*iterationNum;i++){
 			captionArray[i]=(char *)DIFFICALTY;
 			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
 			sprintf(buttonName,"%s %d",captionArray[i],i);
 			free(captionArray[i]);
+			captionArray[i]=buttonName;
 		}
 	}
 	return captionArray;

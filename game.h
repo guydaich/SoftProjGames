@@ -4,6 +4,24 @@
 #include "controls.h"
 #include "save_game.h"
 
+#define RESTART "Rsestart"
+#define QUIT "Quit"
+#define CANCEL "Cancel"
+#define MAIN_MENU "Main Menu"
+#define SAVE "Save Game"
+#define LOAD "Load Game"
+#define DIFF "Difficulties"
+#define PAUSE "Pause"
+#define CHOOSE_GAME "Choose Game"
+#define DIFFICALTY "Difficulty"
+#define SAVE_SLOT "Save Slot"
+#define LOAD_SLOT "Load Slot"
+#define GAME_NAME "Game"
+#define AI_1 "AI Vs AI"
+#define AI_2 "Human Vs AI"
+#define AI_3 "AI Vs Human"
+#define AI_4 "Human Vs Human"
+
 #define AI_SIGN 6
 #define START_SIGN 5
 #define DIFF_SIGN 4
@@ -23,4 +41,5 @@ void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,vo
 element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event),char** captionStart);
 void addNewControlToList(control* control,linked_list_cntrl fathersList);
 char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int *iterationNum,game **prevGame,int flag);
+void newImage(linked_list_cntrl fathersList,int x,int y,char* caption);
 

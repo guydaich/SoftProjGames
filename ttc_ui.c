@@ -1,6 +1,8 @@
 # include "ttc_ui.h"
 # include "controls.h"
 
+void setVic(int i,int j,element_cntrl game_panel,int player);
+
 element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event))
 { 
 	control *ttc_grid;

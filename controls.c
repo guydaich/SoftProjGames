@@ -579,7 +579,7 @@ void freeControlList(element_cntrl node)
 		free(node->cntrl->destination_rect);
 	}
 
-	/*
+	
 	if (node->cntrl->is_button==1)
 	{
 		buttomNum--;
@@ -595,7 +595,7 @@ void freeControlList(element_cntrl node)
 	if (node->cntrl->is_window==1)
 	{
 		windowNum--;
-	}*/
+	}
 	
 	/*free node caption*/
 	if (node->cntrl->caption != NULL 
@@ -607,7 +607,7 @@ void freeControlList(element_cntrl node)
 	free(node->cntrl);
 	free(node);
 
-	//controlElementNum--;
+	controlElementNum--;
 
 }
 
@@ -615,6 +615,3 @@ void emptryButton(void* cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* t
 {
 	return;
 }
-
-
-

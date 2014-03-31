@@ -8,11 +8,12 @@
 #define TTC_BTNXPATH "./gfx/ttc_x_mag.bmp"
 #define TTC_BTNOPATH "./gfx/ttc_o_mag.bmp"
 #define TTC_BTNEPATH "./gfx/ttc_empty.bmp"
+#define TTC_BTNXPATH_VICTORY "./gfx/ttc_x_magVictory.bmp"
+#define TTC_BTNOPATH_VICTORY "./gfx/ttc_o_magVictory.bmp"
 #define TIC_TAC_TOE_ROWS 3 
 #define TIC_TAC_TOE_COLS 3
 #define TTC_PLAYER_1 1
 #define TTC_PLAYER_2 -1
-
 
 
 

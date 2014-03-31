@@ -14,15 +14,6 @@ extern int quit;
 /* inits a new game */
 game* new_game(int game_id)
 {
-	//int is_multi; 
-
-	/*TODO: handle multiplayer selection
-	*
-	*
-	*
-	*/
-	//is_multi = 0; // play against minimax
-
 	game *new_game_obj = (game*)malloc(sizeof(game));  //TODO check new_game_obj!=NULL
 	gameNum++;
 	switch (game_id)
@@ -42,8 +33,9 @@ game* new_game(int game_id)
 		new_game_obj->is_game_over=ttc_is_game_over;
 		new_game_obj->is_multiplayer = 0;
 		new_game_obj->is_victory = ttc_is_victory;
-		new_game_obj->player_has_moves = rv_player_has_moves;
+		new_game_obj->player_has_moves = NULL;
 		new_game_obj->difficulty_num=1;
+		new_game_obj->victoryColor=NULL;
 		break;
 	case REVERSI:
 		new_game_obj->get_name = rv_get_name;
@@ -62,6 +54,7 @@ game* new_game(int game_id)
 		new_game_obj->is_victory = rv_is_victory;
 		new_game_obj->player_has_moves = rv_player_has_moves;
 		new_game_obj->difficulty_num=4;
+		new_game_obj->victoryColor=NULL;
 		break;
 	case CONNECT4:
 		new_game_obj->get_name = get_name_C4;
@@ -79,6 +72,7 @@ game* new_game(int game_id)
 		new_game_obj->is_multiplayer = 0;
 		new_game_obj->is_victory = is_victory_C4;
 		new_game_obj->difficulty_num=7;
+		new_game_obj->victoryColor=NULL;
 		break;
 	default:
 		break;
@@ -129,7 +123,8 @@ void  saveGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* tes
 void  makeMove(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	element_cntrl temp_elem;
-	int move_success = 0;
+	int move_success = 0,x,y;
+	char* victpryImage;
 	if (*choice==1){
 		return;
 	}
@@ -149,14 +144,12 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* tes
 
 	if ( (*cur_game)->is_game_over( (*cur_game)->board)){
 		if ((*cur_game)->is_victory( (*cur_game)->board,1) == 1){
-			newButtonGeneric((*ui_tree)->children,300,480,"victoryOne",restartGame,0);
-			(*ui_tree)->children->tail->parent=(*ui_tree);//temp_elem->parent=(*ui_tree);
-			temp_elem=(*ui_tree)->children->tail;
+			//(*cur_game)->victoryColor((*cur_game)->board,1,ui_tree);
+			color_ttc((*cur_game)->board,1,ui_tree);
 		}
 		else if ((*cur_game)->is_victory( (*cur_game)->board,-1) == 1){
-			newButtonGeneric((*ui_tree)->children,300,480,"victoryTwo",restartGame,0);
-			(*ui_tree)->children->tail->parent=(*ui_tree);//temp_elem->parent=(*ui_tree);
-			temp_elem=(*ui_tree)->children->tail;
+			//(*cur_game)->victoryColor((*cur_game)->board,1,ui_tree);
+			color_ttc((*cur_game)->board,-1,ui_tree);
 		}
 		else
 		{
@@ -165,7 +158,7 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* tes
 			temp_elem=(*ui_tree)->children->tail;
 		}
 		//TODO: handle game over
-		draw_button(temp_elem->cntrl,temp_elem->parent->cntrl);
+		draw_ui_tree((*ui_tree));
 		SDL_Flip((*ui_tree)->cntrl->srfc);
 	}
 	return;
@@ -185,6 +178,7 @@ void  chooseGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* t
 {
 	(*cur_game)=new_game(*choice);
 	(*cur_game)->board=(*cur_game)->get_initial_state();
+
 }
 
 void  runLoadManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)

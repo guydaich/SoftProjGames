@@ -5,7 +5,7 @@
 
 char* Connect4_NAME = "Connect4";
 int* game_matrix;
-int Connect4_diffficulties[] = {1,2,3,4,5,6};
+int Connect4_diffficulties[] = {1,2,3,4,5,6,7};
 int max_col_heights[GCOLS];
 
 /* adds a piece in top of given Column, for stated player)*/
