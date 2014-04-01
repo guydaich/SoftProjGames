@@ -123,8 +123,7 @@ void  saveGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* tes
 void  makeMove(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	element_cntrl temp_elem;
-	int move_success = 0,x,y;
-	char* victpryImage;
+	int move_success = 0;
 	if (*choice==1){
 		return;
 	}
@@ -145,11 +144,11 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* tes
 	if ( (*cur_game)->is_game_over( (*cur_game)->board)){
 		if ((*cur_game)->is_victory( (*cur_game)->board,1) == 1){
 			//(*cur_game)->victoryColor((*cur_game)->board,1,ui_tree);
-			color_ttc((*cur_game)->board,1,ui_tree);
+			color_ttc((*cur_game)->board,1,*ui_tree);
 		}
 		else if ((*cur_game)->is_victory( (*cur_game)->board,-1) == 1){
 			//(*cur_game)->victoryColor((*cur_game)->board,1,ui_tree);
-			color_ttc((*cur_game)->board,-1,ui_tree);
+			color_ttc((*cur_game)->board,-1,*ui_tree);
 		}
 		else
 		{

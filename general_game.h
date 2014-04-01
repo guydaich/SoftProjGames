@@ -35,7 +35,7 @@ typedef struct _general_game
 	int				(*player_has_moves)(int* game_state, int player);
 	int				(*is_game_over)(int* game_state);
 	int				(*is_victory)(int* game_state,int player);
-	int				(*victoryColor)(int* game_state,int player);
+	void			(*victoryColor)(int* game_state,int player,element_cntrl ui_tree);
 	int				(*handle_computer_move)(int* game_state, int depth,int player);
 
 
