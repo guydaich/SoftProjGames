@@ -601,7 +601,7 @@ void freeControlList(element_cntrl node)
 	if (node->cntrl->caption != NULL 
 		&& node->cntrl->caption[2] == NULL)
 	{
-		free(node->cntrl->caption);
+		//free(node->cntrl->caption);
 	}
 	/*free control and node*/
 	free(node->cntrl);

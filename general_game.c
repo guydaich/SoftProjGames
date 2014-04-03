@@ -35,7 +35,7 @@ game* new_game(int game_id)
 		new_game_obj->is_victory = ttc_is_victory;
 		new_game_obj->player_has_moves = NULL;
 		new_game_obj->difficulty_num=1;
-		new_game_obj->victoryColor=NULL;
+		new_game_obj->victoryColor=color_ttc;
 		break;
 	case REVERSI:
 		new_game_obj->get_name = rv_get_name;
@@ -143,12 +143,12 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* tes
 
 	if ( (*cur_game)->is_game_over( (*cur_game)->board)){
 		if ((*cur_game)->is_victory( (*cur_game)->board,1) == 1){
-			//(*cur_game)->victoryColor((*cur_game)->board,1,ui_tree);
-			color_ttc((*cur_game)->board,1,*ui_tree);
+			(*cur_game)->victoryColor((*cur_game)->board,1,*ui_tree);
+			//color_ttc((*cur_game)->board,1,*ui_tree);
 		}
 		else if ((*cur_game)->is_victory( (*cur_game)->board,-1) == 1){
-			//(*cur_game)->victoryColor((*cur_game)->board,1,ui_tree);
-			color_ttc((*cur_game)->board,-1,*ui_tree);
+			(*cur_game)->victoryColor((*cur_game)->board,-1,*ui_tree);
+			//color_ttc((*cur_game)->board,-1,*ui_tree);
 		}
 		else
 		{

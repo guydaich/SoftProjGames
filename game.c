@@ -300,7 +300,7 @@ char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tre
 			captionArray[i]=(char *)LOAD_SLOT;
 			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
 			sprintf(buttonName,"%s %d",captionArray[i],i);
-			free(captionArray[i]);
+			//free(captionArray[i]);
 			captionArray[i]=buttonName;
 		}
 	}
@@ -312,7 +312,7 @@ char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tre
 			captionArray[i]=(char *)SAVE_SLOT;
 			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
 			sprintf(buttonName,"%s %d",captionArray[i],i);
-			free(captionArray[i]);
+			//free(captionArray[i]);
 			captionArray[i]=buttonName;
 		}
 	}
@@ -336,7 +336,7 @@ char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tre
 			captionArray[i]=(char *)DIFFICALTY;
 			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
 			sprintf(buttonName,"%s %d",captionArray[i],i);
-			free(captionArray[i]);
+			//free(captionArray[i]);
 			captionArray[i]=buttonName;
 		}
 	}

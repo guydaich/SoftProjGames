@@ -1,8 +1,6 @@
 # include "ttc_ui.h"
 # include "controls.h"
 
-void setVic(int i,int j,element_cntrl game_panel,int player);
-void color_ttc(int* game_state,int player,element_cntrl ui_tree);
 
 element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event))
 { 
@@ -133,7 +131,7 @@ void color_ttc(int* game_state,int player,element_cntrl ui_tree){
 	if (flag)
 	{
 		for (i= TIC_TAC_TOE_ROWS -1; i >=0 ; i--){
-			setVic(i,i,gamePanel,player);
+			setVic(i,TIC_TAC_TOE_ROWS-i-1,gamePanel,player);
 		}
 		return;
 	}

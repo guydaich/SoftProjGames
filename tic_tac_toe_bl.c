@@ -283,7 +283,7 @@ int	ttc_handle_computer_turn(int* game_state, int depth,int player)
 int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state, int player)
 {
 	int x=0,y=0;
-	int comp_move,succes;
+	int succes;
 	element_cntrl elem=NULL;
 	x=event->button.x;
 	y=event->button.y;
