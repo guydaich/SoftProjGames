@@ -4,12 +4,8 @@
 #include <stdio.h>
 #include "controls.h"
 #include "minimax.h"
+#include "reversi_ui.h"
 
-#define REVERSI_ROWS 8 
-#define REVERSI_COLS 8
-#define REVERSI_NO_PLAYER 0
-#define REVERSI_PLAYER_1 1
-#define REVERSI_PLAYER_2 -1
 #define PLAYER_1_START_1 3*REVERSI_ROWS + 3
 #define PLAYER_2_START_1 4*REVERSI_ROWS + 3
 #define PLAYER_1_START_2 4*REVERSI_ROWS + 4

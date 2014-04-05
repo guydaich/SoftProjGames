@@ -6,11 +6,7 @@
 #include <limits.h>
 #include "minimax.h"
 #include "controls.h"
-
-#define CONNECT4_ROWS 6 
-#define CONNECT4_COLS 7
-#define CONNECT4_PLAYER_1 1
-#define CONNECT4_PLAYER_2 -1
+#include "connect4_ui.h"
 
 
 /* command parsing definitions */

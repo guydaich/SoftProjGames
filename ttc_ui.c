@@ -6,11 +6,11 @@ element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_gam
 { 
 	control *ttc_grid;
 	control *ttc_button;
-	element_cntrl root, grid, temp;
+	element_cntrl root, grid, temp, children_panel;
 	linked_list_cntrl list;
 	int i,j;
  	
-	root = new_control_element(new_panel(0,0,600,600,255,255,255));
+	root = new_control_element(new_panel(0,0,600,600,255,255,255,1));
 	/*create panel children*/	
 	list = new_control_list();
 	/* grid surface - create control and element*/
@@ -22,6 +22,12 @@ element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_gam
 	/* update root children, and grid parent*/
 	set_list_as_children(list,root);
 	
+	children_panel = new_control_element(new_panel(50,50,600,600,255,255,255,0));
+	list = new_control_list();
+	add_control_element_to_list(list,children_panel);
+	set_list_as_children(list,grid);
+
+
 	/*create grid children*/
 	list = new_control_list();
 	for (i=0; i< TIC_TAC_TOE_COLS; i++)
@@ -31,16 +37,12 @@ element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_gam
 			ttc_button= NULL;
 			if (game_state[i*TIC_TAC_TOE_ROWS + j] == TTC_PLAYER_1)	
 			{
-				ttc_button=new_button(j*TTC_WBTN+TTC_XOFFSET,i*TTC_HBTN+TTC_YOFFSET,TTC_BTNXPATH,1,NULL,0);
+				ttc_button=new_button(j*TTC_WBTN,i*TTC_HBTN,TTC_BTNXPATH,1,NULL,0);
 			}
 			else if (game_state[i*TIC_TAC_TOE_ROWS + j] == TTC_PLAYER_2)	
 			{
-				ttc_button=new_button(j*TTC_WBTN+TTC_XOFFSET,i*TTC_HBTN+TTC_YOFFSET,TTC_BTNOPATH,1,NULL,0);
+				ttc_button=new_button(j*TTC_WBTN,i*TTC_HBTN,TTC_BTNOPATH,1,NULL,0);
 			}
-			/*else
-			{
-				ttc_button=new_button(j*TTC_WBTN+TTC_XOFFSET,i*TTC_HBTN+TTC_YOFFSET,TTC_BTNEPATH,1,NULL,1);
-			}*/
 			/*add pieces to children list*/
 			if (ttc_button != NULL)
 			{
@@ -50,7 +52,7 @@ element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_gam
 		}
 	}
 	/*update parent-children*/
-	set_list_as_children(list,grid);
+	set_list_as_children(list,children_panel);
 
 	return root;
 }
@@ -137,29 +139,45 @@ void color_ttc(int* game_state,int player,element_cntrl ui_tree){
 	}
 }
 
+/* function accepts TTC board matrix coordinates, 
+ * locates the relevant TTC image, and creates 
+ * a striked child underneath*/
+
 void setVic(int i,int j,element_cntrl game_panel,int player){
 	element_cntrl ttc_button,temp;
 	control *ttc_button_victory;
 	linked_list_cntrl list;
 	int k;
 
-	ttc_button=game_panel->children->head->children->head;
-	for(k=0;k<(TIC_TAC_TOE_ROWS-1)*TIC_TAC_TOE_COLS+TIC_TAC_TOE_COLS-1;k++){
-		if(ttc_button->cntrl->x==j*TTC_WBTN+TTC_XOFFSET && ttc_button->cntrl->y==i*TTC_HBTN+TTC_YOFFSET) {
+	/* TTC pieces in ui tree */
+	ttc_button=game_panel->children->head->children->head->children->head;
+	/*advance in grid, until reaching piece i,j*/
+	
+	for(k=0; k < (TIC_TAC_TOE_ROWS-1)*TIC_TAC_TOE_COLS+TIC_TAC_TOE_COLS-1; k++)
+	{	
+		if(ttc_button->cntrl->x==j*TTC_WBTN 
+			&& ttc_button->cntrl->y==i*TTC_HBTN) {
 			break;
 		}
 		ttc_button=ttc_button->next;
 	}
 
+	/*Choose Striked X or O*/
 	if (player==1){
-		ttc_button_victory=new_button(0,0,TTC_BTNXPATH_VICTORY,1,NULL,0);
+		ttc_button->cntrl=new_button(ttc_button->cntrl->x,
+			ttc_button->cntrl->y,TTC_BTNXPATH_VICTORY,1,NULL,0);
+		// free previous control
+		free_control(ttc_button->cntrl); 
 	}
 	else {
-		ttc_button_victory=new_button(0,0,TTC_BTNOPATH_VICTORY,1,NULL,0);
+		ttc_button->cntrl=new_button(ttc_button->cntrl->x,
+			ttc_button->cntrl->y,TTC_BTNOPATH_VICTORY,1,NULL,0);
+		// free previous control
+		free_control(ttc_button->cntrl); 
 	}
-	list = new_control_list();
-
+	/*add as child*/
+	/*list = new_control_list();
 	temp = new_control_element(ttc_button_victory);
 	add_control_element_to_list(list,temp);
-	set_list_as_children(list,ttc_button);
+	set_list_as_children(list,ttc_button);*/
 }

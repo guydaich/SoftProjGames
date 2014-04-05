@@ -39,7 +39,7 @@ void handle_control_surface_load(control *cntrl, control *container)
 			if (surface == NULL)
 			{
 				err=SDL_GetError();
-			printf("ERROR: to load t image: %s\n", SDL_GetError());
+				printf("ERROR: to load t image: %s\n", SDL_GetError());
 				SDL_FreeSurface(surface);
 				return;
 			}
@@ -55,26 +55,44 @@ void handle_control_surface_load(control *cntrl, control *container)
 			}
 		}
 		
-		cntrl->srfc = container->srfc;
-		cntrl->ownSurface=surface;
+		if (cntrl->is_bg_rect || cntrl->is_bg_img)
+		{
+			cntrl->srfc = container->srfc;
+			cntrl->ownSurface=surface;
 		
-		/*find rect according to parent*/
-		get_rect(rect,cntrl,container);
+			/*find rect according to parent*/
+			get_rect(rect,cntrl,container);
 		
-		/*find picture proportions*/
-		cntrl->h = surface->h;
-		cntrl->w = surface->w;
+			/*find picture proportions*/
+			cntrl->h = surface->h;
+			cntrl->w = surface->w;
 			
-		/*update to final position on board */
-		cntrl->offsetx = rect->x;
-		cntrl->offsety = rect->y;
+			/*update to final position on board */
+			cntrl->offsetx = rect->x;
+			cntrl->offsety = rect->y;
 		
-		cntrl->destination_rect = rect;
+			cntrl->destination_rect = rect;
 
-		/*set transparancy*/
-		if (cntrl->is_transparant){
-			SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
-				SDL_MapRGB(surface->format, MAGNETAR, MAGNETAG, MAGNETAB));
+			/*set transparancy*/
+			if (cntrl->is_transparant){
+				SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
+					SDL_MapRGB(surface->format, MAGNETAR, MAGNETAG, MAGNETAB));
+			}
+		}
+		else // surface-less control
+		{
+			cntrl->srfc = container->srfc;
+			cntrl->ownSurface=(SDL_Surface*)NULL;
+		
+			/*find rect according to parent*/
+			get_rect(rect,cntrl,container);
+		
+			/*update to final position on board */
+			cntrl->offsetx = rect->x;
+			cntrl->offsety = rect->y;
+		
+			cntrl->destination_rect = rect;
+
 		}
 	}
 
@@ -330,7 +348,7 @@ control* new_button(int x, int y, char *img, int is_trans ,char *caption, int is
 }
 
 /*panel is a logical sub-window, meant to organise a part of the game area*/
-control* new_panel(int x, int y, int w, int h, int R, int B, int G)
+control* new_panel(int x, int y, int w, int h, int R, int B, int G, int is_bg_rect)
 {
 	// allocate window
 	control *panel = (control*)malloc(sizeof(control));
@@ -356,7 +374,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G)
 	panel->destination_rect=NULL;
 	panel->is_grid=0;
 	panel->is_bg_img =0;
-	panel->is_bg_rect =1;
+	panel->is_bg_rect=is_bg_rect;
 
 	return panel;
 }
@@ -463,12 +481,15 @@ void draw_panel(control* panel, control *container)
 	handle_control_surface_load(panel,container);
 
 	/* blit panel surface*/
-	if (SDL_FillRect(container->srfc,panel->destination_rect, 
-		SDL_MapRGB(panel->ownSurface->format, panel->R, panel->G, panel->B)) != 0)
+	if (panel->ownSurface != NULL)
 	{
-		err=SDL_GetError();
-		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-		SDL_FreeSurface(surface);
+		if (SDL_FillRect(container->srfc,panel->destination_rect, 
+			SDL_MapRGB(panel->ownSurface->format, panel->R, panel->G, panel->B)) != 0)
+		{
+			err=SDL_GetError();
+			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
+			SDL_FreeSurface(surface);
+		}
 	}
 }
 
@@ -575,11 +596,11 @@ void freeControlList(element_cntrl node)
 	if (node->cntrl->text_surface != NULL){
 		SDL_FreeSurface(node->cntrl->text_surface);
 	}
+
 	if (node->cntrl->destination_rect != NULL){
 		free(node->cntrl->destination_rect);
 	}
 
-	
 	if (node->cntrl->is_button==1)
 	{
 		buttomNum--;
@@ -614,4 +635,29 @@ void freeControlList(element_cntrl node)
 void emptryButton(void* cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
 {
 	return;
+}
+
+/*TODO : remove this part from free_control_list*/
+void free_control(control *cntrl)
+{
+	/*free SDL surface associated with control*/
+	if (cntrl->ownSurface != NULL){
+		SDL_FreeSurface(cntrl->ownSurface);
+	}
+	cntrl->ownSurface = NULL;
+	if (cntrl->text_surface != NULL){
+		SDL_FreeSurface(cntrl->text_surface);
+	}
+
+	if (cntrl->destination_rect != NULL){
+		free(cntrl->destination_rect);
+	}
+
+	/*free node caption*/
+	if (cntrl->caption != NULL 
+		&& cntrl->caption[2] == NULL)
+	{
+		//free(node->cntrl->caption);
+	}
+
 }

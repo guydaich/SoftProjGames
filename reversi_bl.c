@@ -445,61 +445,6 @@ int rv_is_victory(int* game_state)
 	return -2;
 }
 
-
-element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event))
-{
-	control *rv_grid;
-	control *rv_button;
-	element_cntrl root, grid, temp;
-	linked_list_cntrl list;
-	int i,j;
- 	
-	root = new_control_element(new_panel(0,0,600,600,255,255,255));
-	/*create panel children*/	
-	list = new_control_list();
-	/* grid surface - create control and element*/
-	rv_grid = new_button(0,0,"./gfx/reversi_board.bmp",1,"",1);
-	rv_grid->pressedButton=makeMove;
-	grid = new_control_element(rv_grid);
-	/* add grid to children list*/
-	add_control_element_to_list(list,grid);
-	/* update root children, and grid parent*/
-	set_list_as_children(list,root);
-	
-	/*create grid children*/
-	list = new_control_list();
-	for (i=0; i< REVERSI_ROWS; i++)
-	{
-		for(j=0; j< REVERSI_COLS; j++)
-		{
-			rv_button= NULL;
-			if (game_state[i*REVERSI_ROWS + j] == REVERSI_PLAYER_1)	
-			{
-				rv_button=new_button(50+(j)*75,50+(i)*75,"./gfx/reversi_piece_black.bmp",1,"",0);
-			}
-			else if (game_state[i*REVERSI_ROWS + j] == REVERSI_PLAYER_2)	
-			{
-				rv_button=new_button(50+(j)*75,50+(i)*75,"./gfx/reversi_piece_white.bmp",1,"",0);
-			}
-			/*else
-			{
-				rv_button=new_button(50+(j)*75,50+(i)*75,"./gfx/ttc_empty.bmp",1,"",0);
-				rv_button->pressedButton=makeMove;
-			}*/
-			/*add pieces to children list*/
-			if (rv_button != NULL)
-			{
-				temp = new_control_element(rv_button);
-				add_control_element_to_list(list,temp);
-			}
-		}
-	}
-	/*update parent-children*/
-	set_list_as_children(list,grid);
-
-	return root;
-}
-
 int rv_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state,int player)
 {
 	int x=0,y=0;
@@ -512,7 +457,7 @@ int rv_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_
 	{
 		return 0;
 	}
-	succes=rv_make_move(game_state,(y-50)/75,(x-50)/75,player);
+	succes=rv_make_move(game_state,(y-RVR_YOFFSET)/RVR_WBTN,(x-RVR_XOFFSET)/RVR_HBTN,player);
 	if(succes==0)
 	{
 		return 0;

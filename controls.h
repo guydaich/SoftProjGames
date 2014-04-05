@@ -88,7 +88,8 @@ void draw_panel(control* panel);
 control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption);
 control* new_button(int x, int y, char *img, int is_trans,char *caption, int is_grid);
 control* new_window(int x, int y, int w, int h);
-control* new_panel(int x, int y, int w, int h,int R, int G, int B);
+control* new_panel(int x, int y, int w, int h,int R, int G, int B, int is_bg_rect);
+void free_control(control *cntrl);
 
 void clear_game_panel(element_cntrl ui_tree);
 void freeControlList(element_cntrl node);

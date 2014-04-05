@@ -89,7 +89,7 @@ element_cntrl get_default_ui_tree(game *cur_game)
 	list = new_control_list();
 
 	/*button panel*/
-	temp_control = new_panel(700,0,300,1000,255,255,255);
+	temp_control = new_panel(700,0,300,1000,255,255,255,1);
 	addNewControlToList(temp_control,list);
 	set_list_as_children(list,root);
 
@@ -211,7 +211,7 @@ element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,
 	list = new_control_list();
 
 	/*button panel*/
-	temp_control = new_panel(0,0,250,500,255,255,255);
+	temp_control = new_panel(0,0,250,500,255,255,255,1);
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 	set_list_as_children(list,root);
@@ -245,7 +245,7 @@ element_cntrl startWindow(){
 	list = new_control_list();
 
 	/*button panel*/
-	temp_control = new_panel(0,0,200,400,255,255,255);
+	temp_control = new_panel(0,0,200,400,255,255,255,1);
 	addNewControlToList(temp_control,list);
 	set_list_as_children(list,root);
 
