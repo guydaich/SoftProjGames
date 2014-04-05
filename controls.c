@@ -27,6 +27,8 @@ void get_rect(SDL_Rect *rect_dest, control *cntrl, control *parent_panel)
 /* loads image/rect as surface and saves control surface and associated metrics*/
 void handle_control_surface_load(control *cntrl, control *container)
 {
+
+
 	SDL_Surface *surface; 
 	SDL_Rect *rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
 	

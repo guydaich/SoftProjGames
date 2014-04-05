@@ -10,23 +10,20 @@ element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_gam
 	linked_list_cntrl list;
 	int i,j;
  	
+	/* main panel */
 	root = new_control_element(new_panel(0,0,600,600,255,255,255,1));
-	/*create panel children*/	
+	/*grid picture as panel child*/
 	list = new_control_list();
-	/* grid surface - create control and element*/
 	ttc_grid = new_button(0,0,TTC_GRIDPATH,0,"",1);	
 	ttc_grid->pressedButton=makeMove;
 	grid = new_control_element(ttc_grid);
-	/* add grid to children list*/
 	add_control_element_to_list(list,grid);
-	/* update root children, and grid parent*/
 	set_list_as_children(list,root);
-	
+	/*pieces panel, as grid child*/
 	children_panel = new_control_element(new_panel(50,50,600,600,255,255,255,0));
 	list = new_control_list();
 	add_control_element_to_list(list,children_panel);
 	set_list_as_children(list,grid);
-
 
 	/*create grid children*/
 	list = new_control_list();
@@ -57,6 +54,8 @@ element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_gam
 	return root;
 }
 
+/* detect the winning configuration of the game
+ * update winning pieces to red background */
 void color_ttc(int* game_state,int player,element_cntrl ui_tree){
 	element_cntrl gamePanel;
 	int i,j,flag; 
@@ -77,7 +76,7 @@ void color_ttc(int* game_state,int player,element_cntrl ui_tree){
 		if (flag)
 		{
 			for(j=0; j< TIC_TAC_TOE_COLS; j++){
-				setVic(i,j,gamePanel,player);
+				set_victory_control(i,j,gamePanel,player);
 			}
 			return;
 		}
@@ -97,7 +96,7 @@ void color_ttc(int* game_state,int player,element_cntrl ui_tree){
 		if (flag)
 		{
 			for(j=0; j< TIC_TAC_TOE_ROWS; j++){
-				setVic(j,i,gamePanel,player);
+				set_victory_control(j,i,gamePanel,player);
 			}
 			return;
 		}
@@ -115,7 +114,7 @@ void color_ttc(int* game_state,int player,element_cntrl ui_tree){
 	if (flag)
 	{
 		for (i=0; i< TIC_TAC_TOE_ROWS; i++){
-			setVic(i,i,gamePanel,player);
+			set_victory_control(i,i,gamePanel,player);
 		}
 		return;
 	}
@@ -133,7 +132,7 @@ void color_ttc(int* game_state,int player,element_cntrl ui_tree){
 	if (flag)
 	{
 		for (i= TIC_TAC_TOE_ROWS -1; i >=0 ; i--){
-			setVic(i,TIC_TAC_TOE_ROWS-i-1,gamePanel,player);
+			set_victory_control(i,TIC_TAC_TOE_ROWS-i-1,gamePanel,player);
 		}
 		return;
 	}
@@ -142,8 +141,7 @@ void color_ttc(int* game_state,int player,element_cntrl ui_tree){
 /* function accepts TTC board matrix coordinates, 
  * locates the relevant TTC image, and creates 
  * a striked child underneath*/
-
-void setVic(int i,int j,element_cntrl game_panel,int player){
+void set_victory_control(int i,int j,element_cntrl game_panel,int player){
 	element_cntrl ttc_button,temp;
 	control *ttc_button_victory;
 	linked_list_cntrl list;
@@ -175,9 +173,4 @@ void setVic(int i,int j,element_cntrl game_panel,int player){
 		// free previous control
 		free_control(ttc_button->cntrl); 
 	}
-	/*add as child*/
-	/*list = new_control_list();
-	temp = new_control_element(ttc_button_victory);
-	add_control_element_to_list(list,temp);
-	set_list_as_children(list,ttc_button);*/
 }
