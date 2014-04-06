@@ -64,6 +64,6 @@ void free_node(vertex node);
 vertex build_tree(int * game_matrix, int player, int maxDepth,linked_list (*create_children)(int *gameMatrix, int player));
 int recursive_tree_build(vertex root, int player, int depth, int max_depth,linked_list (*create_children)(int *gameMatrix, int player));
 int calc_min_max_value(int new_score, int player, int prev_score);
-int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth);
+int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,linked_list (*create_children)(int *gameMatrix, int player));
 
 #endif

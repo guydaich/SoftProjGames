@@ -21,7 +21,7 @@ int get_suggested_move(int * game_matrix, int depth,linked_list (*create_childre
 	if (root == NULL){
 		exit(0);
 	}
-	alphaBeta(root,INT_MIN,INT_MAX,1,0,depth);								// update scores in the tree
+	alphaBeta(root,INT_MIN,INT_MAX,1,0,depth,create_children);								// update scores in the tree
 	cMove = getMove(root);								// find best move
 	remove_tree(root, 1);								// destroy tree
 	return cMove;
@@ -35,7 +35,7 @@ int get_computer_move(int * game_matrix,int depth,linked_list (*create_children)
 	if (root == NULL){
 		exit(0);
 	}
-	alphaBeta(root,INT_MIN,INT_MAX,-1,0,depth);
+	alphaBeta(root,INT_MIN,INT_MAX,-1,0,depth,create_children);
 	cMove = getMove(root);
 	remove_tree(root, 1);
 	return cMove;
@@ -45,13 +45,19 @@ int get_computer_move(int * game_matrix,int depth,linked_list (*create_children)
 int getMove(vertex root)
 {
 	element cur_elem;
+	int movement;
 	for (cur_elem = root->edges->head; cur_elem != NULL;
 		cur_elem = cur_elem->next)
 	{
 		if (cur_elem->node->score == root->score)
 		{
-			return cur_elem->node->mov_col;
+			movement=cur_elem->node->mov_col;
+			for (; cur_elem != NULL;cur_elem = cur_elem->next){
+				remove_tree(cur_elem->node, 0);
 		}
+			return movement;
+		}
+		remove_tree(cur_elem->node, 0);
 	}
 	return 0;
 }
@@ -70,7 +76,7 @@ vertex build_tree(int * game_matrix, int player, int maxDepth,linked_list (*crea
 	if (0 == -1){								// problem with std function
 		return NULL;
 	}
-	recursive_tree_build(root, -1 * player, 1, maxDepth,create_children);	// construct tree	
+	//recursive_tree_build(root, -1 * player, 1, maxDepth,create_children);	// construct tree	
 	if (0 == -1){
 		remove_tree(root, 1);
 		return NULL;
@@ -78,7 +84,7 @@ vertex build_tree(int * game_matrix, int player, int maxDepth,linked_list (*crea
 	return root;
 }
 
-/* constructs a tree, recursively, after root has been assigned */
+/* constructs a tree, recursively, after root has been assigned 
 int recursive_tree_build(vertex root, int player, int depth, int max_depth,linked_list (*create_children)(int *gameMatrix, int player))
 {
 	element cur_elem;
@@ -99,14 +105,14 @@ int recursive_tree_build(vertex root, int player, int depth, int max_depth,linke
 			if (0 == -1){
 				return 0;
 			}
-			recursive_tree_build(cur_node, -1 * player, depth + 1, max_depth,create_children);
+			//recursive_tree_build(cur_node, -1 * player, depth + 1, max_depth,create_children);
 			if (0 == -1){
 				return 0;
 			}
 		}
 	}
 	return 0;
-}
+}*/
 
 /* creates a new node, and returns it to Caller */
 vertex make_node(int move, int *game_mtx_ptr, int score)
@@ -120,12 +126,12 @@ vertex make_node(int move, int *game_mtx_ptr, int score)
 	new_node->mov_col = move;
 	new_node->game_state = game_mtx_ptr;
 	new_node->score = score;
-	new_node->edges = new_list();
-	if (new_node->edges==NULL){
+	new_node->edges = NULL;
+	/*if (new_node->edges==NULL){
 		free(game_mtx_ptr);
 		free(new_node);
 		return NULL;
-	}
+	}*/
 	return new_node;
 }
 
@@ -193,6 +199,7 @@ void free_node(vertex node)
 
 void remove_tree(vertex root, int is_root)
 {
+	if (root->edges!=NULL){
 	if (is_root==1){
 		deleteList(root->edges->head,1);
 	}
@@ -201,6 +208,7 @@ void remove_tree(vertex root, int is_root)
 	}
 	free(root->edges);
 	numOfElemmalList--;
+	}
 	if (is_root==0){
 		free(root->game_state);
 		boardCount--;
@@ -214,47 +222,78 @@ void deleteList(element head,int is_nodes){
 		return;
 	}
 	deleteList(head->next,is_nodes);
-	remove_tree(head->node,0);
+	//remove_tree(head->node,0);
 	free(head);
 	numE--;
 }
 
 
-int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth){
+int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,linked_list (*create_children)(int *gameMatrix, int player)){
 	int aboveAlpha=alpha,aboveBeta=beta;
 	int temp;
 	vertex child;
 	element run;
-	if (Node->edges->head==NULL){
-		return Node->score;
+	linked_list new_children;
+	if (depth>=maxdepth || Node->edges->head==NULL){
+		temp= Node->score;
+		if(depth>1){
+			remove_tree(Node,0);
+		}
+		return temp;
 	}
 	if (player==HUMAN){
 		for (run = Node->edges->head;run != NULL; run = run->next){
-			child=run->node;
-			temp=alphaBeta(child,alpha,beta,player*-1,depth+1,maxdepth);
+			child=run->node;					// choose node	
+			if (depth<maxdepth-1){
+				new_children=create_children(child->game_state, player*-1);			// add children
+				child->edges=new_children;
+			}
+			temp=alphaBeta(child,alpha,beta,player*-1,depth+1,maxdepth,create_children);
 			if(aboveAlpha < temp){
 				aboveAlpha=temp;
 			}
 			if (aboveBeta<=aboveAlpha){
+				for ( run = run->next;run != NULL; run = run->next){
+					child=run->node;
+					if(depth>1){
+						remove_tree(child,0);
+					}
+				}
 				break;
 			}
 			
 		}
 		Node->score=aboveAlpha;
+		if(depth>1){
+			remove_tree(Node,0);
+		}
 		return aboveAlpha;
 	}
 	else {
 		for (run = Node->edges->head;run != NULL; run = run->next){
 			child=run->node;
-			temp=alphaBeta(child,alpha,beta,player*-1,depth+1,maxdepth);
+			if (depth<maxdepth-1){
+				new_children=create_children(child->game_state, player*-1);			// add children
+				child->edges=new_children;
+			}
+			temp=alphaBeta(child,alpha,beta,player*-1,depth+1,maxdepth,create_children);
 			if(aboveBeta > temp){
 				aboveBeta=temp;
 			}
 			if (aboveBeta<=aboveAlpha){
+				for ( run = run->next;run != NULL; run = run->next){
+					child=run->node;
+					if(depth>1){
+						remove_tree(child,0);
+					}
+				}
 				break;
 			}
 		}
 		Node->score=aboveBeta;
+		if(depth>1){
+			remove_tree(Node,0);
+		}
 		return aboveBeta;
 	}
 }
