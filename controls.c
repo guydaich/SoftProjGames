@@ -29,7 +29,7 @@ void handle_control_surface_load(control *cntrl, control *container)
 {
 
 
-	SDL_Surface *surface; 
+	SDL_Surface *surface=NULL; 
 	SDL_Rect *rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
 	
 	char *err; 
@@ -414,16 +414,12 @@ control* new_window(int x, int y, int w, int h)
 /* drawing function*/
 void draw_button(control *button, control *container)
 {
-
-	SDL_Rect rect = {0,0,0,0}; 
 	SDL_Surface *surface;
-	char *err; 
 
 	handle_control_surface_load(button,container);
 
 	/* Blit */
 	if (SDL_BlitSurface(button->ownSurface,NULL, container->srfc, button->destination_rect) != 0){
-		char *x= SDL_GetError();
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 		SDL_FreeSurface(surface);
 	}
@@ -439,15 +435,12 @@ void draw_button(control *button, control *container)
 
 void draw_label(control *label, control *container)
 {
-	char *err; 
-	SDL_Rect rect = {0,0,0,0}; 	
 	SDL_Surface *surface;
 
 	handle_control_surface_load(label,container);
 	
 	if (SDL_BlitSurface(label->ownSurface,NULL, container->srfc, label->destination_rect) != 0)
 	{
-		char *x= SDL_GetError();
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
 		SDL_FreeSurface(surface);
 	}
@@ -478,7 +471,6 @@ void draw_panel(control* panel, control *container)
 {
 	SDL_Surface *surface;
 	char *err; 
-	SDL_Rect rect;
 
 	handle_control_surface_load(panel,container);
 
@@ -621,8 +613,7 @@ void freeControlList(element_cntrl node)
 	}
 	
 	/*free node caption*/
-	if (node->cntrl->caption != NULL 
-		&& node->cntrl->caption[2] == NULL)
+	if (node->cntrl->caption != NULL)
 	{
 		//free(node->cntrl->caption);
 	}
@@ -656,8 +647,7 @@ void free_control(control *cntrl)
 	}
 
 	/*free node caption*/
-	if (cntrl->caption != NULL 
-		&& cntrl->caption[2] == NULL)
+	if (cntrl->caption != NULL)
 	{
 		//free(node->cntrl->caption);
 	}

@@ -27,7 +27,7 @@ int* load_game_from_file(char* filename, int* whichGame){
 	FILE *file; 
 	char getName[MAX_NAME_SIZE];
 	int *gameBoard;
-	int i=0,j=0,player;
+	int player;
 
 	file = fopen(filename, "r");
 	if (file == NULL)

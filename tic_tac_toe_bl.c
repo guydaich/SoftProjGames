@@ -271,24 +271,22 @@ int	ttc_handle_computer_turn(int* game_state, int depth,int player)
 {
 	int comp_move;
 	if (player==-1){
-		comp_move = get_computer_move(game_state, 9, ttc_get_state_children);
+		comp_move = get_computer_move(game_state, depth, ttc_get_state_children);
 	}
 	else {
-		comp_move=get_suggested_move(game_state,9, ttc_get_state_children);
+		comp_move=get_suggested_move(game_state,depth, ttc_get_state_children);
 	}
 	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,player);
 	return 0;
 }
 
-int ttc_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state, int player)
+int ttc_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 {
 	int x=0,y=0;
 	int succes;
-	element_cntrl elem=NULL;
 	x=event->button.x;
 	y=event->button.y;
 	/* elem get's the elemnt to update (grid slot) */
-	find_element_by_coordinates(root,x,y,&elem);
 
 	if(ttc_is_game_over(game_state))
 	{

@@ -47,7 +47,6 @@ int rv_make_node(int* game_state, int row, int col, int player)
 {
 	int* moved_state;
 	vertex node;
-	element new_elem,prev_tail;
 
 	moved_state = rv_copy_and_make_move(game_state,row,col,player);
 	node = new_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state,player));
@@ -58,6 +57,7 @@ int rv_make_node(int* game_state, int row, int col, int player)
 		free(moved_state);
 		return 0;
 	}
+	return 1;
 }
 
 int rv_add_to_children_list(linked_list list, int* game_state, int row, int col, int player)
@@ -208,7 +208,7 @@ int rv_get_state_score(int* game_state,int player)
 		}
 	}
 	
-	if (player=REVERSI_PLAYER_2)
+	if (player==REVERSI_PLAYER_2)
 	{
 		return (-1)* score;
 	}
@@ -277,7 +277,7 @@ int rv_make_move(int* game_state, int rows, int cols, int player)
    in one or more*/ 
 int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 {
-	int i,t_rows,t_cols, length,j;
+	int i;
 	int other = player*(-1); 
 
 	if (game_state[rows*REVERSI_ROWS+cols]!=0)
@@ -445,11 +445,10 @@ int rv_is_victory(int* game_state)
 	return -2;
 }
 
-int rv_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state,int player)
+int rv_handle_mouse_button_down (SDL_Event *event, int* game_state,int player)
 {
 	int x=0,y=0;
 	int succes;
-	element_cntrl elem=NULL;
 	x=event->button.x;
 	y=event->button.y;
 

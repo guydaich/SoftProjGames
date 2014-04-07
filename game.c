@@ -34,8 +34,6 @@ int main( int argc, char* args[] )
 	element_cntrl ui_tree=NULL,pressed_Button=NULL; 
 	game *cur_game=NULL;
 	SDL_Event test_event; 
-	int victory_state = 0;
-	int move_success = 0;
 	int pause=0;
 
 	gui_init();
@@ -78,7 +76,7 @@ int main( int argc, char* args[] )
 	return 0;
 }
 
-element_cntrl get_default_ui_tree(game *cur_game)
+element_cntrl get_default_ui_tree()
 {
 	element_cntrl root;
 	control* temp_control;
@@ -182,7 +180,7 @@ element_cntrl game_init(game **cur_game,int mainORLoad)
 	if (*cur_game==NULL){
 		return NULL;
 	}
-	ui_tree = get_default_ui_tree((*cur_game));
+	ui_tree = get_default_ui_tree();
 	return draw_game(*cur_game,ui_tree);
 }
 

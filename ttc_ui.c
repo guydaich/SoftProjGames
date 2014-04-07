@@ -142,9 +142,7 @@ void color_ttc(int* game_state,int player,element_cntrl ui_tree){
  * locates the relevant TTC image, and creates 
  * a striked child underneath*/
 void set_victory_control(int i,int j,element_cntrl game_panel,int player){
-	element_cntrl ttc_button,temp;
-	control *ttc_button_victory;
-	linked_list_cntrl list;
+	element_cntrl ttc_button;
 	int k;
 
 	/* TTC pieces in ui tree */

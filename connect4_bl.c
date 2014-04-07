@@ -260,7 +260,7 @@ int add_to_children_list_C4(linked_list list, int* game_state, int row, int col,
 	moved = copy_and_make_move_C4(game_state,0,move - 1, player);
 		 if (moved == NULL){
 			 //parent is stil "normal". remove him and get a normal tree
-			 remove_tree(mainRoot,1);
+			 remove_tree(mainRoot,1,1);
 			 return -1;
 		 }
 		// create new node
@@ -268,7 +268,7 @@ int add_to_children_list_C4(linked_list list, int* game_state, int row, int col,
 		if (node_mv == NULL){
 			free(moved);
 			//parent is stil "normal". remove him and get a normal tree
-			remove_tree(mainRoot,1);
+			remove_tree(mainRoot,1,1);
 			return -1;
 		}
 		new_elem_mv = new_element();
@@ -277,7 +277,7 @@ int add_to_children_list_C4(linked_list list, int* game_state, int row, int col,
 			free(node_mv->edges);
 			free(node_mv);
 			//parent is stil "normal". remove him and get a normal tree
-			remove_tree(mainRoot,1);
+			remove_tree(mainRoot,1,1);
 			return -1;
 		}
 		new_elem_mv->node = node_mv;
@@ -325,15 +325,13 @@ int is_victory_C4(int* game_state)
 	return 0;
 }
 
-int C4_handle_mouse_button_down (SDL_Event *event,element_cntrl root, int* game_state, int player)
+int C4_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 {
 	int x=0,y=0;
 	int comp_move,succes;
-	element_cntrl elem=NULL;
 	x=event->button.x;
 	y=event->button.y;
 	/* elem get's the elemnt to update (grid slot) */
-	find_element_by_coordinates(root,x,y,&elem);
 
 	if(is_game_over_C4(game_state))
 	{

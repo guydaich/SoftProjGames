@@ -127,7 +127,7 @@ void  makeMove(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* tes
 	if (*choice==1){
 		return;
 	}
-	move_success = (*cur_game)->handle_mouse_button_down(test_event, (*ui_tree), (*cur_game)->board, (*cur_game)->cur_player);		
+	move_success = (*cur_game)->handle_mouse_button_down(test_event, (*cur_game)->board, (*cur_game)->cur_player);		
 	if (!move_success)
 		return; 
 	//(*ui_tree)=draw_game( (*cur_game),(*ui_tree));

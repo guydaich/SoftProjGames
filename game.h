@@ -31,7 +31,7 @@
 
 
 int SDL_Init(Uint32 flags);
-element_cntrl get_default_ui_tree(game *cur_game);
+element_cntrl get_default_ui_tree();
 element_cntrl mainMenuWindow();
 game* runWindow(int mainORLoad,game** prevGame);
 element_cntrl game_init(game **cur_game,int mainORLoad);
