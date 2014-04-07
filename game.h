@@ -20,6 +20,9 @@
 #define AI_2 "Human Vs AI"
 #define AI_3 "AI Vs Human"
 #define AI_4 "Human Vs Human"
+#define YES "yes"
+#define NO "no"
+#define OK "ok"
 
 #define AI_SIGN 6
 #define START_SIGN 5
@@ -28,6 +31,8 @@
 #define LOAD_SIGN 2
 #define MAIN_SIGN 1
 
+#define OK_SIGN 2
+#define OVERWRITE_SIGN 1
 
 int SDL_Init(Uint32 flags);
 void get_default_ui_tree();
@@ -39,6 +44,9 @@ element_cntrl startWindow();
 void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise);
 element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart);
 void addNewControlToList(control* control,linked_list_cntrl fathersList);
-char** initialazeChoiseWindow(void (**pressedButton)(int *quit,void* test_event),int *iterationNum,int flag);
+char** initialazeChoiseWindow(void (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,int flag);
 void newImage(linked_list_cntrl fathersList,int x,int y,char* caption);
+int askWindow(char *qustion,int flag);
+void qustionORtext(int flag);
+
 

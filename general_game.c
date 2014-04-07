@@ -110,10 +110,20 @@ void  goToMainMenu(int *choice,SDL_Event* test_event)
 
 void  saveGame(int *choice,SDL_Event* test_event)
 {
+	int onTopOf,userAnswer,error;
 	char* fileLocation=(char *)malloc(36);
-	sprintf(fileLocation,"C:/Users/David/Documents/load%d.txt",*choice);
-	save_game_to_file(fileLocation,cur_game->board,cur_game->cur_player,
+	sprintf(fileLocation,"C:/Users/davidl/Documents/gameSavings/load%d.txt",*choice);
+	onTopOf=saveGameinFile(fileLocation,cur_game->board,cur_game->cur_player,
 						cur_game->cols,cur_game->rows,(cur_game->get_name()));
+	if(onTopOf==1){
+		//TODO:
+		freeControlList(ui_tree);
+		userAnswer=askWindow("the file already exsist.do you want to continue?",OVERWRITE_SIGN);
+		if (userAnswer==1){
+			error=write_game_to_file(fileLocation,cur_game->board,cur_game->cur_player,
+						cur_game->cols,cur_game->rows,(cur_game->get_name()));
+		}
+	}
 }
 
 void  makeMove(int *choice,SDL_Event* test_event)
@@ -198,12 +208,19 @@ void  runStartManu(int *choice,SDL_Event* test_event)
 
 void  loadGame(int *choice,SDL_Event* test_event)
 {
-int whichGame;
+	int whichGame,error;
 	int *gameBoard; 
 	char* fileLocation=(char *)malloc(36);
-	sprintf(fileLocation,"C:/Users/David/Documents/load%d.txt",*choice);
-	gameBoard=load_game_from_file(fileLocation,&whichGame);
-	free(fileLocation);
+	sprintf(fileLocation,"C:/Users/davidl/Documents/gameSavings/load%d.txt",*choice);
+	error=load_game_from_file(fileLocation,&whichGame,&gameBoard);
+	if (error==-2){
+		askWindow("the game is either corrupt or non-exsistant",OK_SIGN);
+		return;//TODO:what now?
+	}
+	if (error==-1){
+		//TODO:exit program
+	}
+	//free(fileLocation);
 	cur_game=new_game(whichGame);
 	cur_game->board=gameBoard;
 }

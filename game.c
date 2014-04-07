@@ -120,10 +120,10 @@ void get_default_ui_tree()
 
 //run window in which a game is chosen
 void runWindow(int mainORLoad){
-	element_cntrl ui_tree,pressed_Button=NULL;
+	element_cntrl pressed_Button=NULL;
 	int whichGame,iterationNum=1;
 	SDL_Event test_event; 
-	void (*buttonAction)(int *choise,void* test_event)=emptryButton;
+	void (*buttonAction)(int *choise,SDL_Event* test_event)=emptryButton;
 	char** captionArray;
 
 	if (mainORLoad==START_SIGN){
@@ -160,7 +160,7 @@ void runWindow(int mainORLoad){
 			 else {
 				 pressed_Button->cntrl->pressedButton(&whichGame,&test_event);
 			 }
-			 freeControlList(ui_tree);
+			 //freeControlList(ui_tree);
 			 return ;
 			 break;
 		 default: //unhandled event
@@ -168,7 +168,7 @@ void runWindow(int mainORLoad){
 		 }
 	}
 	}
-	freeControlList(ui_tree);
+	//freeControlList(ui_tree);
 }
 
 //go to main menu,choose game and initiate ui_tree
@@ -274,7 +274,7 @@ void addNewControlToList(control* control,linked_list_cntrl fathersList){
 	add_control_element_to_list(fathersList,temp_elem);
 }
 
-char** initialazeChoiseWindow(void (**pressedButton)(int *quit,void* test_event),int *iterationNum,int flag){
+char** initialazeChoiseWindow(void (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,int flag){
 	char** captionArray;
 	char* buttonName;
 	int i;
@@ -336,4 +336,72 @@ char** initialazeChoiseWindow(void (**pressedButton)(int *quit,void* test_event)
 		}
 	}
 	return captionArray;
+}
+
+int askWindow(char *qustion,int flag){
+	element_cntrl pressed_Button=NULL;
+	int whichGame;
+	SDL_Event test_event;
+
+	element_cntrl root;
+	control* temp_control;
+	linked_list_cntrl list; 
+
+	root = new_control_element(new_window(0,0,500,250));
+	/*create panel children*/	
+	list = new_control_list();
+
+	/*button panel*/
+	temp_control = new_panel(0,0,500,250,255,255,255,1);
+	addNewControlToList(temp_control,list);
+
+	//label - paint first
+	temp_control = new_label(0,0,500,250,"./gfx/textArea.bmp",255,0,255,1,qustion);
+	addNewControlToList(temp_control,list);
+
+	set_list_as_children(list,root);
+	ui_tree=root;
+	qustionORtext(flag);
+
+
+	draw_ui_tree(ui_tree);
+	SDL_Flip( ui_tree->cntrl->srfc );
+
+	while(!quit)
+    {
+	while(SDL_PollEvent(&test_event)) {
+		if(test_event.type == SDL_QUIT){
+			quit=1;
+			//freeControlList(ui_tree);
+			break;
+		}
+		switch(test_event.type) {
+		 case SDL_MOUSEBUTTONDOWN:
+			 find_element_by_coordinates(ui_tree,test_event.button.x,test_event.button.y,&pressed_Button);
+			 if(pressed_Button==NULL)
+			 {
+				 break;
+			 }
+			 whichGame=pressed_Button->cntrl->buttonChoise;
+			 return whichGame;
+		}
+	}
+	}
+	return -1;
+}
+
+void qustionORtext(int flag){
+	linked_list_cntrl list;
+
+	//panel children
+	list = new_control_list();
+	if(flag==OVERWRITE_SIGN){
+		newButtonGeneric(list,170,20,YES,emptryButton,1);
+		newButtonGeneric(list,170,190,NO,emptryButton,0);
+	}
+	else if(flag==OK_SIGN){
+		newButtonGeneric(list,170,190,OK,emptryButton,0);
+	}
+
+	set_list_as_children(list,ui_tree->children->tail);
 }
