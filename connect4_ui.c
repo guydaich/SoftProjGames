@@ -1,6 +1,6 @@
 #include "connect4_ui.h"
 
-element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event))
+element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event))
 {
 	control *C4_grid;
 	control *C4_button;

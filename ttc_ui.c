@@ -2,7 +2,7 @@
 # include "controls.h"
 
 
-element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event))
+element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event))
 { 
 	control *ttc_grid;
 	control *ttc_button;

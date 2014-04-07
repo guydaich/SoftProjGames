@@ -1,7 +1,5 @@
 #include "controls.h"
 
-element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event));
-
 #define REVERSI_ROWS 8 
 #define REVERSI_COLS 8
 #define REVERSI_NO_PLAYER 0
@@ -18,3 +16,5 @@ element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(void* cur_game
 #define RVR_GRIDPATH "./gfx/reversi_board.bmp"
 #define RVR_BTN_WHITE_PATH "./gfx/reversi_piece_white.bmp"
 #define RVR_BTN_BLACK_PATH "./gfx/reversi_piece_black.bmp"
+
+element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event));

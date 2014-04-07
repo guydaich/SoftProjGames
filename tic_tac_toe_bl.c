@@ -127,11 +127,11 @@ int ttc_add_to_children_list(linked_list list, int* game_state, int row, int col
  the winning moves will bubble up*/
 int ttc_get_state_score(int* game_state,int player)
 {
-	if (ttc_is_victory(game_state, 1))
+	if (ttc_is_victory(game_state)==1)
 	{
 		return INT_MAX;
 	}
-	else if (ttc_is_victory(game_state, (-1)))
+	else if (ttc_is_victory(game_state)==-1)
 	{
 		return INT_MIN;
 	}
@@ -168,8 +168,8 @@ int ttc_make_move(int* game_state, int row, int col, int player)
 
 int ttc_is_game_over(int* game_state)
 {
-	if (ttc_is_victory(game_state, TTC_PLAYER_1) ||
-		ttc_is_victory(game_state, TTC_PLAYER_2) ||
+	if (ttc_is_victory(game_state)==-1 ||
+		ttc_is_victory(game_state)==1 ||
 		ttc_is_board_full(game_state))
 			return 1;
 	return 0;
@@ -192,7 +192,13 @@ int ttc_is_board_full(int* game_state)
 	return 1;
 }
 /* checks if there is a victory in passed game state */
-int ttc_is_victory(int* game_state, int player)
+int ttc_is_victory(int* game_state){
+	if (ttc_is_victory_player(game_state,1)) return 1;
+	if (ttc_is_victory_player(game_state,-1)) return -1;
+	return 0;
+}
+
+int ttc_is_victory_player(int* game_state, int player)
 {
 	int i,j,flag; 
 	/* check lines */	

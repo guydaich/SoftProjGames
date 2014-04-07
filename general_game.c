@@ -10,6 +10,8 @@
 int gameNum=0;
 
 extern int quit;
+extern game* cur_game;
+extern element_cntrl ui_tree;
 
 /* inits a new game */
 game* new_game(int game_id)
@@ -85,133 +87,116 @@ return new_game_obj;
 
 }
 
-void  restartGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  restartGame(int *choice,SDL_Event* test_event)
 {
-	(*cur_game)->board=(*cur_game)->get_initial_state();
-	(*cur_game)->cur_player=1;
-	if ((*cur_game)->is_multiplayer==3){
+	cur_game->board=cur_game->get_initial_state();
+	cur_game->cur_player=1;
+	if (cur_game->is_multiplayer==3){
 		*choice=1;
 	}
-	(*ui_tree)=draw_game(*cur_game,*ui_tree);
+	draw_game();
 }
 
-void  quitGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  quitGame(int *choice,SDL_Event* test_event)
 {
 	quit=1;
 }
 
-void  goToMainMenu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  goToMainMenu(int *choice,SDL_Event* test_event)
 {
-	freeControlList(*ui_tree);
-	if ((*cur_game)!=NULL)
-	{
-		free((*cur_game));
-		gameNum--;
-	}
-	(*cur_game)=runWindow(MAIN_SIGN,cur_game);
-	(*ui_tree)=NULL;
+	freeControlList(ui_tree);
+	runWindow(MAIN_SIGN);
 }
 
-void  saveGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  saveGame(int *choice,SDL_Event* test_event)
 {
 	char* fileLocation=(char *)malloc(36);
 	sprintf(fileLocation,"C:/Users/David/Documents/load%d.txt",*choice);
-	save_game_to_file(fileLocation,(*cur_game)->board,(*cur_game)->cur_player,
-						(*cur_game)->cols,(*cur_game)->rows,((*cur_game)->get_name()));
+	save_game_to_file(fileLocation,cur_game->board,cur_game->cur_player,
+						cur_game->cols,cur_game->rows,(cur_game->get_name()));
 }
 
-void  makeMove(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  makeMove(int *choice,SDL_Event* test_event)
 {
 	element_cntrl temp_elem;
 	int move_success = 0;
 	if (*choice==1){
 		return;
 	}
-	move_success = (*cur_game)->handle_mouse_button_down(test_event, (*cur_game)->board, (*cur_game)->cur_player);		
+	move_success = cur_game->handle_mouse_button_down(test_event, cur_game->board, cur_game->cur_player);		
 	if (!move_success)
 		return; 
-	//(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
+	//ui_tree=draw_game( cur_game,ui_tree);
 	//SDL_Delay( 1000 );
-	(*cur_game)->cur_player = (-1)*(*cur_game)->cur_player;
-	if ( !(*cur_game)->is_game_over( (*cur_game)->board)){
-		if ((*cur_game)->is_multiplayer==2 || (*cur_game)->is_multiplayer==3){// playing against computer
-			(*cur_game)->handle_computer_move( (*cur_game)->board,(*cur_game)->difficulty,(*cur_game)->cur_player);
-			(*cur_game)->cur_player = (-1)*  (*cur_game)->cur_player;
+	cur_game->cur_player = (-1)*cur_game->cur_player;
+	if ( !cur_game->is_game_over( cur_game->board)){
+		if (cur_game->is_multiplayer==2 || cur_game->is_multiplayer==3){// playing against computer
+			cur_game->handle_computer_move( cur_game->board,cur_game->difficulty,cur_game->cur_player);
+			cur_game->cur_player = (-1)*  cur_game->cur_player;
 		}	
 	}
-	(*ui_tree)=draw_game( (*cur_game),(*ui_tree));
+	draw_game();
 
-	if ( (*cur_game)->is_game_over( (*cur_game)->board)){
-		if ((*cur_game)->is_victory( (*cur_game)->board,1) == 1){
-			(*cur_game)->victoryColor((*cur_game)->board,1,*ui_tree);
-			//color_ttc((*cur_game)->board,1,*ui_tree);
+	if ( cur_game->is_game_over( cur_game->board)){
+		if (cur_game->is_victory( cur_game->board) == 1){
+			cur_game->victoryColor(cur_game->board,1,ui_tree);
+			//color_ttc(cur_game->board,1,*ui_tree);
 		}
-		else if ((*cur_game)->is_victory( (*cur_game)->board,-1) == 1){
-			(*cur_game)->victoryColor((*cur_game)->board,-1,*ui_tree);
-			//color_ttc((*cur_game)->board,-1,*ui_tree);
+		else if (cur_game->is_victory( cur_game->board) == -1){
+			cur_game->victoryColor(cur_game->board,-1,ui_tree);
+			//color_ttc(cur_game->board,-1,*ui_tree);
 		}
 		else
 		{
-			newButtonGeneric((*ui_tree)->children,300,480,"draw",restartGame,0);
-			(*ui_tree)->children->tail->parent=(*ui_tree);//temp_elem->parent=(*ui_tree);
-			temp_elem=(*ui_tree)->children->tail;
+			newButtonGeneric(ui_tree->children,300,480,"draw",restartGame,0);
+			ui_tree->children->tail->parent=ui_tree;//temp_elem->parent=ui_tree;
+			temp_elem=ui_tree->children->tail;
 		}
 		//TODO: handle game over
-		draw_ui_tree((*ui_tree));
-		SDL_Flip((*ui_tree)->cntrl->srfc);
+		draw_ui_tree(ui_tree);
+		SDL_Flip(ui_tree->cntrl->srfc);
 	}
 	return;
 }
 
-void  setDifficalty(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  setDifficalty(int *choice,SDL_Event* test_event)
 {
-	(*cur_game)->difficulty=((*cur_game)->get_difficulty_levels())[*choice-1];
+	cur_game->difficulty=(cur_game->get_difficulty_levels())[*choice-1];
 }
 
-void  setmultiplayer(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  setmultiplayer(int *choice,SDL_Event* test_event)
 {
-	(*cur_game)->is_multiplayer=*choice;
+	cur_game->is_multiplayer=*choice;
 }
 
-void  chooseGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  chooseGame(int *choice,SDL_Event* test_event)
 {
-	(*cur_game)=new_game(*choice);
-	(*cur_game)->board=(*cur_game)->get_initial_state();
+	cur_game=new_game(*choice);
+	cur_game->board=cur_game->get_initial_state();
 
 }
 
-void  runLoadManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  runLoadManu(int *choice,SDL_Event* test_event)
 {
-	freeControlList(*ui_tree);
-	if ((*cur_game)!=NULL)
-	{
-		free((*cur_game));
-		gameNum--;
-	}
-	(*cur_game)=runWindow(LOAD_SIGN,cur_game);
-	(*ui_tree)=NULL;//important
+	freeControlList(ui_tree);
+	runWindow(LOAD_SIGN);
 }
 
-void  runStartManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  runStartManu(int *choice,SDL_Event* test_event)
 {
-	freeControlList(*ui_tree);
-	if ((*cur_game)!=NULL)
-	{
-		free((*cur_game));
-		gameNum--;
-	}
-	(*cur_game)=runWindow(START_SIGN,cur_game);
-	(*cur_game)=runWindow(AI_SIGN,cur_game);
-	if (*cur_game==NULL){
+	freeControlList(ui_tree);
+	runWindow(START_SIGN);
+	runWindow(AI_SIGN);
+	if (cur_game==NULL){
 		return;
 	}
-	if ((*cur_game)->is_multiplayer==1 || (*cur_game)->is_multiplayer==3){
+	if (cur_game->is_multiplayer==1 || cur_game->is_multiplayer==3){
 		*choice=1;
 	}
-	(*ui_tree)=game_init(cur_game,DIFF_SIGN);//important
+	game_init(DIFF_SIGN);//important
 }
 
-void  loadGame(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  loadGame(int *choice,SDL_Event* test_event)
 {
 int whichGame;
 	int *gameBoard; 
@@ -219,27 +204,27 @@ int whichGame;
 	sprintf(fileLocation,"C:/Users/David/Documents/load%d.txt",*choice);
 	gameBoard=load_game_from_file(fileLocation,&whichGame);
 	free(fileLocation);
-	(*cur_game)=new_game(whichGame);
-	(*cur_game)->board=gameBoard;
+	cur_game=new_game(whichGame);
+	cur_game->board=gameBoard;
 }
 
-void  runsaveManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  runsaveManu(int *choice,SDL_Event* test_event)
 {
-	freeControlList(*ui_tree);
-	(*ui_tree)=game_init(cur_game,SAVE_SIGN);
+	freeControlList(ui_tree);
+	game_init(SAVE_SIGN);
 }
 
-void  runDiffManu(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void  runDiffManu(int *choice,SDL_Event* test_event)
 {
-	freeControlList(*ui_tree);
-	(*ui_tree)=game_init(cur_game,DIFF_SIGN);
+	freeControlList(ui_tree);
+	game_init(DIFF_SIGN);
 }
 
-void  setUnpause(game** cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event){
+void  setUnpause(int *choice,SDL_Event* test_event){
 	*choice=!(*choice);// form 1 to 0 and 0 to 1
-	if ((*cur_game)->is_multiplayer==3 && (*cur_game)->cur_player==1){
-		(*cur_game)->handle_computer_move((*cur_game)->board,(*cur_game)->difficulty,(*cur_game)->cur_player);
-		(*cur_game)->cur_player = (-1)*(*cur_game)->cur_player;
+	if (cur_game->is_multiplayer==3 && cur_game->cur_player==1){
+		cur_game->handle_computer_move(cur_game->board,cur_game->difficulty,cur_game->cur_player);
+		cur_game->cur_player = (-1)*(cur_game->cur_player);
 	}
-	(*ui_tree)=draw_game(*cur_game,*ui_tree);
+	draw_game();
 }

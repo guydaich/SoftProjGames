@@ -1,6 +1,6 @@
 #include "reversi_ui.h"
 
-element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event))
+element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event))
 {
 	control *rv_grid;
 	control *rv_button;

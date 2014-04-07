@@ -1,7 +1,6 @@
 #include <SDL.h>
 #include <SDL_video.h>
 #include "general_game.h"
-#include "controls.h"
 #include "save_game.h"
 
 #define RESTART "Rsestart"
@@ -31,15 +30,15 @@
 
 
 int SDL_Init(Uint32 flags);
-element_cntrl get_default_ui_tree();
+void get_default_ui_tree();
 element_cntrl mainMenuWindow();
-game* runWindow(int mainORLoad,game** prevGame);
-element_cntrl game_init(game **cur_game,int mainORLoad);
-element_cntrl draw_game (game *cur_game,element_cntrl prev_ui_tree);
+void runWindow(int mainORLoad);
+void game_init(int mainORLoad);
+void draw_game ();
 element_cntrl startWindow();
-void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int buttonChoise);
-element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event),char** captionStart);
+void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise);
+element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart);
 void addNewControlToList(control* control,linked_list_cntrl fathersList);
-char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int *iterationNum,game **prevGame,int flag);
+char** initialazeChoiseWindow(void (**pressedButton)(int *quit,void* test_event),int *iterationNum,int flag);
 void newImage(linked_list_cntrl fathersList,int x,int y,char* caption);
 

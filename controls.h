@@ -39,7 +39,7 @@ typedef struct _control{
 	SDL_Surface *srfc;
 	SDL_Surface *ownSurface;
 	SDL_Surface *text_surface;
-	void (*pressedButton)(void* cur_game,void* ui_tree,int *choise,void* test_event);
+	void (*pressedButton)(int *choise,void* test_event);
 	int buttonChoise;
 	/*if is grid - when pressed, will act like a lowest-level button*/
 	int is_grid; 
@@ -84,7 +84,7 @@ void draw_ui_tree(element_cntrl root);
 void draw_button(control *button, control *container);
 void draw_label(control *label, control *container);
 void draw_window(control* window);
-void draw_panel(control* panel);
+void draw_panel(control* panel, control *container);
 control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption);
 control* new_button(int x, int y, char *img, int is_trans,char *caption, int is_grid);
 control* new_window(int x, int y, int w, int h);
@@ -93,6 +93,6 @@ void free_control(control *cntrl);
 
 void clear_game_panel(element_cntrl ui_tree);
 void freeControlList(element_cntrl node);
-void emptryButton(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event);
+void emptryButton(int *quit,SDL_Event* test_event);
 #endif
 

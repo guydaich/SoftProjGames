@@ -319,8 +319,11 @@ int is_game_over_C4(int* game_state)
 int is_victory_C4(int* game_state)
 {
 	int score=get_state_score_C4(game_state,0);
-	if (score==INT_MAX || score==INT_MIN){
+	if (score==INT_MAX ){
 		return 1;
+	}
+	if (score==INT_MIN){
+		return -1;
 	}
 	return 0;
 }
@@ -328,7 +331,7 @@ int is_victory_C4(int* game_state)
 int C4_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 {
 	int x=0,y=0;
-	int comp_move,succes;
+	int succes;
 	x=event->button.x;
 	y=event->button.y;
 	/* elem get's the elemnt to update (grid slot) */

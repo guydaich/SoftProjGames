@@ -414,14 +414,11 @@ control* new_window(int x, int y, int w, int h)
 /* drawing function*/
 void draw_button(control *button, control *container)
 {
-	SDL_Surface *surface;
-
 	handle_control_surface_load(button,container);
 
 	/* Blit */
 	if (SDL_BlitSurface(button->ownSurface,NULL, container->srfc, button->destination_rect) != 0){
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-		SDL_FreeSurface(surface);
 	}
 	
 	/*add caption*/
@@ -435,14 +432,11 @@ void draw_button(control *button, control *container)
 
 void draw_label(control *label, control *container)
 {
-	SDL_Surface *surface;
-
 	handle_control_surface_load(label,container);
 	
 	if (SDL_BlitSurface(label->ownSurface,NULL, container->srfc, label->destination_rect) != 0)
 	{
 		printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-		SDL_FreeSurface(surface);
 	}
 
 	if (label->caption != NULL)
@@ -469,7 +463,6 @@ void draw_window(control* window)
 /*add this functionality to window as well. use it to paiunt background in white*/
 void draw_panel(control* panel, control *container)
 {
-	SDL_Surface *surface;
 	char *err; 
 
 	handle_control_surface_load(panel,container);
@@ -482,7 +475,6 @@ void draw_panel(control* panel, control *container)
 		{
 			err=SDL_GetError();
 			printf("ERROR: failed to blit image: %s\n", SDL_GetError());
-			SDL_FreeSurface(surface);
 		}
 	}
 }
@@ -625,7 +617,7 @@ void freeControlList(element_cntrl node)
 
 }
 
-void emptryButton(void* cur_game,element_cntrl* ui_tree,int *choice,SDL_Event* test_event)
+void emptryButton(int *choice,SDL_Event* test_event)
 {
 	return;
 }

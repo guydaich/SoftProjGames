@@ -1,7 +1,5 @@
 #include "controls.h"
 
-element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event));
-
 #define CONNECT4_ROWS 6 
 #define CONNECT4_COLS 7
 #define CONNECT4_PLAYER_1 1
@@ -17,4 +15,6 @@ element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(void* cur_game
 #define C4_GRIDPATH "./gfx/C4board.bmp"
 #define C4_BTN_RED_PATH "./gfx/redC4.bmp"
 #define C4_BTN_BLUE_PATH "./gfx/blueC4.bmp"
+
+element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event));
 

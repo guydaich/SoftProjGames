@@ -12,6 +12,10 @@ extern int windowNum;
 int isTwoComputers=0;
 
 
+game* cur_game=NULL;
+element_cntrl ui_tree=NULL;
+
+
 int gui_init()
 {
 	
@@ -31,13 +35,12 @@ int gui_init()
 
 int main( int argc, char* args[] )
 {
-	element_cntrl ui_tree=NULL,pressed_Button=NULL; 
-	game *cur_game=NULL;
+	element_cntrl pressed_Button=NULL; 
 	SDL_Event test_event; 
 	int pause=0;
 
 	gui_init();
-	runStartManu(&cur_game,&ui_tree,&pause,&test_event);
+	runStartManu(&pause,&test_event);
 
 	while(!quit)
     {
@@ -53,7 +56,7 @@ int main( int argc, char* args[] )
 				{
 					 break;
 				}
-				pressed_Button->cntrl->pressedButton(&cur_game,&ui_tree,&pause,&test_event);
+				pressed_Button->cntrl->pressedButton(&pause,&test_event);
 				break;
 			default: //unhandled event
 				break;
@@ -61,7 +64,7 @@ int main( int argc, char* args[] )
 			if (cur_game!=NULL && cur_game->is_multiplayer==1 && pause==0){
 				cur_game->handle_computer_move(cur_game->board,cur_game->difficulty,cur_game->cur_player);
 				(cur_game)->cur_player = (-1)*(cur_game)->cur_player;
-				(ui_tree)=draw_game(cur_game,ui_tree);
+				draw_game();
 				pause=1;
 			}
 		}
@@ -76,7 +79,7 @@ int main( int argc, char* args[] )
 	return 0;
 }
 
-element_cntrl get_default_ui_tree()
+void get_default_ui_tree()
 {
 	element_cntrl root;
 	control* temp_control;
@@ -112,23 +115,22 @@ element_cntrl get_default_ui_tree()
 	newButtonGeneric(list,25,520,QUIT,quitGame,0);	
 	/* set buttons as panel children*/
 	set_list_as_children(list,root->children->head);
-	return root;
+	ui_tree=root;
 }
 
 //run window in which a game is chosen
-game* runWindow(int mainORLoad,game** prevGame){
+void runWindow(int mainORLoad){
 	element_cntrl ui_tree,pressed_Button=NULL;
 	int whichGame,iterationNum=1;
 	SDL_Event test_event; 
-	game *newGame=NULL;
-	void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event)=emptryButton;
+	void (*buttonAction)(int *choise,void* test_event)=emptryButton;
 	char** captionArray;
 
 	if (mainORLoad==START_SIGN){
 		ui_tree=startWindow();
 	}
 	else {
-		captionArray=initialazeChoiseWindow(&buttonAction,&iterationNum,prevGame,mainORLoad);
+		captionArray=initialazeChoiseWindow(&buttonAction,&iterationNum,mainORLoad);
 		ui_tree=choiseWindow(iterationNum,buttonAction,captionArray);
 	}
 	if (!quit){
@@ -153,14 +155,13 @@ game* runWindow(int mainORLoad,game** prevGame){
 			 }
 			 whichGame=pressed_Button->cntrl->buttonChoise;
 			 if (mainORLoad==SAVE_SIGN || mainORLoad==DIFF_SIGN || mainORLoad==AI_SIGN){
-				 pressed_Button->cntrl->pressedButton(prevGame,&ui_tree,&whichGame,&test_event);
-				 newGame=*prevGame;
+				 pressed_Button->cntrl->pressedButton(&whichGame,&test_event);
 			 }
 			 else {
-				 pressed_Button->cntrl->pressedButton(&newGame,&ui_tree,&whichGame,&test_event);
+				 pressed_Button->cntrl->pressedButton(&whichGame,&test_event);
 			 }
 			 freeControlList(ui_tree);
-			 return newGame;
+			 return ;
 			 break;
 		 default: //unhandled event
 			 break;
@@ -168,37 +169,33 @@ game* runWindow(int mainORLoad,game** prevGame){
 	}
 	}
 	freeControlList(ui_tree);
-	return NULL;
 }
 
 //go to main menu,choose game and initiate ui_tree
-element_cntrl game_init(game **cur_game,int mainORLoad)
+void game_init(int mainORLoad)
 {
-	element_cntrl ui_tree;
-
-	*cur_game=runWindow(mainORLoad,cur_game);
-	if (*cur_game==NULL){
-		return NULL;
+	runWindow(mainORLoad);
+	if (cur_game==NULL){
+		return;
 	}
-	ui_tree = get_default_ui_tree();
-	return draw_game(*cur_game,ui_tree);
+	get_default_ui_tree();
+	draw_game();
 }
 
 //draw game and update ui_tree by cur_game
-element_cntrl draw_game (game *cur_game,element_cntrl prev_ui_tree)
+void draw_game ()
 {
 	element_cntrl game_panel;
 
-	clear_game_panel(prev_ui_tree);
+	clear_game_panel(ui_tree);
 	game_panel = (cur_game)->panel_function((cur_game)->board,makeMove);
-	add_control_element_to_list(prev_ui_tree->children,game_panel);
-	game_panel->parent= prev_ui_tree;
-	draw_ui_tree(prev_ui_tree);
-	SDL_Flip( (prev_ui_tree->cntrl->srfc) );
-	return prev_ui_tree;
+	add_control_element_to_list(ui_tree->children,game_panel);
+	game_panel->parent= ui_tree;
+	draw_ui_tree(ui_tree);
+	SDL_Flip( (ui_tree->cntrl->srfc) );
 }
 
-element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(void* cur_game,void* ui_tree,int *choise,void* test_event),char** captionStart){
+element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart){
 	element_cntrl root, temp_elem;
 	control* temp_control;
 	linked_list_cntrl list;
@@ -263,7 +260,7 @@ element_cntrl startWindow(){
 
 }
 
-void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int buttonChoise){
+void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise){
 	control* temp_control;
 	temp_control = new_button(x,y,"./gfx/generic_button.bmp",1,caption,0);
 	temp_control->buttonChoise=buttonChoise;
@@ -277,7 +274,7 @@ void addNewControlToList(control* control,linked_list_cntrl fathersList){
 	add_control_element_to_list(fathersList,temp_elem);
 }
 
-char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tree,int *quit,void* test_event),int *iterationNum,game **prevGame,int flag){
+char** initialazeChoiseWindow(void (**pressedButton)(int *quit,void* test_event),int *iterationNum,int flag){
 	char** captionArray;
 	char* buttonName;
 	int i;
@@ -324,11 +321,11 @@ char** initialazeChoiseWindow(void (**pressedButton)(void* cur_game,void* ui_tre
 		captionArray[3]=(char *)AI_4;
 	}
 	else {
-		if (*prevGame==NULL){
+		if (cur_game==NULL){
 			return NULL;
 		}
 		*pressedButton=setDifficalty;
-		*iterationNum=(*prevGame)->difficulty_num;
+		*iterationNum=cur_game->difficulty_num;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
 		for (i=0;i<*iterationNum;i++){
 			captionArray[i]=(char *)DIFFICALTY;

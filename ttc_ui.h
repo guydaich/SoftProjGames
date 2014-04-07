@@ -17,6 +17,7 @@
 #define TTC_PLAYER_1 1
 #define TTC_PLAYER_2 -1
 
+element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event));
 void set_victory_control(int i,int j,element_cntrl game_panel,int player);
 void color_ttc(int* game_state,int player,element_cntrl ui_tree);
 

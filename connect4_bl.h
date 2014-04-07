@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <limits.h>
 #include "minimax.h"
-#include "controls.h"
 #include "connect4_ui.h"
 
 
@@ -28,8 +27,6 @@ linked_list		get_state_children_C4(int* matrix, int player);
 int				get_state_score_C4(int* game_matrix,int player);
 int*			get_difficulty_levels_C4();
 void			C4_draw_function();
-element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(void* cur_game,element_cntrl* ui_tree,int *quit,SDL_Event* test_event));
-
 void init_col_heights_C4();
 
 int				is_victory_C4(int* game_state);
