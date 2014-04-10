@@ -96,5 +96,8 @@ void free_control(control *cntrl);
 void clear_game_panel(element_cntrl ui_tree);
 void freeControlList(element_cntrl node);
 void emptryButton(int *quit,SDL_Event* test_event);
+
+void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise);
+void addNewControlToList(control* control,linked_list_cntrl fathersList);
 #endif
 

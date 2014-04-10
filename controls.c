@@ -751,4 +751,16 @@ void free_control(control *cntrl)
 
 }
 
+void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise){
+	control* temp_control;
+	temp_control = new_button(x,y,"./gfx/generic_button.bmp",1,caption,0);
+	temp_control->buttonChoise=buttonChoise;
+	temp_control->pressedButton=pressedButton;
+	addNewControlToList(temp_control,fathersList);
+}
 
+void addNewControlToList(control* control,linked_list_cntrl fathersList){
+	element_cntrl temp_elem;
+	temp_elem = new_control_element(control);
+	add_control_element_to_list(fathersList,temp_elem);
+}

@@ -215,7 +215,7 @@ element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(int *choise,SDL
 	list = new_control_list();
 
 	/*label - paint first*/
-	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"this is a long text! it has many line breaks \n hello\n goodbye\n");
+	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
 	temp_elem = new_control_element(temp_control);
 	add_control_element_to_list(list,temp_elem);
 
@@ -260,19 +260,6 @@ element_cntrl startWindow(){
 
 }
 
-void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise){
-	control* temp_control;
-	temp_control = new_button(x,y,"./gfx/generic_button.bmp",1,caption,0);
-	temp_control->buttonChoise=buttonChoise;
-	temp_control->pressedButton=pressedButton;
-	addNewControlToList(temp_control,fathersList);
-}
-
-void addNewControlToList(control* control,linked_list_cntrl fathersList){
-	element_cntrl temp_elem;
-	temp_elem = new_control_element(control);
-	add_control_element_to_list(fathersList,temp_elem);
-}
 
 char** initialazeChoiseWindow(void (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,int flag){
 	char** captionArray;
@@ -357,7 +344,6 @@ int askWindow(char *qustion,int flag){
 
 	//label - paint first
 	temp_control = new_label(0,0,500,250,"./gfx/textArea.bmp",255,0,255,1,qustion);
-	
 	addNewControlToList(temp_control,list);
 
 	set_list_as_children(list,root);

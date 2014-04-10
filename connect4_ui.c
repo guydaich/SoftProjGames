@@ -55,63 +55,43 @@ element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_
 }
 
 
-void c4_handle_victory_ui(int* game_state,int player,element_cntrl ui_tree)
-{
-	int sizesOFLine[8] = { 0 };
-	int weightVector[6] = { -5, -2, -1, 1, 2, 5 };
+void color_c4(int* game_state,int player,element_cntrl ui_tree){
+	element_cntrl gamePanel;
 	int i, j, k, lineScore = 0, totalScore = 0;
-	element_cntrl gamePanel;	
-	int vic_i, vic_j, vic_flag = 0, vic_player;
-	
+
 	gamePanel=ui_tree->children->tail;
 
-	/* check for row victory */
-	for (i = 0; i < CONNECT4_ROWS; i++) 
-	{
-		for (j = 0; j < CONNECT4_COLS - 3; j++) 
-		{
+	//lines in rows calculation
+	for (i = 0; i < CONNECT4_ROWS; i++) {
+		for (j = 0; j < CONNECT4_COLS - 3; j++) {
 			lineScore = 0;
-			/*check next 4*/
-			for (k = 0; k < 4; k++) 
-			{
-				if (game_state[(i)*CONNECT4_COLS + j + k] == CONNECT4_PLAYER_1)
-				{
+			for (k = 0; k < 4; k++) {
+				if (game_state[(i)*CONNECT4_COLS + j + k] == CONNECT4_PLAYER_1){
+					//CONNECT4_COLS and not rows because move next line==move on all colunms of perv
 					lineScore++;
 				}
-				else if (game_state[(i)*CONNECT4_COLS + j + k] == CONNECT4_PLAYER_2)
-				{
+				else if (game_state[(i)*CONNECT4_COLS + j + k] == CONNECT4_PLAYER_2){
 					lineScore--;
 				}
 			}
-
-			/*update line counts*/
-			if (lineScore == 0){
-				continue;
+			if (lineScore == 4){
+				for (k = 0; k < 4; k++){
+					c4_set_victory_control(i,j+k,gamePanel,CONNECT4_PLAYER_1);
+				}
+				return;
 			}
-			else if (lineScore > 0) {
-				sizesOFLine[lineScore + 3]++;
-			}
-			else{
-				sizesOFLine[lineScore + 4]++;
-			}
-		
-			/*color winning move and return*/
-			if ((sizesOFLine[0] > 0 || sizesOFLine[7] > 0))
-			{
-				vic_player = sizesOFLine[0] > 0 ? CONNECT4_PLAYER_2 : CONNECT4_PLAYER_1;
-				for (k=j;k<j+4;k++)
-					c4_set_victory_control(i,k,gamePanel,vic_player);
+			else if (lineScore==-4){
+				for (k = 0; k < 4; k++){
+					c4_set_victory_control(i,j+k,gamePanel,CONNECT4_PLAYER_2);
+				}
 				return;
 			}
 		}
 	}
 
-
 	//lines in clonums calculation
-	for (j = 0; j < CONNECT4_COLS; j++) 
-	{
-		for (i = 0; i < CONNECT4_ROWS - 3; i++) 
-		{
+	for (j = 0; j < CONNECT4_COLS; j++) {
+		for (i = 0; i < CONNECT4_ROWS - 3; i++) {
 			lineScore = 0;
 			for (k = 0; k < 4; k++) {
 				if (game_state[(i + k)*CONNECT4_COLS + j] == CONNECT4_PLAYER_1){//is it really HUMAN????
@@ -121,29 +101,20 @@ void c4_handle_victory_ui(int* game_state,int player,element_cntrl ui_tree)
 					lineScore--;
 				}
 			}
-			if (lineScore == 0){
-				continue;
-			}
-			else if (lineScore > 0) {
-				sizesOFLine[lineScore + 3]++;
-			}
-			else{
-				sizesOFLine[lineScore + 4]++;
-			}
-
-			/*color winning move and return*/
-			if ((sizesOFLine[0] > 0 || sizesOFLine[7] > 0))
-			{
-				vic_player = sizesOFLine[0] > 0 ? CONNECT4_PLAYER_2 : CONNECT4_PLAYER_1;
-				for (k=i;k<i+4;k++)
-					c4_set_victory_control(k,j,gamePanel,vic_player);
+			if (lineScore == 4){
+				for (k = 0; k < 4; k++){
+					c4_set_victory_control(i+k,j,gamePanel,CONNECT4_PLAYER_1);
+				}
 				return;
-
 			}
-
+			else if (lineScore==-4){
+				for (k = 0; k < 4; k++){
+					c4_set_victory_control(i+k,j,gamePanel,CONNECT4_PLAYER_2);
+				}
+				return;
+			}
 		}
 	}
-
 
 	//lines in diaganals calculation
 	for (j = 0; j < CONNECT4_COLS; j++) {
@@ -158,72 +129,47 @@ void c4_handle_victory_ui(int* game_state,int player,element_cntrl ui_tree)
 						lineScore--;
 					}
 				}
-				if (lineScore == 0){
-					continue;
+				if (lineScore == 4){
+					for (k = 0; k < 4; k++){
+						c4_set_victory_control(i+k,j+k,gamePanel,CONNECT4_PLAYER_1);
+					}
+					return;
 				}
-				else if (lineScore > 0) {
-					sizesOFLine[lineScore + 3]++;
-				}
-				else{
-					sizesOFLine[lineScore + 4]++;
-				}
-
-				if ((sizesOFLine[0] > 0 || sizesOFLine[7] > 0))
-				{
-					vic_player = sizesOFLine[0] > 0 ? CONNECT4_PLAYER_2 : CONNECT4_PLAYER_1;
-					for (k=0;k<4;k++)
-						c4_set_victory_control(i+k,j+k,gamePanel,vic_player);
+				else if (lineScore==-4){
+					for (k = 0; k < 4; k++){
+						c4_set_victory_control(i+k,j+k,gamePanel,CONNECT4_PLAYER_2);
+					}
 					return;
 				}
 			}
-
 			lineScore = 0;
-			if (((i - 3) > -1) && ((j + 3) < CONNECT4_COLS))
-			{
-				for (k = 0; k < 4; k++) 
-				{
+			if (((i - 3) > -1) && ((j + 3) < CONNECT4_COLS)){//diganals which go down and right
+				for (k = 0; k < 4; k++) {
 					if (game_state[(i - k)*CONNECT4_COLS + j + k] == CONNECT4_PLAYER_1){
 						lineScore++;
 					}
-					else if (game_state[(i - k)*CONNECT4_COLS + j + k] == CONNECT4_PLAYER_1){
+					else if (game_state[(i - k)*CONNECT4_COLS + j + k] == CONNECT4_PLAYER_2){
 						lineScore--;
 					}
 				}
-
-				if (lineScore == 0){
-					continue;
-				}
-				else if (lineScore > 0) {
-					sizesOFLine[lineScore + 3]++;
-				}
-				else{
-					sizesOFLine[lineScore + 4]++;
-				}
-
-				if ((sizesOFLine[0] > 0 || sizesOFLine[7] > 0))
-				{
-					vic_player = sizesOFLine[0] > 0 ? CONNECT4_PLAYER_2 : CONNECT4_PLAYER_2;
-					for (k=0;k<4;k++)
-						c4_set_victory_control(i-k,j+k,gamePanel,vic_player);
+				if (lineScore == 4){
+					for (k = 0; k < 4; k++){
+						c4_set_victory_control(i-k,j+k,gamePanel,CONNECT4_PLAYER_1);
+					}
 					return;
 				}
-
+				else if (lineScore==-4){
+					for (k = 0; k < 4; k++){
+						c4_set_victory_control(i-k,j+k,gamePanel,CONNECT4_PLAYER_2);
+					}
+					return;
+				}
 			}
 		}
 	}
 
-	if (sizesOFLine[0] > 0){
-		return INT_MIN; //COMPUTER won
-	}
-	if (sizesOFLine[7] > 0){
-		return INT_MAX; //HUMAN won
-	}
-
-	for (i = 1; i < 7; i++){
-		totalScore = totalScore + sizesOFLine[i] * weightVector[i - 1];
-	}
-	return totalScore;
 }
+
 
 
 /* function accepts Connect4 board matrix coordinates, 

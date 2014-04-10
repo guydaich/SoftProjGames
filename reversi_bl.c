@@ -459,6 +459,9 @@ int rv_handle_mouse_button_down (SDL_Event *event, int* game_state,int player)
 	succes=rv_make_move(game_state,(y-RVR_YOFFSET)/RVR_WBTN,(x-RVR_XOFFSET)/RVR_HBTN,player);
 	if(succes==0)
 	{
+		if (rv_player_has_moves(game_state,player)==0){
+			return 2;//pass move to next player
+		}
 		return 0;
 	}
 	return 1;
@@ -467,6 +470,7 @@ int rv_handle_mouse_button_down (SDL_Event *event, int* game_state,int player)
 int rv_handle_computer_turn(int* game_state, int depth,int player)
 {
 	int comp_move;
+	do{
 	if (player==-1){
 		comp_move = get_computer_move(game_state, depth, rv_get_state_children);
 	}
@@ -474,18 +478,33 @@ int rv_handle_computer_turn(int* game_state, int depth,int player)
 		comp_move=get_suggested_move(game_state,depth, rv_get_state_children);
 	}
 	if (!rv_is_valid_move(game_state,player,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS)){
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		comp_move=-1;
 	}
 	rv_make_move(game_state,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS,player);
+	} while (rv_player_has_moves(game_state,player)==0);
 	return 0;
 }
 
 /*check if player can make another move*/
 int rv_player_has_moves(int* game_state, int player)
 {
-	linked_list children = rv_get_state_children(game_state,player);
+	int i,j;
+	/*linked_list children = rv_get_state_children(game_state,player);
 	if (children->head == NULL)
 		return 0; 
-	return 1;
+	return 1;*/
+
+	for (i=0; i < REVERSI_ROWS; i++)
+	{
+		for(j=0; j < REVERSI_COLS; j++)
+		{
+			/*if possible to place piece in this position*/
+			if (rv_is_valid_move(game_state, player,i,j))
+			{
+				/*add move to list*/
+	                        return 1;
+                        }
+		}
+	}
+	return 0;
 }

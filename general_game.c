@@ -74,7 +74,7 @@ game* new_game(int game_id)
 		new_game_obj->is_multiplayer = 0;
 		new_game_obj->is_victory = is_victory_C4;
 		new_game_obj->difficulty_num=7;
-		new_game_obj->victoryColor=c4_handle_victory_ui;
+		new_game_obj->victoryColor=color_c4;
 		break;
 	default:
 		break;
@@ -134,7 +134,7 @@ void  makeMove(int *choice,SDL_Event* test_event)
 		return;
 	}
 	move_success = cur_game->handle_mouse_button_down(test_event, cur_game->board, cur_game->cur_player);		
-	if (!move_success)
+	if (move_success==0)
 		return; 
 	//ui_tree=draw_game( cur_game,ui_tree);
 	//SDL_Delay( 1000 );
@@ -208,11 +208,11 @@ void  runStartManu(int *choice,SDL_Event* test_event)
 
 void  loadGame(int *choice,SDL_Event* test_event)
 {
-	int whichGame,error;
+	int whichGame,error,player;
 	int *gameBoard; 
 	char* fileLocation=(char *)malloc(36);
 	sprintf(fileLocation,"C:/Users/davidl/Documents/gameSavings/load%d.txt",*choice);
-	error=load_game_from_file(fileLocation,&whichGame,&gameBoard);
+	error=load_game_from_file(fileLocation,&whichGame,&gameBoard,&player);
 	if (error==-2){
 		askWindow("the game is either corrupt or non-exsistant",OK_SIGN);
 		return;//TODO:what now?
@@ -223,6 +223,7 @@ void  loadGame(int *choice,SDL_Event* test_event)
 	//free(fileLocation);
 	cur_game=new_game(whichGame);
 	cur_game->board=gameBoard;
+	cur_game->cur_player=player;
 }
 
 void  runsaveManu(int *choice,SDL_Event* test_event)

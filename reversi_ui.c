@@ -1,4 +1,7 @@
 #include "reversi_ui.h"
+#include "controls.h"
+
+int rv_is_victory(int* game_state);
 
 element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event))
 {
@@ -49,4 +52,18 @@ element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_
 	set_list_as_children(list,children_panel);
 
 	return root;
+}
+
+void color_rv(int* game_state,int player,element_cntrl ui_tree){
+	element_cntrl gameUiBoard;
+	int victoriusPlayer;
+
+	gameUiBoard=ui_tree->children->tail->children->head->children->head;
+	victoriusPlayer=rv_is_victory(game_state);
+	if (victoriusPlayer==REVERSI_PLAYER_1){
+		newButtonGeneric(gameUiBoard->children,25,25,"Player 1 won!",emptryButton,0);
+	}
+	else{
+		newButtonGeneric(gameUiBoard->children,25,25,"Player 2 won!",emptryButton,0);
+	}
 }

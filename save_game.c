@@ -39,11 +39,11 @@ int write_game_to_file(char* filename, int *game_state, int player, int cols, in
 	return 0;
 }
 
-int load_game_from_file(char* filename, int* whichGame,int** board){
+int load_game_from_file(char* filename, int* whichGame,int** board,int *player){
 	FILE *file; 
 	char getName[MAX_NAME_SIZE];
 	int *gameBoard;
-	int player,error;
+	int error;
 
 	file = fopen(filename, "r");
 	if (file == NULL)
@@ -52,8 +52,8 @@ int load_game_from_file(char* filename, int* whichGame,int** board){
 	}
 	fscanf(file,"%s",getName);
 	printf("%s\n",getName);
-	fscanf(file,"%d",&player);
-	if (player!=-1 && player!=1){
+	fscanf(file,"%d",player);
+	if (*player!=-1 && *player!=1){
 		return -2;
 	}
 	else if(strcmp(getName,"Connect4")==0){
