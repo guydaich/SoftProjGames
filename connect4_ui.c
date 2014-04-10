@@ -55,7 +55,7 @@ element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_
 }
 
 
-int c4_handle_victory_ui(int* game_state,int player,element_cntrl ui_tree)
+void c4_handle_victory_ui(int* game_state,int player,element_cntrl ui_tree)
 {
 	int sizesOFLine[8] = { 0 };
 	int weightVector[6] = { -5, -2, -1, 1, 2, 5 };

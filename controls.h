@@ -39,6 +39,8 @@ typedef struct _control{
 	SDL_Surface *srfc;
 	SDL_Surface *ownSurface;
 	SDL_Surface *text_surface;
+	SDL_Surface **multitext;
+	int num_texts;
 	void (*pressedButton)(int *choise,SDL_Event* test_event);
 	int buttonChoise;
 	/*if is grid - when pressed, will act like a lowest-level button*/

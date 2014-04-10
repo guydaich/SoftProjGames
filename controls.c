@@ -5,6 +5,8 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
+#define MAX_CAPTION_LINES 5
+
 int controlElementNum=0;
 int buttomNum=0;
 int labelNum=0;
@@ -116,6 +118,21 @@ void get_text_position(SDL_Rect *rect_source, char* text,TTF_Font *font, SDL_Rec
 	rect_dest->y = rect_source->y + (rect_source->h - h)/2;
 }
 
+int get_text_position_multi(SDL_Rect *rect_source, char* text,TTF_Font *font, SDL_Rect *rect_dest,int offset_idx)
+{
+
+	int w,h;
+	if (TTF_SizeText(font,text,&w,&h)) {
+    // perhaps print the current TTF_GetError()
+		return;
+	} 
+	rect_dest->w = w; 
+	rect_dest->h = h; 
+	rect_dest->x = rect_source->x;
+	rect_dest->y = rect_source->y+offset_idx;
+}
+
+
 int is_valid_rect(SDL_Rect *rect)
 {
 	/*basic*/
@@ -136,7 +153,6 @@ void make_rect(SDL_Rect *rect, int h, int w, int x, int y)
 	return; 
 }
 
-/*draws control->caption text to control*/
 void draw_caption_to_control(control *cntrl)
 {
 	char* err; 
@@ -182,6 +198,78 @@ void draw_caption_to_control(control *cntrl)
 	}
 	
 	return; 
+}
+
+
+/*draws control->caption text to control*/
+void draw_caption_to_control_multi(control *cntrl)
+{
+	char* err; 
+	TTF_Font *font;
+	SDL_Surface *surface;
+	SDL_Color text_color = {0, 0, 0};
+	SDL_Rect text_rect = {0,0,0,0};
+	SDL_Rect soure_rect = {0,0,0,0};
+
+	char s[200];
+	char *lines[5];
+	char* token;
+	int i=0;
+	int linecount=0;
+	int prev_x_offset = 0;
+
+
+	if (cntrl->caption == NULL)	
+		return;
+
+	/*make all text Calculations*/
+	
+	//if (!is_valid_rect(&soure_rect))
+	//	return; 
+
+	TTF_Init();
+	
+	if ((font = TTF_OpenFont("arial.ttf", 16)) == NULL) {
+		err=TTF_GetError();
+		return;
+	}
+
+
+	/*tokenize string*/
+	strcpy(s, cntrl->caption);
+	token = strtok(s, "\n");
+	while (token) {
+		lines[linecount] = token;
+		linecount++;
+		token = strtok(NULL, "\n");
+	}
+
+	cntrl->num_texts = linecount;
+	/*if text surface wan't previously loaded*/		
+	for (i=0; i<linecount; i++)
+	{
+			make_rect(&soure_rect, cntrl->h,cntrl->w,cntrl->offsetx,cntrl->offsety);
+			get_text_position_multi(&soure_rect, lines[i], font, &text_rect,prev_x_offset);
+			prev_x_offset = prev_x_offset + text_rect.h;
+
+			/*if this line's text doesn't exist*/
+			if (cntrl->multitext[i] == NULL)
+			{
+				surface = TTF_RenderText_Blended(font, lines[i], text_color);
+				if (surface==NULL){
+					err=TTF_GetError();
+					SDL_FreeSurface(surface);
+					return;
+				}
+			cntrl->multitext[i] = surface; 
+			}
+			/* Blit surface*/
+			if (SDL_BlitSurface(cntrl->multitext[i], NULL, cntrl->srfc, &text_rect) != 0){
+				err=TTF_GetError();
+				return;
+			}
+	}
+	return;
 }
 
 
@@ -282,6 +370,7 @@ void draw_ui_tree(element_cntrl root)
 control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans, char* caption)
 {
 	// allocate button
+	int i;
 	control *label = (control*)malloc(sizeof(control));
 	labelNum++;
 	label->is_button = 0;
@@ -308,7 +397,12 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->is_grid=0;
 	label->is_bg_img =1;
 	label->is_bg_rect =0;
-
+	label->multitext=NULL;
+	label->multitext = (SDL_Surface**)malloc(sizeof(SDL_Surface*)*MAX_CAPTION_LINES);
+	for (i=0; i < MAX_CAPTION_LINES ; i++)
+	{
+		label->multitext[i] = NULL;
+	}
 
 	return label;
 }
@@ -441,7 +535,7 @@ void draw_label(control *label, control *container)
 
 	if (label->caption != NULL)
 	{
-		draw_caption_to_control(label);	
+		draw_caption_to_control_multi(label);	
 	}
 }
 
@@ -560,6 +654,7 @@ void clear_game_panel(element_cntrl ui_tree)
 void freeControlList(element_cntrl node)
 {
 	element_cntrl cur_elem,next_elem;
+	int i;
 
 	if (node == NULL){
 		return;
@@ -586,6 +681,16 @@ void freeControlList(element_cntrl node)
 	if (node->cntrl->destination_rect != NULL){
 		free(node->cntrl->destination_rect);
 	}
+
+	/*frees up texts*/
+	if (node->cntrl->multitext != NULL){
+		for (i=0; i<node->cntrl->num_texts; i++)
+		{
+			if (node->cntrl->multitext[i] != NULL)
+				SDL_FreeSurface(node->cntrl->multitext[i]);
+		}
+	}
+
 
 	if (node->cntrl->is_button==1)
 	{
@@ -645,3 +750,5 @@ void free_control(control *cntrl)
 	}
 
 }
+
+

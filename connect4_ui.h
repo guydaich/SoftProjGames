@@ -19,5 +19,5 @@
 #define C4_BTN_BLUE_VICTORY_PATH "./gfx/blueC4victory.bmp"
 
 element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event));
-int c4_handle_victory_ui(int* game_matrix,int player);
+void c4_handle_victory_ui(int* game_matrix,int player);
 void c4_set_victory_control(int i,int j,element_cntrl game_panel,int player);

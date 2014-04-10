@@ -112,13 +112,13 @@ void  saveGame(int *choice,SDL_Event* test_event)
 {
 	int onTopOf,userAnswer,error;
 	char* fileLocation=(char *)malloc(36);
-	sprintf(fileLocation,"C:/Users/davidl/Documents/gameSavings/load%d.txt",*choice);
+	sprintf(fileLocation,"./save/load%d.txt",*choice);
 	onTopOf=saveGameinFile(fileLocation,cur_game->board,cur_game->cur_player,
 						cur_game->cols,cur_game->rows,(cur_game->get_name()));
 	if(onTopOf==1){
 		//TODO:
 		freeControlList(ui_tree);
-		userAnswer=askWindow("the file already exsist.do you want to continue?",OVERWRITE_SIGN);
+		userAnswer=askWindow("This file already exist.\nDo you wish to overwrite?",OVERWRITE_SIGN);
 		if (userAnswer==1){
 			error=write_game_to_file(fileLocation,cur_game->board,cur_game->cur_player,
 						cur_game->cols,cur_game->rows,(cur_game->get_name()));
