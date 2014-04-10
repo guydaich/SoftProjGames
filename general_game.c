@@ -74,7 +74,7 @@ game* new_game(int game_id)
 		new_game_obj->is_multiplayer = 0;
 		new_game_obj->is_victory = is_victory_C4;
 		new_game_obj->difficulty_num=7;
-		new_game_obj->victoryColor=NULL;
+		new_game_obj->victoryColor=c4_handle_victory_ui;
 		break;
 	default:
 		break;

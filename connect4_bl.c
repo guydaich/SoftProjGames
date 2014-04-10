@@ -6,7 +6,7 @@
 char* Connect4_NAME = "Connect4";
 int* game_matrix;
 int Connect4_diffficulties[] = {1,2,3,4,5,6,7};
-int max_col_heights[GCOLS];
+int max_col_heights[CONNECT4_COLS];
 
 /* adds a piece in top of given Column, for stated player)*/
 void add_piece_to_board_C4(int* game_state,int column, int player)
@@ -14,7 +14,7 @@ void add_piece_to_board_C4(int* game_state,int column, int player)
 	/* set Human piece at top of selected column */
 	max_col_heights[column-1]--;
 	/* update player pieces*/
-	game_state[max_col_heights[column - 1]*GCOLS +column - 1] = player;
+	game_state[max_col_heights[column - 1]*CONNECT4_COLS +column - 1] = player;
 }
 
 
@@ -22,12 +22,12 @@ void add_piece_to_board_C4(int* game_state,int column, int player)
 int *get_initial_state_C4()
 {
 	int i,j = 0;
-	game_matrix=(int *)calloc(GROWS*GCOLS,sizeof(int));
-	for (i =0; i < GROWS ; i++)
+	game_matrix=(int *)calloc(CONNECT4_ROWS*CONNECT4_COLS,sizeof(int));
+	for (i =0; i < CONNECT4_ROWS ; i++)
 	{
-		for (j=0; j< GROWS; j++)
+		for (j=0; j< CONNECT4_ROWS; j++)
 		{
-			(game_matrix)[i*GCOLS+j] = 0; 
+			(game_matrix)[i*CONNECT4_COLS+j] = 0; 
 		}
 	}
 	init_col_heights_C4();
@@ -39,9 +39,9 @@ void init_col_heights_C4()
 {
 int i =0;
 
-for (i=0; i<GCOLS; i++)
+for (i=0; i<CONNECT4_COLS; i++)
 	{
-		max_col_heights[i] = GROWS;
+		max_col_heights[i] = CONNECT4_ROWS;
 	}
 }
 
@@ -50,7 +50,7 @@ int is_board_full_C4()
 {
 int i =0;
 
-for (i=0; i<GCOLS; i++)
+for (i=0; i<CONNECT4_COLS; i++)
 	{
 		/* if exists a non-full column, board not full */
 		if ((max_col_heights[i]) != 0)
@@ -77,22 +77,21 @@ void victory_C4(int winner,int *game_over)
 
 
 // Calculates Scoring for a Board
-int get_state_score_C4(int* game_matrix,int player)	//asume game_matrix=2D array[GROWS][GCOLS]
+int get_state_score_C4(int* game_matrix,int player)
 {
 	int sizesOFLine[8] = { 0 };
 	int weightVector[6] = { -5, -2, -1, 1, 2, 5 };
 	int i, j, k, lineScore = 0, totalScore = 0;
 
 	//lines in rows calculation
-	for (i = 0; i < GROWS; i++) {
-		for (j = 0; j < GCOLS - 3; j++) {
+	for (i = 0; i < CONNECT4_ROWS; i++) {
+		for (j = 0; j < CONNECT4_COLS - 3; j++) {
 			lineScore = 0;
 			for (k = 0; k < 4; k++) {
-				if (game_matrix[(i)*GCOLS + j + k] == HUMAN){
-					//GCOLS and not rows because move next line==move on all colunms of perv
+				if (game_matrix[(i)*CONNECT4_COLS + j + k] == HUMAN){
 					lineScore++;
 				}
-				else if (game_matrix[(i)*GCOLS + j + k] == COMPUTER){
+				else if (game_matrix[(i)*CONNECT4_COLS + j + k] == COMPUTER){
 					lineScore--;
 				}
 			}
@@ -109,14 +108,14 @@ int get_state_score_C4(int* game_matrix,int player)	//asume game_matrix=2D array
 	}
 
 	//lines in clonums calculation
-	for (j = 0; j < GCOLS; j++) {
-		for (i = 0; i < GROWS - 3; i++) {
+	for (j = 0; j < CONNECT4_COLS; j++) {
+		for (i = 0; i < CONNECT4_ROWS - 3; i++) {
 			lineScore = 0;
 			for (k = 0; k < 4; k++) {
-				if (game_matrix[(i + k)*GCOLS + j] == HUMAN){//is it really HUMAN????
+				if (game_matrix[(i + k)*CONNECT4_COLS + j] == HUMAN){
 					lineScore++;
 				}
-				else if (game_matrix[(i + k)*GCOLS + j] == COMPUTER){
+				else if (game_matrix[(i + k)*CONNECT4_COLS + j] == COMPUTER){
 					lineScore--;
 				}
 			}
@@ -133,15 +132,15 @@ int get_state_score_C4(int* game_matrix,int player)	//asume game_matrix=2D array
 	}
 
 	//lines in diaganals calculation
-	for (j = 0; j < GCOLS; j++) {
-		for (i = 0; i < GROWS; i++) {
+	for (j = 0; j < CONNECT4_COLS; j++) {
+		for (i = 0; i < CONNECT4_ROWS; i++) {
 			lineScore = 0;
-			if (((i + 3) < GROWS) && ((j + 3) < GCOLS)){//diganals which go up and right
+			if (((i + 3) < CONNECT4_ROWS) && ((j + 3) < CONNECT4_COLS)){
 				for (k = 0; k < 4; k++) {
-					if (game_matrix[(i + k)*GCOLS + j + k] == HUMAN){
+					if (game_matrix[(i + k)*CONNECT4_COLS + j + k] == HUMAN){
 						lineScore++;
 					}
-					else if (game_matrix[(i + k)*GCOLS + j + k] == COMPUTER){
+					else if (game_matrix[(i + k)*CONNECT4_COLS + j + k] == COMPUTER){
 						lineScore--;
 					}
 				}
@@ -156,12 +155,12 @@ int get_state_score_C4(int* game_matrix,int player)	//asume game_matrix=2D array
 				}
 			}
 			lineScore = 0;
-			if (((i - 3) > -1) && ((j + 3) < GCOLS)){//diganals which go down and right
+			if (((i - 3) > -1) && ((j + 3) < CONNECT4_COLS)){//diganals which go down and right
 				for (k = 0; k < 4; k++) {
-					if (game_matrix[(i - k)*GCOLS + j + k] == HUMAN){
+					if (game_matrix[(i - k)*CONNECT4_COLS + j + k] == HUMAN){
 						lineScore++;
 					}
-					else if (game_matrix[(i - k)*GCOLS + j + k] == COMPUTER){
+					else if (game_matrix[(i - k)*CONNECT4_COLS + j + k] == COMPUTER){
 						lineScore--;
 					}
 				}
@@ -196,7 +195,7 @@ int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player)
 {
 	int i, j;
 	int *new_board_ptr = // allocate new board
-		(int*)calloc(GROWS*GCOLS, sizeof(int));	
+		(int*)calloc(CONNECT4_ROWS*CONNECT4_COLS, sizeof(int));	
 	boardCount++;
 	
 	// handle calloc error
@@ -205,19 +204,19 @@ int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player)
 		perror("Error: standard function calloc has failed");
 		return NULL;
 	}
-	for (i = 0; i < GROWS; i++)		// copy board
+	for (i = 0; i < CONNECT4_ROWS; i++)		// copy board
 	{
-		for (j = 0; j < GCOLS; j++)
+		for (j = 0; j < CONNECT4_COLS; j++)
 		{
-			new_board_ptr[i*GCOLS + j] = (from)[i*GCOLS + j];
+			new_board_ptr[i*CONNECT4_COLS + j] = (from)[i*CONNECT4_COLS + j];
 		}
 	}
 	
-	for (i = GROWS - 1; i >= 0; i--) // find appropriate row for column move
+	for (i = CONNECT4_ROWS - 1; i >= 0; i--) // find appropriate row for column move
 	{
-		if (new_board_ptr[i*GCOLS + move_col] == 0)
+		if (new_board_ptr[i*CONNECT4_COLS + move_col] == 0)
 		{
-			new_board_ptr[i*GCOLS + move_col] = player;
+			new_board_ptr[i*CONNECT4_COLS + move_col] = player;
 			break;
 		}
 	}
@@ -368,11 +367,11 @@ int	C4_handle_computer_turn(int* game_state, int depth, int player)
 int	C4_make_move(int* game_state, int row, int col, int player)
 {
 	int i;
-for (i = GROWS - 1; i >= 0; i--) // find appropriate row for column move
+for (i = CONNECT4_ROWS - 1; i >= 0; i--) // find appropriate row for column move
 	{
-		if (game_state[i*GCOLS + col] == 0)
+		if (game_state[i*CONNECT4_COLS + col] == 0)
 		{
-			game_state[i*GCOLS + col] = player;
+			game_state[i*CONNECT4_COLS + col] = player;
 			return 1;
 		}
 	}

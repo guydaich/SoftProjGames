@@ -34,13 +34,6 @@ struct vertex_s {
 typedef struct  vertex_s * vertex;
 
 
-/*definitions */
-#define COLS 17 // Visual Board sizes
-#define ROWS 8
-
-#define GCOLS 7 // Actual Game Matrix Size
-#define GROWS 6
-
 #define EMPTY 0 // game Matrix Terms
 #define HUMAN 1
 #define COMPUTER -1
