@@ -24,8 +24,6 @@ int				ttc_handle_mouse_button_down (SDL_Event *event, int* game_state,int playe
 int				ttc_handle_computer_turn(int* game_state, int depth,int player);
 int				ttc_is_any_victory(int* game_state);
 int				ttc_player_has_moves(int* game_state);
-
-
 #endif
 
 

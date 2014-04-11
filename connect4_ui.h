@@ -1,3 +1,5 @@
+#ifndef CONNECT_4_UI_H
+#define CONNECT_4_UI_H
 #include "controls.h"
 
 #define CONNECT4_ROWS 6 
@@ -21,3 +23,4 @@
 element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event));
 void color_c4(int* game_state,int player,element_cntrl ui_tree);
 void c4_set_victory_control(int i,int j,element_cntrl game_panel,int player);
+#endif

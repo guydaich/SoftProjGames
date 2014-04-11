@@ -66,4 +66,5 @@ void color_rv(int* game_state,int player,element_cntrl ui_tree){
 	else{
 		newButtonGeneric(gameUiBoard->children,25,25,"Player 2 won!",emptryButton,0);
 	}
+	gameUiBoard->children->tail->parent=gameUiBoard;
 }

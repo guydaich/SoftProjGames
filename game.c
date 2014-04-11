@@ -119,7 +119,7 @@ void get_default_ui_tree()
 }
 
 //run window in which a game is chosen
-void runWindow(int mainORLoad){
+void runWindow(choiseWindowSign mainORLoad){
 	element_cntrl pressed_Button=NULL;
 	int whichGame,iterationNum=1;
 	SDL_Event test_event; 
@@ -154,12 +154,7 @@ void runWindow(int mainORLoad){
 				 break;
 			 }
 			 whichGame=pressed_Button->cntrl->buttonChoise;
-			 if (mainORLoad==SAVE_SIGN || mainORLoad==DIFF_SIGN || mainORLoad==AI_SIGN){
 				 pressed_Button->cntrl->pressedButton(&whichGame,&test_event);
-			 }
-			 else {
-				 pressed_Button->cntrl->pressedButton(&whichGame,&test_event);
-			 }
 			 //freeControlList(ui_tree);
 			 return ;
 			 break;
@@ -172,7 +167,7 @@ void runWindow(int mainORLoad){
 }
 
 //go to main menu,choose game and initiate ui_tree
-void game_init(int mainORLoad)
+void game_init(choiseWindowSign mainORLoad)
 {
 	runWindow(mainORLoad);
 	if (cur_game==NULL){
@@ -261,7 +256,7 @@ element_cntrl startWindow(){
 }
 
 
-char** initialazeChoiseWindow(void (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,int flag){
+char** initialazeChoiseWindow(void (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,choiseWindowSign flag){
 	char** captionArray;
 	char* buttonName;
 	int i;
@@ -325,7 +320,7 @@ char** initialazeChoiseWindow(void (**pressedButton)(int *quit,SDL_Event* test_e
 	return captionArray;
 }
 
-int askWindow(char *qustion,int flag){
+int askWindow(char *qustion,qustionWindowsSgin flag){
 	element_cntrl pressed_Button=NULL;
 	int whichGame;
 	SDL_Event test_event;
@@ -377,7 +372,7 @@ int askWindow(char *qustion,int flag){
 	return -1;
 }
 
-void qustionORtext(int flag){
+void qustionORtext(qustionWindowsSgin flag){
 	linked_list_cntrl list;
 
 	//panel children

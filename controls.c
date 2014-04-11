@@ -124,12 +124,13 @@ int get_text_position_multi(SDL_Rect *rect_source, char* text,TTF_Font *font, SD
 	int w,h;
 	if (TTF_SizeText(font,text,&w,&h)) {
     // perhaps print the current TTF_GetError()
-		return;
+		return -1;
 	} 
 	rect_dest->w = w; 
 	rect_dest->h = h; 
 	rect_dest->x = rect_source->x;
 	rect_dest->y = rect_source->y+offset_idx;
+	return 0;
 }
 
 
@@ -564,7 +565,7 @@ void draw_panel(control* panel, control *container)
 	/* blit panel surface*/
 	if (panel->ownSurface != NULL)
 	{
-		if (SDL_FillRect(container->srfc,panel->destination_rect, 
+	if ((int)SDL_FillRect(container->srfc,panel->destination_rect, 
 			SDL_MapRGB(panel->ownSurface->format, panel->R, panel->G, panel->B)) != 0)
 		{
 			err=SDL_GetError();

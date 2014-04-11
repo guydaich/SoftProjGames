@@ -6,10 +6,7 @@
 #include "tic_tac_toe_bl.h"
 #include "reversi_bl.h"
 #include "connect4_bl.h"
-
-#define TTC 1
-#define REVERSI 2
-#define CONNECT4 3
+#include "game enum.h"
 
 /*general game structure*/
 typedef struct _general_game
@@ -40,7 +37,7 @@ typedef struct _general_game
 
 } game;
 
-game* new_game(int game_id);
+game* new_game(whichGame game_id);
 void  restartGame(int *choice,SDL_Event* test_event);
 void  quitGame(int *choice,SDL_Event* test_event);
 void  goToMainMenu(int *choice,SDL_Event* test_event);

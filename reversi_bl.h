@@ -16,9 +16,6 @@
 #define R2 -1
 #define R1 1
 
-
-
-
 /* functions */
 char*			rv_get_name();
 int*			rv_get_initial_state();

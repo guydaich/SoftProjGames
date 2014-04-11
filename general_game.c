@@ -14,7 +14,7 @@ extern game* cur_game;
 extern element_cntrl ui_tree;
 
 /* inits a new game */
-game* new_game(int game_id)
+game* new_game(whichGame game_id)
 {
 	game *new_game_obj = (game*)malloc(sizeof(game));  //TODO check new_game_obj!=NULL
 	gameNum++;
@@ -56,7 +56,7 @@ game* new_game(int game_id)
 		new_game_obj->is_victory = rv_is_victory;
 		new_game_obj->player_has_moves = rv_player_has_moves;
 		new_game_obj->difficulty_num=4;
-		new_game_obj->victoryColor=NULL;
+		new_game_obj->victoryColor=color_rv;
 		break;
 	case CONNECT4:
 		new_game_obj->get_name = get_name_C4;
@@ -112,7 +112,7 @@ void  saveGame(int *choice,SDL_Event* test_event)
 {
 	int onTopOf,userAnswer,error;
 	char* fileLocation=(char *)malloc(36);
-	sprintf(fileLocation,"./save/load%d.txt",*choice);
+	sprintf(fileLocation,"C:/Users/davidl/Documents/gameSavings/load%d.txt",*choice);
 	onTopOf=saveGameinFile(fileLocation,cur_game->board,cur_game->cur_player,
 						cur_game->cols,cur_game->rows,(cur_game->get_name()));
 	if(onTopOf==1){
@@ -150,16 +150,14 @@ void  makeMove(int *choice,SDL_Event* test_event)
 	if ( cur_game->is_game_over( cur_game->board)){
 		if (cur_game->is_victory( cur_game->board) == 1){
 			cur_game->victoryColor(cur_game->board,1,ui_tree);
-			//color_ttc(cur_game->board,1,*ui_tree);
 		}
 		else if (cur_game->is_victory( cur_game->board) == -1){
 			cur_game->victoryColor(cur_game->board,-1,ui_tree);
-			//color_ttc(cur_game->board,-1,*ui_tree);
 		}
 		else
 		{
 			newButtonGeneric(ui_tree->children,300,480,"draw",restartGame,0);
-			ui_tree->children->tail->parent=ui_tree;//temp_elem->parent=ui_tree;
+			ui_tree->children->tail->parent=ui_tree;
 			temp_elem=ui_tree->children->tail;
 		}
 		//TODO: handle game over
@@ -208,7 +206,8 @@ void  runStartManu(int *choice,SDL_Event* test_event)
 
 void  loadGame(int *choice,SDL_Event* test_event)
 {
-	int whichGame,error,player;
+	whichGame whichGame;
+	int error,player;
 	int *gameBoard; 
 	char* fileLocation=(char *)malloc(36);
 	sprintf(fileLocation,"C:/Users/davidl/Documents/gameSavings/load%d.txt",*choice);

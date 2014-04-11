@@ -39,7 +39,7 @@ int write_game_to_file(char* filename, int *game_state, int player, int cols, in
 	return 0;
 }
 
-int load_game_from_file(char* filename, int* whichGame,int** board,int *player){
+int load_game_from_file(char* filename, whichGame* whichG,int** board,int *player){
 	FILE *file; 
 	char getName[MAX_NAME_SIZE];
 	int *gameBoard;
@@ -57,7 +57,7 @@ int load_game_from_file(char* filename, int* whichGame,int** board,int *player){
 		return -2;
 	}
 	else if(strcmp(getName,"Connect4")==0){
-		*whichGame=3;
+		*whichG=CONNECT4;
 		gameBoard=(int*)calloc(CONNECT4_COLS*CONNECT4_GROWS,sizeof(int));
 		if (gameBoard==NULL){
 			return -1;
@@ -66,7 +66,7 @@ int load_game_from_file(char* filename, int* whichGame,int** board,int *player){
 		//set functions to curr game functions and game board and player
 	}
 	else if(strcmp(getName,"Tic-Tac-Toe")==0){
-		*whichGame=1;
+		*whichG=TTC;
 		gameBoard=(int*)calloc(TTT_COLS*TTT_ROWS,sizeof(int));
 		if (gameBoard==NULL){
 			return -1;
@@ -75,7 +75,7 @@ int load_game_from_file(char* filename, int* whichGame,int** board,int *player){
 		//set functions to curr game functions and game board and player
 	}
 	else if(strcmp(getName,"Reversi")==0){
-		*whichGame=2;
+		*whichG=REVERSI;
 		gameBoard=(int*)calloc(REVERSI_COLS*REVERSI_ROWS,sizeof(int));
 		if (gameBoard==NULL){
 			return -1;

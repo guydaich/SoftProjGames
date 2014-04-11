@@ -57,7 +57,7 @@ element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_
 
 void color_c4(int* game_state,int player,element_cntrl ui_tree){
 	element_cntrl gamePanel;
-	int i, j, k, lineScore = 0, totalScore = 0;
+	int i, j, k, lineScore = 0;
 
 	gamePanel=ui_tree->children->tail;
 

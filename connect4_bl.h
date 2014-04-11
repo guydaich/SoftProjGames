@@ -1,4 +1,5 @@
-/*			io.h					*/
+#ifndef CONNECT_4_H
+#define CONNECT_4_H
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -6,17 +7,6 @@
 #include <limits.h>
 #include "minimax.h"
 #include "connect4_ui.h"
-
-
-/* command parsing definitions */
-#define cmd_steps "set_number_steps "
-#define cmd_discs  "add_disc "
-#define cmd_move  "suggest_move"
-#define cmd_quit  "quit"
-#define cmd_restart  "restart_game"
-#define cmd_steps_len  17
-#define cmd_discs_len  9
-#define num_char 40
 
 extern int boardCount;
 extern vertex mainRoot;
@@ -37,3 +27,4 @@ int				C4_make_move(int* game_state, int row, int col, int player);
 int				is_game_over_C4(int* game_state);
 int				C4_handle_mouse_button_down (SDL_Event *event, int* game_state,int player);
 int				C4_handle_computer_turn(int* game_state, int depth,int player);
+#endif

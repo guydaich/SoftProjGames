@@ -1,3 +1,5 @@
+#ifndef GAME_H
+#define GAME_H
 #include <SDL.h>
 #include <SDL_video.h>
 #include "general_game.h"
@@ -24,27 +26,27 @@
 #define NO "no"
 #define OK "ok"
 
-#define AI_SIGN 6
-#define START_SIGN 5
-#define DIFF_SIGN 4
-#define SAVE_SIGN 3
-#define LOAD_SIGN 2
-#define MAIN_SIGN 1
+enum qustionWindowsSgin {
+	OVERWRITE_SIGN,OK_SIGN
+};
+typedef enum qustionWindowsSgin qustionWindowsSgin;
 
-#define OK_SIGN 2
-#define OVERWRITE_SIGN 1
+enum choiseWindowSign {
+	MAIN_SIGN,LOAD_SIGN,SAVE_SIGN,DIFF_SIGN,START_SIGN,AI_SIGN
+};
+typedef enum choiseWindowSign choiseWindowSign;
+
 
 int SDL_Init(Uint32 flags);
 void get_default_ui_tree();
 element_cntrl mainMenuWindow();
-void runWindow(int mainORLoad);
-void game_init(int mainORLoad);
+void runWindow(choiseWindowSign mainORLoad);
+void game_init(choiseWindowSign mainORLoad);
 void draw_game ();
 element_cntrl startWindow();
 element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart);
-char** initialazeChoiseWindow(void (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,int flag);
+char** initialazeChoiseWindow(void (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,choiseWindowSign flag);
 void newImage(linked_list_cntrl fathersList,int x,int y,char* caption);
-int askWindow(char *qustion,int flag);
-void qustionORtext(int flag);
-
-
+int askWindow(char *qustion,qustionWindowsSgin flag);
+void qustionORtext(qustionWindowsSgin flag);
+#endif

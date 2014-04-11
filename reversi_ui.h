@@ -1,3 +1,5 @@
+#ifndef REVERSI_UI_H
+#define REVERSI_UI_H
 #include "controls.h"
 
 #define REVERSI_ROWS 8 
@@ -18,3 +20,5 @@
 #define RVR_BTN_BLACK_PATH "./gfx/reversi_piece_black.bmp"
 
 element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event));
+void color_rv(int* game_state,int player,element_cntrl ui_tree);
+#endif

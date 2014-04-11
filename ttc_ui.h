@@ -1,3 +1,5 @@
+#ifndef TIC_TAC_TOE_UI_H
+#define TIC_TAC_TOE_UI_H
 #include "controls.h"
 
 #define TTC_XOFFSET 50
@@ -20,6 +22,4 @@
 element_cntrl ttc_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event));
 void set_victory_control(int i,int j,element_cntrl game_panel,int player);
 void color_ttc(int* game_state,int player,element_cntrl ui_tree);
-
-
-
+#endif
