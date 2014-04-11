@@ -31,8 +31,11 @@ int* ttc_get_initial_state()
 
 int* ttc_copy_and_make_move(int* game_state, int move_row, int move_col, int player)
 {
-	int* copied_state = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
 	int i=0,j=0;
+	int* copied_state = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
+	if (copied_state==NULL){
+		return NULL;
+	}
 	for (i=0; i< TIC_TAC_TOE_ROWS; i++)
 	{
 		for(j=0; j  <TIC_TAC_TOE_COLS; j++)
@@ -46,10 +49,15 @@ int* ttc_copy_and_make_move(int* game_state, int move_row, int move_col, int pla
 	return copied_state;
 }
 
-linked_list ttc_get_state_children(int* game_state, int player)
+linked_list ttc_get_state_children(int* game_state, int player,int *error)
 {
-	linked_list list = new_list();
 	int i,j, return_value = 1 ;
+	element run_elem;
+	linked_list list = new_list();
+	if (list==NULL){
+		*error=-1;
+		return NULL;
+	}
 
 	/*if game is over - no more steps*/
 	if (ttc_is_game_over(game_state))
@@ -68,9 +76,33 @@ linked_list ttc_get_state_children(int* game_state, int player)
 			{
 				/* add this move to children list*/
 				return_value = ttc_add_to_children_list(list,game_state,i,j,player);
+				if (return_value==-1){
+					break;
 			}
 		}
 	}
+		if (return_value==-1){
+			break;
+		}
+	}
+	if (return_value==-1){
+		for (run_elem=list->head;run_elem!=NULL && run_elem->next!=NULL;run_elem->next){
+			free(run_elem->node->game_state);
+			free(run_elem->node);
+			if (run_elem->prev!=NULL){
+				free(run_elem->prev);
+			}
+		}
+		//free last one
+		if (run_elem!=NULL){
+			free(run_elem->node->game_state);
+			free(run_elem->node);
+			free(run_elem);
+		}
+		*error=-1;
+		return NULL;
+	}
+	*error=0;
 	return list; 
 }
 
@@ -83,13 +115,16 @@ int ttc_add_to_children_list(linked_list list, int* game_state, int row, int col
 	element new_elem,prev_tail;
 
 	moved_state = ttc_copy_and_make_move(game_state,row,col,player);
+	if (moved_state==NULL){
+		return -1;
+	}
 	node = new_node(row*TIC_TAC_TOE_ROWS + col,(int*)moved_state,ttc_get_state_score(moved_state,player));
 
 	/*check for errors*/
 	if (node == NULL)
 	{
 		free(moved_state);
-		return 0;
+		return -1;
 	}
 
 	/*create new element */
@@ -100,7 +135,7 @@ int ttc_add_to_children_list(linked_list list, int* game_state, int row, int col
 	{
 		free(moved_state);
 		free(node);
-		return 0;
+		return -1;
 	}
 				
 	/*assign node to element*/

@@ -19,7 +19,7 @@
 /* functions */
 char*			rv_get_name();
 int*			rv_get_initial_state();
-linked_list		rv_get_state_children(int* game_state, int player);
+linked_list		rv_get_state_children(int* game_state, int player,int* error);
 int				rv_get_state_score(int* game_state,int player);
 int*			rv_get_difficulty_levels();
 void			rv_draw_function();

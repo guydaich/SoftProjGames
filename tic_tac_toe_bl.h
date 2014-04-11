@@ -8,7 +8,7 @@
 /* functions */
 char*			ttc_get_name();
 int*			ttc_get_initial_state();
-linked_list		ttc_get_state_children(int* game_state, int player);
+linked_list		ttc_get_state_children(int* game_state, int player,int *error);
 int				ttc_get_state_score(int* game_state,int player);
 int*			ttc_get_difficulty_levels();
 void			ttc_draw_function();

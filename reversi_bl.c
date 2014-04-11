@@ -49,13 +49,15 @@ int rv_make_node(int* game_state, int row, int col, int player)
 	vertex node;
 
 	moved_state = rv_copy_and_make_move(game_state,row,col,player);
+	if(moved_state==NULL){
+		return -1;
+	}
 	node = new_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state,player));
-
 	/*check for errors*/
 	if (node == NULL)
 	{
 		free(moved_state);
-		return 0;
+		return -1;
 	}
 	return 1;
 }
@@ -67,13 +69,16 @@ int rv_add_to_children_list(linked_list list, int* game_state, int row, int col,
 	element new_elem,prev_tail;
 
 	moved_state = rv_copy_and_make_move(game_state,row,col,player);
+	if(moved_state==NULL){
+		return -1;
+	}
 	node = new_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state,player));
 
 	/*check for errors*/
 	if (node == NULL)
 	{
 		free(moved_state);
-		return 0;
+		return -1;
 	}
 
 	/*create new element */
@@ -84,7 +89,7 @@ int rv_add_to_children_list(linked_list list, int* game_state, int row, int col,
 	{
 		free(moved_state);
 		free(node);
-		return 0;
+		return -1;
 	}
 				
 	/*assign node to element*/
@@ -106,9 +111,10 @@ int rv_add_to_children_list(linked_list list, int* game_state, int row, int col,
 }
 
 
-linked_list rv_get_state_children(int* game_state, int player)
+linked_list rv_get_state_children(int* game_state, int player,int *error)
 {
-	int i,j,return_value;
+	int i,j,return_value=1;
+	element run_elem;
 	linked_list list = new_list();
 	
 	for (i=0; i < REVERSI_ROWS; i++)
@@ -120,17 +126,34 @@ linked_list rv_get_state_children(int* game_state, int player)
 			{
 				/*add move to list*/
 				return_value = rv_add_to_children_list(list,game_state,i,j,player);	
+				if (return_value==-1){
+					break;
+				}
 			}
+		}
+		if (return_value==-1){
+			break;
 		}
 	}
 
-	// no steps left - game is over, pass empty list
-	if (list->head == NULL)
-	{
-		list->head = NULL;
-		list->tail = NULL;
+	if (return_value==-1){
+		for (run_elem==list->head;run_elem!=NULL && run_elem->next!=NULL;run_elem->next){
+			free(run_elem->node->game_state);
+			free(run_elem->node);
+			if (run_elem->prev!=NULL){
+				free(run_elem->prev);
+			}
+		}
+		//free last one
+		if (run_elem!=NULL){
+			free(run_elem->node->game_state);
+			free(run_elem->node);
+			free(run_elem);
+		}
+		*error=-1;
+		return NULL;
 	}
-	
+	*error=0;
 	return list;
 }
 

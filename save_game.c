@@ -47,7 +47,7 @@ int load_game_from_file(char* filename, whichGame* whichG,int** board,int *playe
 
 	file = fopen(filename, "r");
 	if (file == NULL)
-	{ // complete
+	{ 
 		return -2;
 	}
 	fscanf(file,"%s",getName);

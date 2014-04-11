@@ -23,7 +23,7 @@ typedef struct _general_game
 	/*general function*/
 	char*			(*get_name)();
 	int*			(*get_initial_state)();
-	linked_list		(*get_state_children)(int* game_state, int player);
+	linked_list		(*get_state_children)(int* game_state, int player,int *error);
 	int				(*get_state_score)(int* game_state,int player);
 	int*			(*get_difficulty_levels)();
 	element_cntrl	(*panel_function)(int* game_state,void  (*makeMove)(int *choice,SDL_Event* test_event));

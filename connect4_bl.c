@@ -224,13 +224,19 @@ int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player)
 }
 
 // adds children to a node in the process of building the tree
-linked_list get_state_children_C4(int* matrix, int player)
+linked_list get_state_children_C4(int* matrix, int player,int *error)
 {
 	linked_list newList;
 	int move;
-	int child_player = player;		// player is opposite
+	int addChildError=0;
+	int child_player = player;
+	element run_elem;
 
 	newList=new_list();
+	if (newList==NULL){
+		*error=-1;
+		return NULL;
+	}
 
 	if (get_state_score_C4(matrix,0) == INT_MAX ||
 		get_state_score_C4(matrix,0) == INT_MIN)		//if victory achieved stop building
@@ -244,7 +250,27 @@ linked_list get_state_children_C4(int* matrix, int player)
 		{
 			continue;								// continue to next move
 		}
-		add_to_children_list_C4( newList,matrix,0,move,child_player);
+		addChildError=add_to_children_list_C4( newList,matrix,0,move,child_player);
+		if(addChildError==-1){
+			break;
+		}
+	}
+	if(addChildError==-1){
+		for (run_elem=newList->head;run_elem!=NULL && run_elem->next!=NULL;run_elem->next){
+			free(run_elem->node->game_state);
+			free(run_elem->node);
+			if (run_elem->prev!=NULL){
+				free(run_elem->prev);
+			}
+		}
+		//free last one
+		if (run_elem!=NULL){
+			free(run_elem->node->game_state);
+			free(run_elem->node);
+			free(run_elem);
+		}
+		*error=-1;
+		return NULL;
 	}
 	return newList;
 }
@@ -258,25 +284,18 @@ int add_to_children_list_C4(linked_list list, int* game_state, int row, int col,
 	vertex node_mv;
 	moved = copy_and_make_move_C4(game_state,0,move - 1, player);
 		 if (moved == NULL){
-			 //parent is stil "normal". remove him and get a normal tree
-			 remove_tree(mainRoot,1,1);
 			 return -1;
 		 }
 		// create new node
 		node_mv = make_node(move, moved, get_state_score_C4(moved,0));
 		if (node_mv == NULL){
 			free(moved);
-			//parent is stil "normal". remove him and get a normal tree
-			remove_tree(mainRoot,1,1);
 			return -1;
 		}
 		new_elem_mv = new_element();
 		if (new_elem_mv == NULL){
 			free(moved);
-			free(node_mv->edges);
 			free(node_mv);
-			//parent is stil "normal". remove him and get a normal tree
-			remove_tree(mainRoot,1,1);
 			return -1;
 		}
 		new_elem_mv->node = node_mv;
