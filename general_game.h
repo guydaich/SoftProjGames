@@ -16,7 +16,8 @@ typedef struct _general_game
 	int rows; 
 	int cols; 
 	int cur_player; 
-	int difficulty;
+	int difficultyP1;
+	int difficultyP2;
 	int is_multiplayer;
 	int difficulty_num;
 
@@ -43,7 +44,8 @@ void  quitGame(int *choice,SDL_Event* test_event);
 void  goToMainMenu(int *choice,SDL_Event* test_event);
 void  saveGame(int *choice,SDL_Event* test_event);
 void  makeMove(int *choice,SDL_Event* test_event);
-void  setDifficalty(int *choice,SDL_Event* test_event);
+void  setDifficaltyP1(int *choice,SDL_Event* test_event);
+void  setDifficaltyP2(int *choice,SDL_Event* test_event);
 void  chooseGame(int *choice,SDL_Event* test_event);
 void  runLoadManu(int *choice,SDL_Event* test_event);
 void  loadGame(int *choice,SDL_Event* test_event);

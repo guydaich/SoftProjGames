@@ -62,7 +62,12 @@ int main( int argc, char* args[] )
 				break;
 			}
 			if (cur_game!=NULL && cur_game->is_multiplayer==1 && pause==0){
-				cur_game->handle_computer_move(cur_game->board,cur_game->difficulty,cur_game->cur_player);
+				if ((cur_game)->cur_player==1){
+					cur_game->handle_computer_move(cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
+				}
+				else {
+					cur_game->handle_computer_move(cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
+				}
 				(cur_game)->cur_player = (-1)*(cur_game)->cur_player;
 				draw_game();
 				pause=1;
@@ -302,11 +307,26 @@ char** initialazeChoiseWindow(void (**pressedButton)(int *quit,SDL_Event* test_e
 		captionArray[2]=(char *)AI_3;
 		captionArray[3]=(char *)AI_4;
 	}
-	else {
+	else if (flag==DIFF1_SIGN){
 		if (cur_game==NULL){
 			return NULL;
 		}
-		*pressedButton=setDifficalty;
+		*pressedButton=setDifficaltyP1;
+		*iterationNum=cur_game->difficulty_num;
+		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
+		for (i=0;i<*iterationNum;i++){
+			captionArray[i]=(char *)DIFFICALTY;
+			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
+			sprintf(buttonName,"%s %d",captionArray[i],i);
+			//free(captionArray[i]);
+			captionArray[i]=buttonName;
+		}
+	}
+	 else if (flag==DIFF2_SIGN){
+		if (cur_game==NULL){
+			return NULL;
+		}
+		*pressedButton=setDifficaltyP2;
 		*iterationNum=cur_game->difficulty_num;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
 		for (i=0;i<*iterationNum;i++){

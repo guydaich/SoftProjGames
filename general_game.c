@@ -81,7 +81,8 @@ game* new_game(whichGame game_id)
 	}
 
 	new_game_obj->board = new_game_obj->get_initial_state();
-	new_game_obj->difficulty=new_game_obj->get_difficulty_levels()[0];
+	new_game_obj->difficultyP1=new_game_obj->get_difficulty_levels()[0];
+	new_game_obj->difficultyP2=new_game_obj->get_difficulty_levels()[0];
 
 return new_game_obj;
 
@@ -141,7 +142,12 @@ void  makeMove(int *choice,SDL_Event* test_event)
 	cur_game->cur_player = (-1)*cur_game->cur_player;
 	if ( !cur_game->is_game_over( cur_game->board)){
 		if (cur_game->is_multiplayer==2 || cur_game->is_multiplayer==3){// playing against computer
-			cur_game->handle_computer_move( cur_game->board,cur_game->difficulty,cur_game->cur_player);
+			if (cur_game->cur_player==1){
+				cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
+			}
+			else {
+				cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
+			}
 			cur_game->cur_player = (-1)*  cur_game->cur_player;
 		}	
 	}
@@ -167,9 +173,14 @@ void  makeMove(int *choice,SDL_Event* test_event)
 	return;
 }
 
-void  setDifficalty(int *choice,SDL_Event* test_event)
+void  setDifficaltyP1(int *choice,SDL_Event* test_event)
 {
-	cur_game->difficulty=(cur_game->get_difficulty_levels())[*choice-1];
+	cur_game->difficultyP1=(cur_game->get_difficulty_levels())[*choice-1];
+}
+
+void  setDifficaltyP2(int *choice,SDL_Event* test_event)
+{
+	cur_game->difficultyP2=(cur_game->get_difficulty_levels())[*choice-1];
 }
 
 void  setmultiplayer(int *choice,SDL_Event* test_event)
@@ -201,7 +212,21 @@ void  runStartManu(int *choice,SDL_Event* test_event)
 	if (cur_game->is_multiplayer==1 || cur_game->is_multiplayer==3){
 		*choice=1;
 	}
-	game_init(DIFF_SIGN);//important
+	switch(cur_game->is_multiplayer){
+		case 1:
+			runWindow(DIFF1_SIGN);
+			game_init(DIFF2_SIGN);
+			break;
+		case 2:
+			game_init(DIFF2_SIGN);
+			break;
+		case 3:
+			game_init(DIFF1_SIGN);
+			break;
+		case 4:
+			game_init(DIFF1_SIGN);
+			break;
+	}
 }
 
 void  loadGame(int *choice,SDL_Event* test_event)
@@ -233,14 +258,20 @@ void  runsaveManu(int *choice,SDL_Event* test_event)
 
 void  runDiffManu(int *choice,SDL_Event* test_event)
 {
+	//TODO:
 	freeControlList(ui_tree);
-	game_init(DIFF_SIGN);
+	game_init(DIFF1_SIGN);
 }
 
 void  setUnpause(int *choice,SDL_Event* test_event){
 	*choice=!(*choice);// form 1 to 0 and 0 to 1
 	if (cur_game->is_multiplayer==3 && cur_game->cur_player==1){
-		cur_game->handle_computer_move(cur_game->board,cur_game->difficulty,cur_game->cur_player);
+		if (cur_game->cur_player==1){
+			cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
+		}
+		else {
+			cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
+		}
 		cur_game->cur_player = (-1)*(cur_game->cur_player);
 	}
 	draw_game();

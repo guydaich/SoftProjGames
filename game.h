@@ -32,7 +32,7 @@ enum qustionWindowsSgin {
 typedef enum qustionWindowsSgin qustionWindowsSgin;
 
 enum choiseWindowSign {
-	MAIN_SIGN,LOAD_SIGN,SAVE_SIGN,DIFF_SIGN,START_SIGN,AI_SIGN
+	MAIN_SIGN,LOAD_SIGN,SAVE_SIGN,DIFF1_SIGN,DIFF2_SIGN,START_SIGN,AI_SIGN
 };
 typedef enum choiseWindowSign choiseWindowSign;
 
