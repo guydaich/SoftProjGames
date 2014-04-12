@@ -83,10 +83,10 @@ void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl 
 
 /* control functions */
 void draw_ui_tree(element_cntrl root);
-void draw_button(control *button, control *container);
-void draw_label(control *label, control *container);
-void draw_window(control* window);
-void draw_panel(control* panel, control *container);
+int draw_button(control *button, control *container);
+int draw_label(control *label, control *container);
+int draw_window(control* window);
+int draw_panel(control* panel, control *container);
 control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption);
 control* new_button(int x, int y, char *img, int is_trans,char *caption, int is_grid);
 control* new_window(int x, int y, int w, int h);
