@@ -309,6 +309,12 @@ int	ttc_handle_computer_turn(int* game_state, int depth,int player)
 	else {
 		comp_move=get_suggested_move(game_state,depth, ttc_get_state_children);
 	}
+	if (comp_move<0){
+		return -1;
+	}
+	else if (comp_move==0){
+		return -2;
+	}
 	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,player);
 	return 0;
 }

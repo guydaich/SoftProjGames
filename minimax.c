@@ -79,7 +79,11 @@ vertex build_tree(int * game_matrix, int player,linked_list (*create_children)(i
 	if (root == NULL){
 		return NULL;
 	}
-	new_children=create_children(root->game_state, player,&error);	//add prameter error
+	new_children=create_children(root->game_state, player,&error);
+	if (error<0){
+		remove_tree(root,1,0);
+		return NULL;
+	}
 	root->edges=new_children;
 	return root;
 }

@@ -37,11 +37,11 @@ int main( int argc, char* args[] )
 {
 	element_cntrl pressed_Button=NULL; 
 	SDL_Event test_event; 
-	int pause=0;
+	int pause=0,error;
 
 	gui_init();
-	runStartManu(&pause,&test_event);
-	if (cur_game==NULL){
+	error=runStartManu(&pause,&test_event);
+	if (error<0 || cur_game==NULL){
 		return 0;
 	}
 	while(!quit)
@@ -58,8 +58,8 @@ int main( int argc, char* args[] )
 				{
 					 break;
 				}
-				pressed_Button->cntrl->pressedButton(&pause,&test_event);
-				if (cur_game==NULL){
+				error=pressed_Button->cntrl->pressedButton(&pause,&test_event);
+				if (error<0 ||cur_game==NULL){
 					return 0;
 				}
 				break;
@@ -85,7 +85,6 @@ int main( int argc, char* args[] )
 		free(cur_game);
 		gameNum--;
 	}
-
 	return 0;
 }
 
@@ -224,6 +223,9 @@ int runWindow(choiseWindowSign mainORLoad){
 			return -1;
 		}
 	}
+	else if(mainORLoad==ZERO_SIGN){
+		return 0;
+	}
 	else {
 		captionArray=initialazeChoiseWindow(&buttonAction,&iterationNum,mainORLoad);
 		if (captionArray==NULL){
@@ -313,6 +315,7 @@ int game_init(choiseWindowSign mainORLoad)
 	if (error<0){
 		freeControlList(ui_tree);
 		ui_tree=NULL;
+		free(cur_game);//checked for null before
 		return -1;
 	}
 	return 0;

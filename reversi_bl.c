@@ -385,7 +385,7 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 		}
 	}
 	//check diaganal up right
-	if (cols!=0 && rows!=0 && game_state[(rows+1)*REVERSI_COLS + cols-1]==other)
+	if (cols!=0 && rows!=REVERSI_ROWS-1 && game_state[(rows+1)*REVERSI_COLS + cols-1]==other)
 	{
 		for (i=1; rows+i<REVERSI_ROWS && cols-i>=0; i++)
 		{
@@ -501,6 +501,12 @@ int rv_handle_computer_turn(int* game_state, int depth,int player)
 	}
 	else {
 		comp_move=get_suggested_move(game_state,depth, rv_get_state_children);
+	}
+	if (comp_move<0){
+		return -1;
+	}
+	else if (comp_move==0){
+		return -2;
 	}
 	if (!rv_is_valid_move(game_state,player,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS)){
 		return -2;

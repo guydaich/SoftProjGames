@@ -165,6 +165,8 @@ int  makeMove(int *choice,SDL_Event* test_event)
 		return 0; 
 	}
 	else if(move_success<0){
+		free(cur_game);
+		freeControlList(ui_tree);
 		return -1;
 	}
 	//ui_tree=draw_game( cur_game,ui_tree);
@@ -175,12 +177,16 @@ int  makeMove(int *choice,SDL_Event* test_event)
 			if (cur_game->cur_player==1){
 				error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
 				if (error<0){
+					free(cur_game);
+					freeControlList(ui_tree);
 					return -1;
 				}
 			}
 			else {
 				error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
 				if (error<0){
+					free(cur_game);
+					freeControlList(ui_tree);
 					return -1;
 				}
 			}
@@ -189,6 +195,8 @@ int  makeMove(int *choice,SDL_Event* test_event)
 	}
 	error=draw_game();
 	if (error<0){
+		free(cur_game);
+		freeControlList(ui_tree);
 		return -1;
 	}
 
@@ -320,7 +328,10 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 			}
 			break;
 		case 4:
-			error=game_init(DIFF1_SIGN);//idea-ZERO_SIGN
+			error=game_init(ZERO_SIGN);//idea-ZERO_SIGN
+			if(error<0){
+				return -1;
+			}
 			break;
 	}
 	return 0;
