@@ -11,7 +11,8 @@
 #define MAIN_MENU "Main Menu"
 #define SAVE "Save Game"
 #define LOAD "Load Game"
-#define DIFF "Difficulties"
+#define DIFFP1 "P1 Difficulties"
+#define DIFFP2 "P2 Difficulties"
 #define PAUSE "Pause"
 #define CHOOSE_GAME "Choose Game"
 #define DIFFICALTY "Difficulty"
@@ -38,15 +39,15 @@ typedef enum choiseWindowSign choiseWindowSign;
 
 
 int SDL_Init(Uint32 flags);
-void get_default_ui_tree();
+int get_default_ui_tree();
 element_cntrl mainMenuWindow();
-void runWindow(choiseWindowSign mainORLoad);
-void game_init(choiseWindowSign mainORLoad);
-void draw_game ();
+int runWindow(choiseWindowSign mainORLoad);
+int game_init(choiseWindowSign mainORLoad);
+int draw_game ();
 element_cntrl startWindow();
-element_cntrl choiseWindow(int iterationNum,void (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart);
-char** initialazeChoiseWindow(void (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,choiseWindowSign flag);
+element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart);
+char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,choiseWindowSign flag);
 void newImage(linked_list_cntrl fathersList,int x,int y,char* caption);
 int askWindow(char *qustion,qustionWindowsSgin flag);
-void qustionORtext(qustionWindowsSgin flag);
+int qustionORtext(qustionWindowsSgin flag);
 #endif

@@ -2,7 +2,6 @@
 #include "ttc_ui.h"
 
 char* TIC_TAC_TOE_NAME = "Tic-Tac-Toe";
-int* tic_tac_toe_board=NULL;
 int tic_tac_toe_diffficulties[] = {9};
 
 char* ttc_get_name()
@@ -14,10 +13,10 @@ int* ttc_get_initial_state()
 {
 	int i=0,j=0;
 	int* initial_board;
-	if (tic_tac_toe_board!=NULL){
-		free(tic_tac_toe_board);
-	}
 	initial_board = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
+	if(initial_board==NULL){
+		return NULL;
+	}
 
 	for (i=0; i < TIC_TAC_TOE_ROWS; i++)
 	{
@@ -182,13 +181,6 @@ int* ttc_get_difficulty_levels()
 	return tic_tac_toe_diffficulties;
 }
 
-
-/* non-interface functions */
-void ttc_init_game()
-{
-	tic_tac_toe_board = ttc_get_initial_state();
-}
-
 int ttc_make_move(int* game_state, int row, int col, int player)
 {
 	if (game_state[row*TIC_TAC_TOE_ROWS + col] == 0)
@@ -342,9 +334,5 @@ int ttc_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 	{
 		return 0;
 	}
-	/*if (ttc_is_game_over(game_state))
-	{
-		return 0;
-	}*/
 	return 1;
 }

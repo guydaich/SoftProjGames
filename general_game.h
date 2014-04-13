@@ -27,32 +27,33 @@ typedef struct _general_game
 	linked_list		(*get_state_children)(int* game_state, int player,int *error);
 	int				(*get_state_score)(int* game_state,int player);
 	int*			(*get_difficulty_levels)();
-	element_cntrl	(*panel_function)(int* game_state,void  (*makeMove)(int *choice,SDL_Event* test_event));
+	element_cntrl	(*panel_function)(int* game_state,int  (*makeMove)(int *choice,SDL_Event* test_event));
 	int				(*handle_mouse_button_down)(SDL_Event *event, int* game_state, int player);
 	int				(*player_has_moves)(int* game_state, int player);
 	int				(*is_game_over)(int* game_state);
 	int				(*is_victory)(int* game_state);
-	void			(*victoryColor)(int* game_state,int player,element_cntrl ui_tree);
+	int 			(*victoryColor)(int* game_state,int player,element_cntrl ui_tree);
 	int				(*handle_computer_move)(int* game_state, int depth,int player);
 
 
 } game;
 
 game* new_game(whichGame game_id);
-void  restartGame(int *choice,SDL_Event* test_event);
-void  quitGame(int *choice,SDL_Event* test_event);
-void  goToMainMenu(int *choice,SDL_Event* test_event);
-void  saveGame(int *choice,SDL_Event* test_event);
-void  makeMove(int *choice,SDL_Event* test_event);
-void  setDifficaltyP1(int *choice,SDL_Event* test_event);
-void  setDifficaltyP2(int *choice,SDL_Event* test_event);
-void  chooseGame(int *choice,SDL_Event* test_event);
-void  runLoadManu(int *choice,SDL_Event* test_event);
-void  loadGame(int *choice,SDL_Event* test_event);
-void  runsaveManu(int *choice,SDL_Event* test_event);
-void  runDiffManu(int *choice,SDL_Event* test_event);
-void  runStartManu(int *choice,SDL_Event* test_event);
-void  setmultiplayer(int *choice,SDL_Event* test_event);
-void  setUnpause(int *choice,SDL_Event* test_event);
+int  restartGame(int *choice,SDL_Event* test_event);
+int  quitGame(int *choice,SDL_Event* test_event);
+int  goToMainMenu(int *choice,SDL_Event* test_event);
+int  saveGame(int *choice,SDL_Event* test_event);
+int  makeMove(int *choice,SDL_Event* test_event);
+int  setDifficaltyP1(int *choice,SDL_Event* test_event);
+int  setDifficaltyP2(int *choice,SDL_Event* test_event);
+int  chooseGame(int *choice,SDL_Event* test_event);
+int  runLoadManu(int *choice,SDL_Event* test_event);
+int  loadGame(int *choice,SDL_Event* test_event);
+int  runsaveManu(int *choice,SDL_Event* test_event);
+int  runDiffManuP1(int *choice,SDL_Event* test_event);
+int  runDiffManuP2(int *choice,SDL_Event* test_event);
+int  runStartManu(int *choice,SDL_Event* test_event);
+int  setmultiplayer(int *choice,SDL_Event* test_event);
+int  setUnpause(int *choice,SDL_Event* test_event);
 
 #endif

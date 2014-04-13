@@ -41,7 +41,7 @@ typedef struct _control{
 	SDL_Surface *text_surface;
 	SDL_Surface **multitext;
 	int num_texts;
-	void (*pressedButton)(int *choise,SDL_Event* test_event);
+	int (*pressedButton)(int *choise,SDL_Event* test_event);
 	int buttonChoise;
 	/*if is grid - when pressed, will act like a lowest-level button*/
 	int is_grid; 
@@ -95,9 +95,10 @@ void free_control(control *cntrl);
 
 void clear_game_panel(element_cntrl ui_tree);
 void freeControlList(element_cntrl node);
-void emptryButton(int *quit,SDL_Event* test_event);
+int emptryButton(int *quit,SDL_Event* test_event);
 
-void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise);
-void addNewControlToList(control* control,linked_list_cntrl fathersList);
+int newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,int (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise);
+int addNewControlToList(control* control,linked_list_cntrl fathersList);
+void freeUnconnectedList(linked_list_cntrl fathersList);
 #endif
 

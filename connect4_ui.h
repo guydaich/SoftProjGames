@@ -20,7 +20,7 @@
 #define C4_BTN_RED_VICTORY_PATH "./gfx/redC4victory.bmp"
 #define C4_BTN_BLUE_VICTORY_PATH "./gfx/blueC4victory.bmp"
 
-element_cntrl	C4_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event));
-void color_c4(int* game_state,int player,element_cntrl ui_tree);
-void c4_set_victory_control(int i,int j,element_cntrl game_panel,int player);
+element_cntrl	C4_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_Event* test_event));
+int color_c4(int* game_state,int player,element_cntrl ui_tree);
+int c4_set_victory_control(int i,int j,element_cntrl game_panel,int player);
 #endif

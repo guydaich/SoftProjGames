@@ -4,7 +4,6 @@
 #include "connect4_bl.h"
 
 char* Connect4_NAME = "Connect4";
-int* game_matrix;
 int Connect4_diffficulties[] = {1,2,3,4,5,6,7};
 int max_col_heights[CONNECT4_COLS];
 
@@ -22,7 +21,10 @@ void add_piece_to_board_C4(int* game_state,int column, int player)
 int *get_initial_state_C4()
 {
 	int i,j = 0;
-	game_matrix=(int *)calloc(CONNECT4_ROWS*CONNECT4_COLS,sizeof(int));
+	int *game_matrix=(int *)calloc(CONNECT4_ROWS*CONNECT4_COLS,sizeof(int));
+	if (game_matrix==NULL){
+		return NULL;
+	}
 	for (i =0; i < CONNECT4_ROWS ; i++)
 	{
 		for (j=0; j< CONNECT4_ROWS; j++)
@@ -30,7 +32,7 @@ int *get_initial_state_C4()
 			(game_matrix)[i*CONNECT4_COLS+j] = 0; 
 		}
 	}
-	init_col_heights_C4();
+	init_col_heights_C4();//init global variable, no error;
 	return game_matrix;
 }
 
@@ -60,21 +62,6 @@ for (i=0; i<CONNECT4_COLS; i++)
 	}
 return 1;
 }
-
-/* updates game to reflect victory*/
-void victory_C4(int winner,int *game_over)
-{
-	*game_over = 1;
-	if (winner==COMPUTER)
-	{
-		printf("Game over: computer wins\n");
-	}
-	else
-	{
-		printf("Game over: you win\n");
-	}
-}
-
 
 // Calculates Scoring for a Board
 int get_state_score_C4(int* game_matrix,int player)
@@ -196,14 +183,15 @@ int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player)
 	int i, j;
 	int *new_board_ptr = // allocate new board
 		(int*)calloc(CONNECT4_ROWS*CONNECT4_COLS, sizeof(int));	
-	boardCount++;
-	
 	// handle calloc error
 	if (new_board_ptr == NULL)
 	{
 		perror("Error: standard function calloc has failed");
 		return NULL;
 	}
+
+	boardCount++;
+
 	for (i = 0; i < CONNECT4_ROWS; i++)		// copy board
 	{
 		for (j = 0; j < CONNECT4_COLS; j++)
@@ -283,36 +271,36 @@ int add_to_children_list_C4(linked_list list, int* game_state, int row, int col,
 	element new_elem_mv;
 	vertex node_mv;
 	moved = copy_and_make_move_C4(game_state,0,move - 1, player);
-		 if (moved == NULL){
-			 return -1;
-		 }
-		// create new node
-		node_mv = make_node(move, moved, get_state_score_C4(moved,0));
-		if (node_mv == NULL){
-			free(moved);
-			return -1;
-		}
-		new_elem_mv = new_element();
-		if (new_elem_mv == NULL){
-			free(moved);
-			free(node_mv);
-			return -1;
-		}
-		new_elem_mv->node = node_mv;
+	if (moved == NULL){
+		return -1;
+	}
+	// create new node
+	node_mv = make_node(move, moved, get_state_score_C4(moved,0));
+	if (node_mv == NULL){
+		free(moved);
+		return -1;
+	}
+	new_elem_mv = new_element();
+	if (new_elem_mv == NULL){
+		free(moved);
+		free(node_mv);
+	return -1;
+	}
+	new_elem_mv->node = node_mv;
 
-		if (list->head == NULL)
-		{	//if the list is empty the add new_elem_mv to list
-			list->head=new_elem_mv;
-			list->tail=new_elem_mv;
-		}
-		else
-		{	//if list not empty,set new element as tail
-			element prevTail=list->tail;
-			prevTail->next = new_elem_mv;
-			new_elem_mv->prev = prevTail;
-			list->tail=new_elem_mv;
-		}
-		return 1;
+	if (list->head == NULL)
+	{	//if the list is empty the add new_elem_mv to list
+		list->head=new_elem_mv;
+		list->tail=new_elem_mv;
+	}
+	else
+	{	//if list not empty,set new element as tail
+		element prevTail=list->tail;
+		prevTail->next = new_elem_mv;
+		new_elem_mv->prev = prevTail;
+		list->tail=new_elem_mv;
+	}
+	return 1;
 }
 
 
@@ -358,15 +346,11 @@ int C4_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 	{
 		return 0;
 	}
-	succes=C4_make_move(game_state,0,x/100,player);
+	succes=C4_make_move(game_state,0,(x-35)/88,player);
 	if(succes==0)
 	{
 		return 0;
 	}
-	/*if (is_game_over_C4(game_state))
-	{
-		return 0;
-	}*/
 	return 1;
 }
 
@@ -379,14 +363,20 @@ int	C4_handle_computer_turn(int* game_state, int depth, int player)
 	else {
 		comp_move=get_suggested_move(game_state,depth, get_state_children_C4);
 	}
-	C4_make_move(game_state,0,comp_move-1,player);
+	if(comp_move<0){
+		return -1;
+	}
+	else if (comp_move==0){
+		return -2;
+	}
+	C4_make_move(game_state,0,comp_move-1,player);//return 0 doesn't mean error??
 	return 0;
 }
 
 int	C4_make_move(int* game_state, int row, int col, int player)
 {
 	int i;
-for (i = CONNECT4_ROWS - 1; i >= 0; i--) // find appropriate row for column move
+	for (i = CONNECT4_ROWS - 1; i >= 0; i--) // find appropriate row for column move
 	{
 		if (game_state[i*CONNECT4_COLS + col] == 0)
 		{

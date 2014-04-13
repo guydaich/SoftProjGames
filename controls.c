@@ -33,7 +33,6 @@ int handle_control_surface_load(control *cntrl, control *container)
 {
 	SDL_Surface *surface=NULL; 
 	SDL_Rect *rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));	
-	char *err; 	
 
 	/*no surface assoicated with control yet*/
 	if (cntrl->ownSurface == NULL)
@@ -236,7 +235,7 @@ int draw_caption_to_control_multi(control *cntrl)
 
 
 	if (cntrl->caption == NULL)	
-		return;
+		return -2;
 
 	/*make all text Calculations*/
 	
@@ -297,6 +296,7 @@ element_cntrl new_control_element(control* cntrl)
 	if (elem==NULL)
 	{
 		perror("malloc has failed");
+		free_control(cntrl);//important, otherowise thing like "new_control_element(new_panel())" will be lost.
 		return NULL;
 		//TODO: handle malloc failure? ia handled above in null check?
 	}
@@ -584,10 +584,12 @@ int draw_button(control *button, control *container)
 	}
 	
 	/*add caption*/
-	if (button->caption != NULL)
-		if (draw_caption_to_control(button)==-1)
+	if (button->caption != NULL){
+		if (draw_caption_to_control(button)==-1){
 			return -1;
-	
+		}
+	}
+	return 0;//sccussfuly drawn
 }
 
 
@@ -599,9 +601,12 @@ int draw_label(control *label, control *container)
 	if (SDL_BlitSurface(label->ownSurface,NULL, container->srfc, label->destination_rect) != 0)
 		return -1;
 
-	if (label->caption != NULL)
-		if (draw_caption_to_control_multi(label)==-1)	
+	if (label->caption != NULL){
+		if (draw_caption_to_control_multi(label)==-1){	
 			return -1;
+		}
+	}
+	return 0;//sccussfuly drawn
 }
 
 
@@ -623,6 +628,7 @@ int draw_window(control* window)
 		window->offsetx = 0; 
 		window->offsety = 0; 
 	}
+	return 0;
 }
 
 /*add this functionality to window as well. use it to paiunt background in white*/
@@ -642,6 +648,7 @@ int draw_panel(control* panel, control *container)
 				return -1;
 		}
 	}
+	return 0;//sccusses
 }
 
 
@@ -805,9 +812,9 @@ void freeControlList(element_cntrl node)
 
 }
 
-void emptryButton(int *choice,SDL_Event* test_event)
+int emptryButton(int *choice,SDL_Event* test_event)
 {
-	return;
+	return 0;
 }
 
 /*TODO : remove this part from free_control_list*/
@@ -829,31 +836,59 @@ void free_control(control *cntrl)
 	/*free node caption*/
 	if (cntrl->caption != NULL)
 	{
-		//free(node->cntrl->caption);
+		free(cntrl->caption);
 	}
-
 }
 
-void newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,void (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise){
+int newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,int (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise){
 	control* temp_control;
-	temp_control = new_button(x,y,"./gfx/generic_button.bmp",1,caption,0);
+	int error;
+	char *captionCopy;
+
+	//in order to free caprion freely
+	captionCopy=calloc(strlen(caption)+1,sizeof(char));
+	strcpy(captionCopy,caption);
+	temp_control = new_button(x,y,"./gfx/generic_button.bmp",1,captionCopy,0);
 	if (temp_control == NULL)
 	{
-		//TODO: malloc faield
+		freeUnconnectedList(fathersList);
+		return -1;
 	}
 	temp_control->buttonChoise=buttonChoise;
 	temp_control->pressedButton=pressedButton;
-	addNewControlToList(temp_control,fathersList);
+	error=addNewControlToList(temp_control,fathersList);
+	if (error==-1){
+		free_control(temp_control);
+		return -1;
+	}
+	return 0;
 }
 
 /* wraps control in elemnt and adds to a linked list */
-void addNewControlToList(control* control,linked_list_cntrl fathersList){
+int addNewControlToList(control* control,linked_list_cntrl fathersList){
 	element_cntrl temp_elem;
 
 	temp_elem = new_control_element(control);
 	if (temp_elem==NULL)
 	{
 	// TODO: allocating element failed. remove entire tree? backout?
+		freeUnconnectedList(fathersList);
+		return -1;
 	}
 	add_control_element_to_list(fathersList,temp_elem);
+	return 0;
+}
+
+void freeUnconnectedList(linked_list_cntrl fathersList){
+	element_cntrl cur_elem,next_elem;
+	//free list's children
+	if (fathersList != NULL){
+		for (cur_elem=fathersList->head;
+			cur_elem != NULL; cur_elem=next_elem){
+			next_elem=cur_elem->next;
+			freeControlList(cur_elem);
+		}
+		//free list
+		free(fathersList);
+	}
 }

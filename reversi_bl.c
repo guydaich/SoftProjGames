@@ -24,9 +24,12 @@ char* rv_get_name()
 
 int* rv_get_initial_state()
 {
-	int* initial_board = (int*)calloc(REVERSI_ROWS*REVERSI_COLS,sizeof(int));
-	
 	int i=0,j=0;
+	int* initial_board = (int*)calloc(REVERSI_ROWS*REVERSI_COLS,sizeof(int));
+	if(initial_board==NULL){
+		return NULL;
+	}
+	
 	for (i=0; i< REVERSI_ROWS; i++){
 		for(j=0; j  <REVERSI_COLS; j++){
 			initial_board[i*REVERSI_ROWS + j] = REVERSI_NO_PLAYER; 
@@ -125,7 +128,7 @@ linked_list rv_get_state_children(int* game_state, int player,int *error)
 			if (rv_is_valid_move(game_state, player,i,j))
 			{
 				/*add move to list*/
-				return_value = rv_add_to_children_list(list,game_state,i,j,player);	
+				return_value = rv_add_to_children_list(list,game_state,i,j,player);
 				if (return_value==-1){
 					break;
 				}
@@ -137,7 +140,7 @@ linked_list rv_get_state_children(int* game_state, int player,int *error)
 	}
 
 	if (return_value==-1){
-		for (run_elem==list->head;run_elem!=NULL && run_elem->next!=NULL;run_elem->next){
+		for (run_elem=list->head;run_elem!=NULL && run_elem->next!=NULL;run_elem->next){
 			free(run_elem->node->game_state);
 			free(run_elem->node);
 			if (run_elem->prev!=NULL){
@@ -162,6 +165,9 @@ int* rv_copy_and_make_move(int* game_state, int move_row, int move_col, int play
 	int i=0,j=0;
 	/*assign new board*/
 	int* copied_state = (int*)calloc(REVERSI_ROWS * REVERSI_COLS, sizeof(int));
+	if (copied_state==NULL){
+		return NULL;
+	}
 	
 	/*copy current state*/
 	for (i=0; i < REVERSI_ROWS; i++)
@@ -244,13 +250,6 @@ int rv_get_state_score(int* game_state,int player)
 int* rv_get_difficulty_levels()
 {
 	return reversi_diffficulties;
-}
-
-
-/* non-interface functions */
-void rv_init_game()
-{
-	reversi_board = rv_get_initial_state();
 }
 
 /*get a position, flips other player's pieces*/
@@ -430,11 +429,11 @@ int rv_is_game_over(int* game_state)
 	{
 		for(j=0; j < REVERSI_COLS; j++)
 		{
-			if (rv_is_valid_move(game_state,REVERSI_PLAYER_1,i,j))
+			if (rv_is_valid_move(game_state,REVERSI_PLAYER_1,i,j)==1)
 			{
 				return 0; 
 			}
-			if (rv_is_valid_move(game_state,REVERSI_PLAYER_2,i,j))
+			if (rv_is_valid_move(game_state,REVERSI_PLAYER_2,i,j)==1)
 			{
 				return 0; 
 			}
@@ -443,7 +442,7 @@ int rv_is_game_over(int* game_state)
 	return 1;
 }
 
-/* checks if there is a victory in passed: return 0 for tie, 1/-1 for victor */
+// checks if there is a victory in passed: return 0 for tie, 1/-1 for victory . for error return -2
 int rv_is_victory(int* game_state)
 {
 	int player_pieces,other_pieces;
@@ -493,6 +492,9 @@ int rv_handle_mouse_button_down (SDL_Event *event, int* game_state,int player)
 int rv_handle_computer_turn(int* game_state, int depth,int player)
 {
 	int comp_move;
+	if (rv_player_has_moves(game_state,player)==0){
+		return 0;
+	}
 	do{
 	if (player==-1){
 		comp_move = get_computer_move(game_state, depth, rv_get_state_children);
@@ -501,7 +503,7 @@ int rv_handle_computer_turn(int* game_state, int depth,int player)
 		comp_move=get_suggested_move(game_state,depth, rv_get_state_children);
 	}
 	if (!rv_is_valid_move(game_state,player,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS)){
-		comp_move=-1;
+		return -2;
 	}
 	rv_make_move(game_state,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS,player);
 	} while (rv_player_has_moves(game_state,-1*player)==0 && rv_player_has_moves(game_state,player)==1);
@@ -521,12 +523,10 @@ int rv_player_has_moves(int* game_state, int player)
 	{
 		for(j=0; j < REVERSI_COLS; j++)
 		{
-			/*if possible to place piece in this position*/
 			if (rv_is_valid_move(game_state, player,i,j))
 			{
-				/*add move to list*/
-	                        return 1;
-                        }
+	            return 1;
+            }
 		}
 	}
 	return 0;
