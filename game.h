@@ -47,7 +47,6 @@ int draw_game ();
 element_cntrl startWindow();
 element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart);
 char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,choiseWindowSign flag);
-void newImage(linked_list_cntrl fathersList,int x,int y,char* caption);
 int askWindow(char *qustion,qustionWindowsSgin flag);
 int qustionORtext(qustionWindowsSgin flag);
 #endif

@@ -298,6 +298,10 @@ int game_init(choiseWindowSign mainORLoad)
 	if (error<0){
 		return -1;
 	}
+	else{
+		freeControlList(ui_tree);
+		ui_tree=NULL;
+	}
 	if (cur_game==NULL){
 		return 0;
 	}
@@ -305,7 +309,12 @@ int game_init(choiseWindowSign mainORLoad)
 	if (error<0){
 		return -1;
 	}
-	draw_game();
+	error=draw_game();
+	if (error<0){
+		freeControlList(ui_tree);
+		ui_tree=NULL;
+		return -1;
+	}
 	return 0;
 }
 

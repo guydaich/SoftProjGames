@@ -90,6 +90,7 @@ return new_game_obj;
 
 int restartGame(int *choice,SDL_Event* test_event)
 {
+	int error=0;
 	if(cur_game->board!=NULL){//free prev 
 		free(cur_game->board);
 	}
@@ -101,7 +102,10 @@ int restartGame(int *choice,SDL_Event* test_event)
 	if (cur_game->is_multiplayer==3){
 		*choice=1;
 	}
-	draw_game();
+	error=draw_game();
+	if (error<0){
+		return -1;
+	}
 	return 0;
 }
 
@@ -113,8 +117,12 @@ int quitGame(int *choice,SDL_Event* test_event)
 
 int goToMainMenu(int *choice,SDL_Event* test_event)
 {
+	int error;
 	//freeControlList(ui_tree);
-	runWindow(MAIN_SIGN);
+	error=runWindow(MAIN_SIGN);
+	if (error<0){
+		return -1;
+	}
 	return 0;
 }
 
@@ -179,18 +187,25 @@ int  makeMove(int *choice,SDL_Event* test_event)
 			cur_game->cur_player = (-1)*  cur_game->cur_player;
 		}	
 	}
-	draw_game();
+	error=draw_game();
+	if (error<0){
+		return -1;
+	}
 
 	if ( cur_game->is_game_over( cur_game->board)){
 		if (cur_game->is_victory( cur_game->board) == 1){
 			error=cur_game->victoryColor(cur_game->board,1,ui_tree);
 			if (error<0){
+				free(cur_game);
+				freeControlList(ui_tree);
 				return -1;
 			}
 		}
 		else if (cur_game->is_victory( cur_game->board) == -1){
 			error=cur_game->victoryColor(cur_game->board,-1,ui_tree);
 			if (error<0){
+				free(cur_game);
+				freeControlList(ui_tree);
 				return -1;
 			}
 		}
@@ -198,6 +213,8 @@ int  makeMove(int *choice,SDL_Event* test_event)
 		{
 			error=newButtonGeneric(ui_tree->children,300,480,"draw",restartGame,0);
 			if (error<0){
+				free(cur_game);
+				freeControlList(ui_tree);
 				return -1;
 			}
 			ui_tree->children->tail->parent=ui_tree;
@@ -249,19 +266,30 @@ int  chooseGame(int *choice,SDL_Event* test_event)
 
 int  runLoadManu(int *choice,SDL_Event* test_event)
 {
+	int error;
 	//freeControlList(ui_tree);
-	runWindow(LOAD_SIGN);
+	error=runWindow(LOAD_SIGN);
+	if(error<0){
+		return -1;
+	}
 	return 0;
 }
 
 int  runStartManu(int *choice,SDL_Event* test_event)
 {
+	int error;
 	//freeControlList(ui_tree);
-	runWindow(START_SIGN);
+	error=runWindow(START_SIGN);
+	if(error<0){
+		return -1;
+	}
 	if (cur_game==NULL){
 		return -1;
 	}
-	runWindow(AI_SIGN);
+	error=runWindow(AI_SIGN);
+	if(error<0){
+		return -1;
+	}
 	if(cur_game->is_multiplayer<0 || cur_game->is_multiplayer>4){
 		return -1;
 	}
@@ -270,17 +298,29 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 	}
 	switch(cur_game->is_multiplayer){
 		case 1:
-			runWindow(DIFF1_SIGN);
-			game_init(DIFF2_SIGN);
+			error=runWindow(DIFF1_SIGN);
+			if(error<0){
+				return -1;
+			}
+			error=game_init(DIFF2_SIGN);
+			if(error<0){
+				return -1;
+			}
 			break;
 		case 2:
-			game_init(DIFF2_SIGN);
+			error=game_init(DIFF2_SIGN);
+			if(error<0){
+				return -1;
+			}
 			break;
 		case 3:
-			game_init(DIFF1_SIGN);
+			error=game_init(DIFF1_SIGN);
+			if(error<0){
+				return -1;
+			}
 			break;
 		case 4:
-			game_init(DIFF1_SIGN);//idea-ZERO_SIGN
+			error=game_init(DIFF1_SIGN);//idea-ZERO_SIGN
 			break;
 	}
 	return 0;
@@ -314,22 +354,34 @@ int loadGame(int *choice,SDL_Event* test_event)
 
 int runsaveManu(int *choice,SDL_Event* test_event)
 {
+	int error;
 	//freeControlList(ui_tree);
-	game_init(SAVE_SIGN);
+	error=game_init(SAVE_SIGN);
+	if (error<0){
+		return -1;
+	}
 	return 0;
 }
 
 int runDiffManuP1(int *choice,SDL_Event* test_event)
 {
+	int error;
 	//freeControlList(ui_tree);
-	game_init(DIFF1_SIGN);
+	error=game_init(DIFF1_SIGN);
+	if (error<0){
+		return -1;
+	}
 	return 0;
 }
 
 int runDiffManuP2(int *choice,SDL_Event* test_event)
 {
+	int error;
 	//freeControlList(ui_tree);
-	game_init(DIFF2_SIGN);
+	error=game_init(DIFF2_SIGN);
+	if (error<0){
+		return -1;
+	}
 	return 0;
 }
 
@@ -348,6 +400,11 @@ int setUnpause(int *choice,SDL_Event* test_event){
 		}
 		cur_game->cur_player = (-1)*(cur_game->cur_player);
 	}
-	draw_game();
+	error=draw_game();
+	if (error<0){
+		free(cur_game);
+		freeControlList(ui_tree);
+		return -1;
+	}
 	return 0;
 }
