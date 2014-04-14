@@ -342,7 +342,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 	element_cntrl root, temp_elem;
 	control* temp_control;
 	linked_list_cntrl list;
-	int i,error;
+	int i,error=0;
 	
 	root = new_control_element(new_window(0,0,250,500));
 	if (root==NULL){
@@ -491,7 +491,7 @@ element_cntrl startWindow(){
 
 
 char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,choiseWindowSign flag){
-	char** captionArray;
+	char** captionArray=NULL;
 	char* buttonName;
 	int i,error=0;
 

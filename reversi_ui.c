@@ -3,7 +3,7 @@
 
 int rv_is_victory(int* game_state);
 
-element_cntrl	rv_panel_function(int* game_state,void  (*makeMove)(int *quit,SDL_Event* test_event))
+element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_Event* test_event))
 {
 	control *rv_grid;
 	control *rv_button;

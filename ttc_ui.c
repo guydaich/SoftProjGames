@@ -108,7 +108,7 @@ element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_
 int color_ttc(int* game_state,int player,element_cntrl ui_tree){
 	element_cntrl gamePanel;
 	int i,j,flag;
-	int color_success=0,error; 
+	int error; 
 	/* check lines */	
 	
 	gamePanel=ui_tree->children->tail;

@@ -6,7 +6,7 @@
 #include "tic_tac_toe_bl.h"
 #include "reversi_bl.h"
 #include "connect4_bl.h"
-#include "game enum.h"
+#include "game_enum.h"
 
 /*general game structure*/
 typedef struct _general_game

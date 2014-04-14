@@ -140,7 +140,7 @@ linked_list rv_get_state_children(int* game_state, int player,int *error)
 	}
 
 	if (return_value==-1){
-		for (run_elem=list->head;run_elem!=NULL && run_elem->next!=NULL;run_elem->next){
+		for (run_elem=list->head;run_elem!=NULL && run_elem->next!=NULL;run_elem=run_elem->next){
 			free(run_elem->node->game_state);
 			free(run_elem->node);
 			if (run_elem->prev!=NULL){

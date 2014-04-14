@@ -167,7 +167,7 @@ void make_rect(SDL_Rect *rect, int h, int w, int x, int y)
 /*draws a single line of caption to center of control*/
 int draw_caption_to_control(control *cntrl)
 {
-	char* err; 
+	//char* err; 
 	TTF_Font *font;
 	SDL_Surface *surface;
 	SDL_Color text_color = {255, 255, 255};
@@ -208,7 +208,7 @@ int draw_caption_to_control(control *cntrl)
 
 	/* Blit surface*/
 	if (SDL_BlitSurface(cntrl->text_surface, NULL, cntrl->srfc, &text_rect) != 0){
-		err=TTF_GetError();
+		//err=TTF_GetError();
 		return -1;
 	}
 	
@@ -634,8 +634,6 @@ int draw_window(control* window)
 /*add this functionality to window as well. use it to paiunt background in white*/
 int draw_panel(control* panel, control *container)
 {
-	char *err; 
-
 	if (handle_control_surface_load(panel,container)==-1)
 		return -1;
 

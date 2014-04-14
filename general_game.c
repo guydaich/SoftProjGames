@@ -155,7 +155,6 @@ int saveGame(int *choice,SDL_Event* test_event)
 
 int  makeMove(int *choice,SDL_Event* test_event)
 {
-	element_cntrl temp_elem;
 	int move_success = 0,error=0;
 	if (*choice==1){//paused
 		return 0;
@@ -226,7 +225,6 @@ int  makeMove(int *choice,SDL_Event* test_event)
 				return -1;
 			}
 			ui_tree->children->tail->parent=ui_tree;
-			temp_elem=ui_tree->children->tail;
 		}
 		draw_ui_tree(ui_tree);
 		SDL_Flip(ui_tree->cntrl->srfc);

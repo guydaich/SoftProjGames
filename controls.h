@@ -17,7 +17,7 @@ typedef struct _control{
 	int is_button;
 	int is_label; 
 	/*drawing function pointer*/
-	void (* draw)(); 
+	int (* draw)(struct _control *mySelf,struct _control *container); 
 	/* caption for window */
 	char *caption; 
 	/* coordinates and sizes */

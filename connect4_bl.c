@@ -244,7 +244,7 @@ linked_list get_state_children_C4(int* matrix, int player,int *error)
 		}
 	}
 	if(addChildError==-1){
-		for (run_elem=newList->head;run_elem!=NULL && run_elem->next!=NULL;run_elem->next){
+		for (run_elem=newList->head;run_elem!=NULL && run_elem->next!=NULL;run_elem=run_elem->next){
 			free(run_elem->node->game_state);
 			free(run_elem->node);
 			if (run_elem->prev!=NULL){
@@ -336,10 +336,9 @@ int is_victory_C4(int* game_state)
 
 int C4_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 {
-	int x=0,y=0;
+	int x=0;
 	int succes;
 	x=event->button.x;
-	y=event->button.y;
 	/* elem get's the elemnt to update (grid slot) */
 
 	if(is_game_over_C4(game_state))
