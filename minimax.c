@@ -16,7 +16,7 @@ int numE;
 /* returns a suggested move foe the player, according to minimax */
 int get_suggested_move(int * game_matrix, int depth,linked_list (*create_children)(int *gameMatrix, int player,int *error))
 {
-	int cMove = 0,error; 
+	int cMove = 0,error=0; 
 	vertex root = build_tree(game_matrix, 1,create_children);	// build tree
 	if (root == NULL){
 		return -1;
@@ -34,7 +34,7 @@ int get_suggested_move(int * game_matrix, int depth,linked_list (*create_childre
 /* choose the best next move for the computer, according to minimax */
 int get_computer_move(int * game_matrix,int depth,linked_list (*create_children)(int *gameMatrix, int player,int *error))
 {
-	int cMove = 0,error;
+	int cMove = 0,error=0;
 	vertex root = build_tree(game_matrix, -1,create_children);
 	if (root == NULL){
 		return -1;
@@ -53,7 +53,7 @@ int get_computer_move(int * game_matrix,int depth,linked_list (*create_children)
 int getMove(vertex root)
 {
 	element cur_elem;
-	int movement;
+	int movement=0;
 	for (cur_elem = root->edges->head; cur_elem != NULL;
 		cur_elem = cur_elem->next)
 	{
@@ -73,8 +73,8 @@ int getMove(vertex root)
 
 vertex build_tree(int * game_matrix, int player,linked_list (*create_children)(int *gameMatrix, int player,int *error))
 {
-	linked_list new_children;
-	int error;
+	linked_list new_children=NULL;
+	int error=0;
 	vertex root = make_node(0, game_matrix,0); 			// new root 
 	if (root == NULL){
 		return NULL;
@@ -217,7 +217,7 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,
 		for (run = Node->edges->head;run != NULL; run = run->next){
 			child=run->node;					// choose node	
 			if (depth<maxdepth-1){
-				int create_childrenError;
+				int create_childrenError=0;
 				new_children=create_children(child->game_state, player*-1,&create_childrenError);			// add children
 				if(create_childrenError==-1){
 					*error=-1;
@@ -255,7 +255,7 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,
 		for (run = Node->edges->head;run != NULL; run = run->next){
 			child=run->node;
 			if (depth<maxdepth-1){
-				int create_childrenError;
+				int create_childrenError=0;
 				new_children=create_children(child->game_state, player*-1,&create_childrenError);			// add children
 				if(create_childrenError==-1){
 					*error=-1;

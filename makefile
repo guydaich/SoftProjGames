@@ -39,7 +39,7 @@ controls.o:controls.c controls.h
 	$(CC) $(CFLAGS) -c $*.c $(INCS)
 
 minimax.o:minimax.c minimax.h
-	$(CC) -c $*.c
+	$(CC) $(CFLAGS) -c $*.c
 
 save_game.o:save_game.c save_game.h game_enum.h
-	$(CC) -c $*.c
+	$(CC) $(CFLAGS) -c $*.c

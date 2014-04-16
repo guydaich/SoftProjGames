@@ -456,7 +456,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	
 	for (i=0; i < MAX_CAPTION_LINES ; i++)
 	{
-		label->multitext[i] = NULL;
+		label->multitext[i] = (SDL_Surface*)NULL;
 	}
 
 	return label;
@@ -497,6 +497,7 @@ control* new_button(int x, int y, char *img, int is_trans ,char *caption, int is
 	button->is_grid=is_grid;
 	button->is_bg_img =1;
 	button->is_bg_rect =0;
+	button->multitext=NULL;
 
 	return button;
 }
@@ -534,6 +535,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G, int is_bg_re
 	panel->is_grid=0;
 	panel->is_bg_img =0;
 	panel->is_bg_rect=is_bg_rect;
+	panel->multitext=NULL;
 
 	return panel;
 }
@@ -567,7 +569,7 @@ control* new_window(int x, int y, int w, int h)
 	window->is_grid=0;
 	window->is_bg_img =0;
 	window->is_bg_rect =0;
-
+	window->multitext=NULL;
 
 	return window;
 }
