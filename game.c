@@ -327,13 +327,36 @@ int game_init(choiseWindowSign mainORLoad)
 //draw game and update ui_tree by cur_game
 int draw_game ()
 {
-	element_cntrl game_panel;
+	control *playerLabel_control=NULL;
+	element_cntrl game_panel=NULL,temp_elem=NULL;
+	char playerLabel[4];
 
 	clear_game_panel(ui_tree);
 	game_panel = (cur_game)->panel_function((cur_game)->board,makeMove);
 	if (game_panel==NULL){
 		return -1;
 	}
+	//label - player
+	playerLabel[0]=' ';
+	playerLabel[2]='1';
+	playerLabel[3]='\0';
+	if (cur_game->cur_player==-1){
+		playerLabel[1]='-';
+	}
+	else{
+		playerLabel[1]=' ';
+	}
+	playerLabel_control = new_label(620,0,25,25,"./gfx/playerArea.bmp",255,0,255,1,playerLabel);
+	if (playerLabel_control==NULL){
+		return -1;
+	}
+	temp_elem = new_control_element(playerLabel_control);
+	if (temp_elem==NULL){
+		return -1;
+	}
+	temp_elem->parent=game_panel;
+	add_control_element_to_list(game_panel->children,temp_elem);
+
 	add_control_element_to_list(ui_tree->children,game_panel);
 	game_panel->parent= ui_tree;
 	draw_ui_tree(ui_tree);

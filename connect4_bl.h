@@ -16,7 +16,6 @@ int *			get_initial_state_C4();
 linked_list		get_state_children_C4(int* matrix, int player,int *error);
 int				get_state_score_C4(int* game_matrix,int player);
 int*			get_difficulty_levels_C4();
-void			C4_draw_function();
 void init_col_heights_C4();
 
 int				is_victory_C4(int* game_state);

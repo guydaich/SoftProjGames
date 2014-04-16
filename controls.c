@@ -135,9 +135,9 @@ int get_text_position_multi(SDL_Rect *rect_source, char* text,TTF_Font *font, SD
 	rect_dest->y = rect_source->y+offset;
 	
 	/* check for overflow */
-	if (rect_dest->x + rect_dest->w > rect_source->w)
+	if ( rect_dest->w > rect_source->w)
 		return -1;
-	if (rect_dest->y + rect_dest->h > rect_source->w)
+	if (rect_dest->h > rect_source->w)
 		return -1;
 	
 	return 1;
