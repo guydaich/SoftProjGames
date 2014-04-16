@@ -242,7 +242,7 @@ int draw_caption_to_control_multi(control *cntrl)
 	//if (!is_valid_rect(&soure_rect))
 	//	return; 
 
-	TTF_Init();
+	//TTF_Init();
 	
 	font = TTF_OpenFont("arial.ttf", 16);
 	if (font == NULL) {

@@ -163,7 +163,6 @@ int  makeMove(int *choice,SDL_Event* test_event)
 	}
 	move_success = cur_game->handle_mouse_button_down(test_event, cur_game->board, cur_game->cur_player);		
 	if (move_success==0){
-		printf("logic fail in handle_mouse_button_down\n");
 		return 0; 
 	}
 	else if(move_success<0){
@@ -173,8 +172,6 @@ int  makeMove(int *choice,SDL_Event* test_event)
 		freeControlList(ui_tree);
 		return -1;
 	}
-	//ui_tree=draw_game( cur_game,ui_tree);
-	//SDL_Delay( 1000 );
 	cur_game->cur_player = (-1)*cur_game->cur_player;
 	if ( !cur_game->is_game_over( cur_game->board)){
 		if (cur_game->is_multiplayer==2 || cur_game->is_multiplayer==3){// playing against computer

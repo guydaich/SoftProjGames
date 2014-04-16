@@ -4,9 +4,9 @@ int rv_is_victory(int* game_state);
 
 element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_Event* test_event))
 {
-	control *rv_grid=NULL;
+	control *rv_grid=NULL,*temp_control=NULL;
 	control *rv_button=NULL;
-	element_cntrl root=NULL, grid=NULL, temp=NULL, children_panel=NULL;
+	element_cntrl root=NULL, grid=NULL, temp=NULL, children_panel=NULL,temp_elem=NULL;
 	linked_list_cntrl list=NULL;
 	int i=0,j=0,error=0;
  	
@@ -109,6 +109,22 @@ element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 		free(root);
 		return NULL;
 	}
+	//label - player
+	temp_control = new_label(620,0,25,25,"./gfx/generic_button.bmp",255,0,255,1,"1jlkjlkjkljlkj\n");
+	if (temp_control==NULL){
+		freeUnconnectedList(list);
+		free_control(root->cntrl);
+		free(root);
+		return NULL;
+	}
+	temp_elem = new_control_element(temp_control);
+	if (temp_elem==NULL){
+		freeUnconnectedList(list);
+		free_control(root->cntrl);
+		free(root);
+		return NULL;
+	}
+	add_control_element_to_list(list,temp_elem);
 	//update parent-children
 	set_list_as_children(list,children_panel);
 
