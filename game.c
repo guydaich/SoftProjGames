@@ -329,7 +329,9 @@ int draw_game ()
 {
 	control *playerLabel_control=NULL;
 	element_cntrl game_panel=NULL,temp_elem=NULL;
-	char playerLabel[4];
+	char *playerLabels[2]={P1,P2};
+	char *playerSourses[2];
+	int i=0;
 
 	clear_game_panel(ui_tree);
 	game_panel = (cur_game)->panel_function((cur_game)->board,makeMove);
@@ -337,16 +339,16 @@ int draw_game ()
 		return -1;
 	}
 	//label - player
-	playerLabel[0]=' ';
-	playerLabel[2]='1';
-	playerLabel[3]='\0';
 	if (cur_game->cur_player==-1){
-		playerLabel[1]='-';
+		playerSourses[0]=P_EMPTY;
+		playerSourses[1]=P_COLORED;
 	}
 	else{
-		playerLabel[1]=' ';
+		playerSourses[0]=P_COLORED;
+		playerSourses[1]=P_EMPTY;
 	}
-	playerLabel_control = new_label(620,0,25,25,"./gfx/playerArea.bmp",255,0,255,1,playerLabel);
+	for (i=0;i<2;i++){
+		playerLabel_control = new_label(160+300*i,2,100,30,playerSourses[i],255,0,255,1,playerLabels[i]);
 	if (playerLabel_control==NULL){
 		return -1;
 	}
@@ -356,6 +358,7 @@ int draw_game ()
 	}
 	temp_elem->parent=game_panel;
 	add_control_element_to_list(game_panel->children,temp_elem);
+	}
 
 	add_control_element_to_list(ui_tree->children,game_panel);
 	game_panel->parent= ui_tree;
