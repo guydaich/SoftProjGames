@@ -318,6 +318,7 @@ int game_init(choiseWindowSign mainORLoad)
 		freeControlList(ui_tree);
 		ui_tree=NULL;
 		free(cur_game);//checked for null before
+		gameNum--;
 		return -1;
 	}
 	return 0;
@@ -346,7 +347,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 	linked_list_cntrl list;
 	int i,error=0;
 	
-	root = new_control_element(new_window(0,0,250,500));
+	root = new_control_element(new_window(0,0,250,(iterationNum)*80));
 	if (root==NULL){
 		return NULL;
 	}
@@ -359,7 +360,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 	}
 
 	/*button panel*/
-	temp_control = new_panel(0,0,250,500,255,255,255,1);
+	temp_control = new_panel(0,0,250,(iterationNum)*80,220,220,220,1);
 	if (temp_control==NULL){
 		freeUnconnectedList(list);
 		free_control(root->cntrl);
@@ -383,7 +384,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 		free(root);
 		return NULL;
 	}
-	/*label - paint first*/
+	/*label - paint first
 	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
 	if (temp_control==NULL){
 		freeUnconnectedList(list);
@@ -399,6 +400,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 		return NULL;
 	}
 	add_control_element_to_list(list,temp_elem);
+	*/
 
 	for (i=1;i<=iterationNum;i++)
 	{
@@ -414,7 +416,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 		return NULL;
 	}
 	free(captionStart);
-	error=newButtonGeneric(list,20,400,CANCEL,runStartManu,0);
+	error=newButtonGeneric(list,20,20+(i-1)*50,CANCEL,runStartManu,0);
 	if (error<0){
 		//newButtonGeneric frees list 
 		free_control(root->cntrl);
@@ -432,7 +434,7 @@ element_cntrl startWindow(){
 	linked_list_cntrl list; 
 	int error;
 
-	root = new_control_element(new_window(0,0,200,400));
+	root = new_control_element(new_window(0,0,240,300));
 	if(root==NULL){
 		return NULL;
 	}
@@ -445,7 +447,7 @@ element_cntrl startWindow(){
 	}
 
 	/*button panel*/
-	temp_control = new_panel(0,0,200,400,255,255,255,1);
+	temp_control = new_panel(0,0,240,300,220,220,220,1);
 	if(temp_control==NULL){
 		freeUnconnectedList(list);
 		free_control(root->cntrl);
@@ -474,13 +476,13 @@ element_cntrl startWindow(){
 		free(root);
 		return NULL;
 	}
-	error=newButtonGeneric(list,20,100,LOAD,runLoadManu,0);
+	error=newButtonGeneric(list,20,80,LOAD,runLoadManu,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
-	error=newButtonGeneric(list,20,200,CANCEL,quitGame,0);
+	error=newButtonGeneric(list,20,160,CANCEL,quitGame,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);

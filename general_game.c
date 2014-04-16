@@ -169,6 +169,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 	else if(move_success<0){
 		printf("failed in handle_mouse_button_down\n");
 		free(cur_game);
+		gameNum--;
 		freeControlList(ui_tree);
 		return -1;
 	}
@@ -182,6 +183,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 				if (error<0){
 					printf("failed in handle_computer_move\n");
 					free(cur_game);
+					gameNum--;
 					freeControlList(ui_tree);
 					return -1;
 				}
@@ -191,6 +193,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 				if (error<0){
 					printf("failed in handle_computer_move\n");
 					free(cur_game);
+					gameNum--;
 					freeControlList(ui_tree);
 					return -1;
 				}
@@ -202,6 +205,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 	if (error<0){
 		printf("failed in draw_game\n");
 		free(cur_game);
+		gameNum--;
 		freeControlList(ui_tree);
 		return -1;
 	}
@@ -212,6 +216,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 			if (error<0){
 				printf("failed in victoryColor\n");
 				free(cur_game);
+				gameNum--;
 				freeControlList(ui_tree);
 				return -1;
 			}
@@ -221,6 +226,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 			if (error<0){
 				printf("failed in victoryColor\n");
 				free(cur_game);
+				gameNum--;
 				freeControlList(ui_tree);
 				return -1;
 			}
@@ -231,6 +237,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 			if (error<0){
 				printf("failed in makeing draw button\n");
 				free(cur_game);
+				gameNum--;
 				freeControlList(ui_tree);
 				return -1;
 			}
@@ -269,6 +276,7 @@ int  setmultiplayer(int *choice,SDL_Event* test_event)
 int  chooseGame(int *choice,SDL_Event* test_event)
 {
 	free(cur_game);
+	gameNum--;
 	cur_game=new_game(*choice);
 	if(cur_game==NULL){
 		return -1;
@@ -426,6 +434,7 @@ int setUnpause(int *choice,SDL_Event* test_event){
 	error=draw_game();
 	if (error<0){
 		free(cur_game);
+		gameNum--;
 		freeControlList(ui_tree);
 		return -1;
 	}

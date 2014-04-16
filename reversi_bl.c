@@ -243,11 +243,11 @@ int rv_get_state_score(int* game_state,int player)
 			else if (game_state[i*REVERSI_ROWS + j] == (-1)*player)
 			{
 				score -= region_scores[i][j];
+			}
 		}
 	}
-	}
-		return score;
-	}
+	return score;
+}
 
 int* rv_get_difficulty_levels()
 {
@@ -506,9 +506,6 @@ int rv_handle_computer_turn(int* game_state, int depth,int player)
 	}
 	if (comp_move<0){
 		return -1;
-	}
-	else if (comp_move==0){
-		return -2;
 	}
 	if (!rv_is_valid_move(game_state,player,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS)){
 		return -2;
