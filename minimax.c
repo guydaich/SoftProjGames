@@ -37,10 +37,12 @@ int get_computer_move(int * game_matrix,int depth,linked_list (*create_children)
 	int cMove = 0,error=0;
 	vertex root = build_tree(game_matrix, -1,create_children);
 	if (root == NULL){
+		printf("make root failed\n");
 		return -1;
 	}
 	alphaBeta(root,INT_MIN,INT_MAX,-1,0,depth,create_children,&error);
 	if(error==-1){
+		printf("alphaBeta failed\n");
 		remove_tree(root, 1,1);
 		return -1;
 	}

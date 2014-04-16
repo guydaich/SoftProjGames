@@ -140,12 +140,14 @@ int saveGame(int *choice,SDL_Event* test_event)
 			error=write_game_to_file(fileLocation,cur_game->board,cur_game->cur_player,
 						cur_game->cols,cur_game->rows,(cur_game->get_name()));
 			if(error<0){
+				printf("failed to write to file after asking\n");
 				free(fileLocation);
 				return -1;
 			}
 		}
 	}
 	else if(onTopOf<0){
+		printf("failed to write to file\n");
 		free(fileLocation);
 		return -1;
 	}
@@ -161,9 +163,11 @@ int  makeMove(int *choice,SDL_Event* test_event)
 	}
 	move_success = cur_game->handle_mouse_button_down(test_event, cur_game->board, cur_game->cur_player);		
 	if (move_success==0){
+		printf("logic fail in handle_mouse_button_down\n");
 		return 0; 
 	}
 	else if(move_success<0){
+		printf("failed in handle_mouse_button_down\n");
 		free(cur_game);
 		freeControlList(ui_tree);
 		return -1;
@@ -176,6 +180,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 			if (cur_game->cur_player==1){
 				error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
 				if (error<0){
+					printf("failed in handle_computer_move\n");
 					free(cur_game);
 					freeControlList(ui_tree);
 					return -1;
@@ -184,6 +189,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 			else {
 				error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
 				if (error<0){
+					printf("failed in handle_computer_move\n");
 					free(cur_game);
 					freeControlList(ui_tree);
 					return -1;
@@ -194,6 +200,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 	}
 	error=draw_game();
 	if (error<0){
+		printf("failed in draw_game\n");
 		free(cur_game);
 		freeControlList(ui_tree);
 		return -1;
@@ -203,6 +210,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 		if (cur_game->is_victory( cur_game->board) == 1){
 			error=cur_game->victoryColor(cur_game->board,1,ui_tree);
 			if (error<0){
+				printf("failed in victoryColor\n");
 				free(cur_game);
 				freeControlList(ui_tree);
 				return -1;
@@ -211,6 +219,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 		else if (cur_game->is_victory( cur_game->board) == -1){
 			error=cur_game->victoryColor(cur_game->board,-1,ui_tree);
 			if (error<0){
+				printf("failed in victoryColor\n");
 				free(cur_game);
 				freeControlList(ui_tree);
 				return -1;
@@ -220,6 +229,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 		{
 			error=newButtonGeneric(ui_tree->children,300,480,"draw",restartGame,0);
 			if (error<0){
+				printf("failed in makeing draw button\n");
 				free(cur_game);
 				freeControlList(ui_tree);
 				return -1;

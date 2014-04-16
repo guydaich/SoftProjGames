@@ -29,7 +29,8 @@ int gui_init()
 		printf("ERROR: unable to init SDL: %s\n",SDL_GetError());
 		return -1;
 	}
-
+	freopen("CON","w",stdout);//make log files
+	freopen("CON","w",stderr);
 	return 1;
 }
 
@@ -60,6 +61,7 @@ int main( int argc, char* args[] )
 				}
 				error=pressed_Button->cntrl->pressedButton(&pause,&test_event);
 				if (error<0 ||cur_game==NULL){
+					printf("a chaceAble error occured\n");
 					return 0;
 				}
 				break;

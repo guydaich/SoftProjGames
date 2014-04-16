@@ -15,6 +15,7 @@ int* ttc_get_initial_state()
 	int* initial_board;
 	initial_board = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
 	if(initial_board==NULL){
+		printf("failed to make board(calloc) in ttc_get_initial_state\n");
 		return NULL;
 	}
 
@@ -33,6 +34,7 @@ int* ttc_copy_and_make_move(int* game_state, int move_row, int move_col, int pla
 	int i=0,j=0;
 	int* copied_state = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
 	if (copied_state==NULL){
+		printf("failed to make board(calloc) in ttc_copy_and_make_move\n");
 		return NULL;
 	}
 	for (i=0; i< TIC_TAC_TOE_ROWS; i++)
@@ -302,7 +304,7 @@ int ttc_is_victory_player(int* game_state, int player)
 
 int	ttc_handle_computer_turn(int* game_state, int depth,int player)
 {
-	int comp_move;
+	int comp_move=0;
 	if (player==-1){
 		comp_move = get_computer_move(game_state, depth, ttc_get_state_children);
 	}
@@ -310,10 +312,8 @@ int	ttc_handle_computer_turn(int* game_state, int depth,int player)
 		comp_move=get_suggested_move(game_state,depth, ttc_get_state_children);
 	}
 	if (comp_move<0){
+		printf("failure in ttc_handle_computer_turn(minimax)\n");
 		return -1;
-	}
-	else if (comp_move==0){
-		return -2;
 	}
 	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,player);
 	return 0;
