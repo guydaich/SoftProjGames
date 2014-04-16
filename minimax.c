@@ -5,11 +5,11 @@
 
 #include "minimax.h"
 
-vertex mainRoot;
-int boardCount;
-int numOfElemmalList;
-int numOfNodemal;
-int numE;
+vertex mainRoot=NULL;
+int boardCount=0;
+int numOfElemmalList=0;
+int numOfNodemal=0;
+int numE=0;
 
 /* ---- Interface functions ---- */
 
@@ -19,10 +19,12 @@ int get_suggested_move(int * game_matrix, int depth,linked_list (*create_childre
 	int cMove = 0,error=0; 
 	vertex root = build_tree(game_matrix, 1,create_children);	// build tree
 	if (root == NULL){
+		printf("make root failed\n");
 		return -1;
 	}
 	alphaBeta(root,INT_MIN,INT_MAX,1,0,depth,create_children,&error);								// update scores in the tree
 	if(error==-1){
+		printf("alphaBeta failed\n");
 		remove_tree(root, 1,1);
 		return -1;
 	}
@@ -79,10 +81,12 @@ vertex build_tree(int * game_matrix, int player,linked_list (*create_children)(i
 	int error=0;
 	vertex root = make_node(0, game_matrix,0); 			// new root 
 	if (root == NULL){
+		printf("ERROR: can't create root\n");
 		return NULL;
 	}
 	new_children=create_children(root->game_state, player,&error);
 	if (error<0){
+		printf("ERROR: can't create children for root\n");
 		remove_tree(root,1,0);
 		return NULL;
 	}
@@ -222,6 +226,7 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,
 				int create_childrenError=0;
 				new_children=create_children(child->game_state, player*-1,&create_childrenError);			// add children
 				if(create_childrenError==-1){
+					printf("ERROR: can't create children\n");
 					*error=-1;
 					return 0;
 				}
@@ -260,6 +265,7 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,
 				int create_childrenError=0;
 				new_children=create_children(child->game_state, player*-1,&create_childrenError);			// add children
 				if(create_childrenError==-1){
+					printf("ERROR: can't create children\n");
 					*error=-1;
 					return 0;
 				}

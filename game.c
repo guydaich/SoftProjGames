@@ -29,8 +29,8 @@ int gui_init()
 		printf("ERROR: unable to init SDL: %s\n",SDL_GetError());
 		return -1;
 	}
-	freopen("CON","w",stdout);//make log files
-	freopen("CON","w",stderr);
+	//freopen("CON","w",stdout);//make log files
+	//freopen("CON","w",stderr);
 	return 1;
 }
 
@@ -61,7 +61,7 @@ int main( int argc, char* args[] )
 				}
 				error=pressed_Button->cntrl->pressedButton(&pause,&test_event);
 				if (error<0 ||cur_game==NULL){
-					printf("a chaceAble error occured\n");
+					printf("a catchAble error occured\n");
 					return 0;
 				}
 				break;
@@ -414,7 +414,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 		return NULL;
 	}
 	free(captionStart);
-	error=newButtonGeneric(list,20,400,CANCEL,quitGame,0);
+	error=newButtonGeneric(list,20,400,CANCEL,runStartManu,0);
 	if (error<0){
 		//newButtonGeneric frees list 
 		free_control(root->cntrl);
@@ -635,6 +635,11 @@ int askWindow(char *qustion,qustionWindowsSgin flag){
 	element_cntrl root;
 	control* temp_control;
 	linked_list_cntrl list; 
+
+	if (ui_tree!=NULL){
+		freeControlList(ui_tree);
+		ui_tree=NULL;
+	}
 
 	root = new_control_element(new_window(0,0,500,250));
 	if(root==NULL){

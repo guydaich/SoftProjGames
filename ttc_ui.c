@@ -3,26 +3,29 @@
 
 element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_Event* test_event))
 { 
-	control *ttc_grid;
-	control *ttc_button;
-	element_cntrl root, grid, temp, children_panel;
-	linked_list_cntrl list;
-	int i,j,error =0;
+	control *ttc_grid=NULL;
+	control *ttc_button=NULL;
+	element_cntrl root=NULL, grid=NULL, temp=NULL, children_panel=NULL;
+	linked_list_cntrl list=NULL;
+	int i=0,j=0,error =0;
  	
 	/* main panel */
 	root = new_control_element(new_panel(0,0,600,600,255,255,255,1));
 	if (root==NULL){
+		printf("can't make root in ttc_panel_function\n");
 		return NULL;
 	}
 	/*grid picture as panel child*/
 	list = new_control_list();
 	if (list==NULL){
+		printf("can't make list for root in ttc_panel_function\n");
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
 	ttc_grid = new_button(0,0,TTC_GRIDPATH,0,"",1);	
 	if (ttc_grid==NULL){
+		printf("can't make ttc_grid in ttc_panel_function\n");
 		freeUnconnectedList(list);
 		free_control(root->cntrl);
 		free(root);
@@ -31,6 +34,7 @@ element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_
 	ttc_grid->pressedButton=makeMove;
 	grid = new_control_element(ttc_grid);
 	if (grid==NULL){
+		printf("can't make control element for ttc_grid in ttc_panel_function\n");
 		freeUnconnectedList(list);
 		free_control(root->cntrl);
 		free(root);
@@ -41,12 +45,14 @@ element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_
 	/*pieces panel, as grid child*/
 	children_panel = new_control_element(new_panel(50,50,600,600,255,255,255,0));
 	if (children_panel==NULL){
+		printf("can't make children_panel in ttc_panel_function\n");
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
 	list = new_control_list();
 	if (list==NULL){
+		printf("can't make list for ttc_grid in ttc_panel_function\n");
 		free_control(children_panel->cntrl);
 		free(children_panel);
 		free_control(root->cntrl);
@@ -59,6 +65,7 @@ element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_
 	/*create grid children*/
 	list = new_control_list();
 	if (list==NULL){
+		printf("can't make list for children_panel in ttc_panel_function\n");
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
@@ -80,9 +87,15 @@ element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_
 			if (ttc_button != NULL)
 			{
 				temp = new_control_element(ttc_button);
+				if (temp==NULL){
+					printf("can't make control element for piece in ttc_panel_function\n");
+					error=1;
+					break;
+				}
 				add_control_element_to_list(list,temp);
 			}
 			else if(game_state[i*TIC_TAC_TOE_ROWS + j]==TTC_PLAYER_1 || game_state[i*TIC_TAC_TOE_ROWS + j] == TTC_PLAYER_2){
+				printf("can't make piece in ttc_panel_function\n");
 				error=1;
 				break;
 			}
@@ -106,10 +119,9 @@ element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_
 /* detect the winning configuration of the game
  * update winning pieces to red background */
 int color_ttc(int* game_state,int player,element_cntrl ui_tree){
-	element_cntrl gamePanel;
-	int i,j,flag;
-	int error; 
-	/* check lines */	
+	element_cntrl gamePanel=NULL;
+	int i=0,j=0,flag=1;
+	int error=0; 	
 	
 	gamePanel=ui_tree->children->tail;
 		// check rows
@@ -128,6 +140,7 @@ int color_ttc(int* game_state,int player,element_cntrl ui_tree){
 			for(j=0; j< TIC_TAC_TOE_COLS; j++){
 				error=set_victory_control(i,j,gamePanel,player);
 				if (error==-1){
+					printf("failed to draw victory\n");
 					return -1;
 				}
 			}
@@ -151,6 +164,7 @@ int color_ttc(int* game_state,int player,element_cntrl ui_tree){
 			for(j=0; j< TIC_TAC_TOE_ROWS; j++){
 				error=set_victory_control(j,i,gamePanel,player);
 				if (error==-1){
+					printf("failed to draw victory\n");
 					return -1;
 				}
 			}
@@ -172,6 +186,7 @@ int color_ttc(int* game_state,int player,element_cntrl ui_tree){
 		for (i=0; i< TIC_TAC_TOE_ROWS; i++){
 			error=set_victory_control(i,i,gamePanel,player);
 			if (error==-1){
+				printf("failed to draw victory\n");
 				return -1;
 			}
 		}
@@ -193,11 +208,13 @@ int color_ttc(int* game_state,int player,element_cntrl ui_tree){
 		for (i= TIC_TAC_TOE_ROWS -1; i >=0 ; i--){
 			error=set_victory_control(i,TIC_TAC_TOE_ROWS-i-1,gamePanel,player);
 			if (error==-1){
+				printf("failed to draw victory\n");
 				return -1;
 			}
 		}
 		return 0;
 	}
+	printf("ERROR: color_ttc was called but there is no victory\n");
 	return -2;
 }
 
@@ -206,7 +223,7 @@ int color_ttc(int* game_state,int player,element_cntrl ui_tree){
  * a striked child underneath*/
 int set_victory_control(int i,int j,element_cntrl game_panel,int player){
 	element_cntrl ttc_button;
-	int k;
+	int k=0;
 
 	/* TTC pieces in ui tree */
 	ttc_button=game_panel->children->head->children->head->children->head;
@@ -220,6 +237,7 @@ int set_victory_control(int i,int j,element_cntrl game_panel,int player){
 		}
 		ttc_button=ttc_button->next;
 		if(ttc_button==NULL){
+			printf("ERROR: failed to find \"piece of victory\" at row %d and colunm %d in set_victory_control(ttc)\n",i,j);
 			return -1;
 		}
 	}
@@ -232,6 +250,7 @@ int set_victory_control(int i,int j,element_cntrl game_panel,int player){
 		ttc_button->cntrl=new_button(ttc_button->cntrl->x,
 			ttc_button->cntrl->y,TTC_BTNXPATH_VICTORY,1,NULL,0);
 		if(ttc_button==NULL){
+			printf("ERROR: failed to make button for \"piece of victory\" at row %d and colunm %d in set_victory_control(ttc)\n",i,j);
 			return -1;
 		}
 	}
@@ -242,6 +261,7 @@ int set_victory_control(int i,int j,element_cntrl game_panel,int player){
 		ttc_button->cntrl=new_button(ttc_button->cntrl->x,
 			ttc_button->cntrl->y,TTC_BTNOPATH_VICTORY,1,NULL,0); 
 		if(ttc_button==NULL){
+			printf("ERROR: failed to make button for \"piece of victory\" at row %d and colunm %d in set_victory_control(ttc)\n",i,j);
 			return -1;
 		}
 	}

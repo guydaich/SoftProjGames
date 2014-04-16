@@ -3,7 +3,7 @@
 
 
 int saveGameinFile(char* filename, int *game_state, int player, int cols, int rows,char *gameName){
-	FILE *file;
+	FILE *file=NULL;
 
 	file = fopen(filename, "r");
 	if(file!=NULL){
@@ -18,13 +18,14 @@ int saveGameinFile(char* filename, int *game_state, int player, int cols, int ro
 
 int write_game_to_file(char* filename, int *game_state, int player, int cols, int rows,char *gameName)
 {
-	FILE *file; 
+	FILE *file=NULL; 
 	int i=0,j=0;
 	
 	/* open file for writing */
 	file = fopen(filename, "w");
 	if (file == NULL)//the file already exists
 	{ 
+		printf("ERROR: can't open the file in order to save\n");
 		return -1;
 	}
 	fprintf(file, "%s\n",gameName);//print Game name
@@ -48,18 +49,21 @@ int load_game_from_file(char* filename, whichGame* whichG,int** board,int *playe
 	file = fopen(filename, "r");
 	if (file == NULL)
 	{ 
+		printf("ERROR: can't open load file\n");
 		return -2;
 	}
 	fscanf(file,"%s",getName);
 	printf("%s\n",getName);
 	fscanf(file,"%d",player);
 	if (*player!=-1 && *player!=1){
+		printf("ERROR: load file in wrong format\n");
 		return -2;
 	}
 	else if(strcmp(getName,"Connect4")==0){
 		*whichG=CONNECT4;
 		gameBoard=(int*)calloc(CONNECT4_COLS*CONNECT4_GROWS,sizeof(int));
 		if (gameBoard==NULL){
+			printf("ERROR: failed to allocae board in load_game_from_file\n");
 			return -1;
 		}
 		error=fill_matrix_loaded(file,gameBoard,CONNECT4_COLS,CONNECT4_GROWS);
@@ -69,6 +73,7 @@ int load_game_from_file(char* filename, whichGame* whichG,int** board,int *playe
 		*whichG=TTC;
 		gameBoard=(int*)calloc(TTT_COLS*TTT_ROWS,sizeof(int));
 		if (gameBoard==NULL){
+			printf("ERROR: failed to allocae board in load_game_from_file\n");
 			return -1;
 		}
 		error=fill_matrix_loaded(file,gameBoard,TTT_COLS,TTT_ROWS);
@@ -78,15 +83,18 @@ int load_game_from_file(char* filename, whichGame* whichG,int** board,int *playe
 		*whichG=REVERSI;
 		gameBoard=(int*)calloc(REVERSI_COLS*REVERSI_ROWS,sizeof(int));
 		if (gameBoard==NULL){
+			printf("ERROR: failed to allocae board in load_game_from_file\n");
 			return -1;
 		}
 		error=fill_matrix_loaded(file,gameBoard,REVERSI_COLS,REVERSI_ROWS);
 		//set functions to curr game functions and game board and player
 	}
 	else{
+		printf("ERROR: load file in wrong format\n");
 		return -2;
 	}
 	if (error==-1){
+		printf("ERROR: load file in wrong format\n");
 		return -2;
 	}
 	*board=gameBoard;

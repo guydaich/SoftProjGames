@@ -355,6 +355,10 @@ int loadGame(int *choice,SDL_Event* test_event)
 	error=load_game_from_file(fileLocation,&whichGame,&gameBoard,&player);
 	if (error==-2){
 		askWindow("the game is either corrupt or non-exsistant",OK_SIGN);
+		error=runStartManu(choice,test_event);
+		if (error<0){
+			return -1;
+		}
 		cur_game=NULL;
 		return 0;
 	}

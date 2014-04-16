@@ -67,9 +67,9 @@ int rv_make_node(int* game_state, int row, int col, int player)
 
 int rv_add_to_children_list(linked_list list, int* game_state, int row, int col, int player)
 {
-	int* moved_state;
-	vertex node;
-	element new_elem,prev_tail;
+	int* moved_state=NULL;
+	vertex node=NULL;
+	element new_elem=NULL,prev_tail=NULL;
 
 	moved_state = rv_copy_and_make_move(game_state,row,col,player);
 	if(moved_state==NULL){
@@ -116,8 +116,8 @@ int rv_add_to_children_list(linked_list list, int* game_state, int row, int col,
 
 linked_list rv_get_state_children(int* game_state, int player,int *error)
 {
-	int i,j,return_value=1;
-	element run_elem;
+	int i=0,j=0,return_value=0;
+	element run_elem=NULL;
 	linked_list list = new_list();
 	
 	for (i=0; i < REVERSI_ROWS; i++)
@@ -138,7 +138,6 @@ linked_list rv_get_state_children(int* game_state, int player,int *error)
 			break;
 		}
 	}
-
 	if (return_value==-1){
 		for (run_elem=list->head;run_elem!=NULL && run_elem->next!=NULL;run_elem=run_elem->next){
 			free(run_elem->node->game_state);
@@ -155,6 +154,11 @@ linked_list rv_get_state_children(int* game_state, int player,int *error)
 		}
 		*error=-1;
 		return NULL;
+	}
+	else if (list->head==NULL){
+		if (rv_player_has_moves(game_state,(-1)*player)==1){//pass move
+			rv_add_to_children_list(list,game_state,-1,-1,player);
+		}
 	}
 	*error=0;
 	return list;
@@ -177,7 +181,9 @@ int* rv_copy_and_make_move(int* game_state, int move_row, int move_col, int play
 			copied_state[i*REVERSI_ROWS + j] = game_state[i*REVERSI_ROWS + j]; 
 		}
 	}
-	
+	if (move_row==-1 && move_col==-1){//pass 
+		return copied_state;
+	}
 	/*make new move - turning enemy pieces as you go*/
 	rv_make_move(copied_state,move_row,move_col,player);
 
@@ -234,18 +240,14 @@ int rv_get_state_score(int* game_state,int player)
 			{
 				score += region_scores[i][j];
 			}
+			else if (game_state[i*REVERSI_ROWS + j] == (-1)*player)
+			{
+				score -= region_scores[i][j];
 		}
 	}
-	
-	if (player==REVERSI_PLAYER_2)
-	{
-		return (-1)* score;
 	}
-	else 
-	{
 		return score;
 	}
-}
 
 int* rv_get_difficulty_levels()
 {
@@ -255,7 +257,7 @@ int* rv_get_difficulty_levels()
 /*get a position, flips other player's pieces*/
 int rv_make_move(int* game_state, int rows, int cols, int player)
 {
-	int i,t_rows,t_cols, length;
+	int i=0,t_rows=-1,t_cols=-1, length=0;
 	int other = player*(-1); 
 
 	if (!rv_is_valid_move(game_state,player,rows,cols))
