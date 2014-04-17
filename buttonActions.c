@@ -55,16 +55,16 @@ int goToMainMenu(int *choice,SDL_Event* test_event)
  * slot. returns -1 on failure*/
 int saveGame(int *choice,SDL_Event* test_event)
 {
-	int onTopOf,userAnswer,error;
+	int onTopOf=0,userAnswer=0,error=0;
 	/*allocate file path*/
 	char* fileLocation=(char *)malloc(36);
 	sprintf(fileLocation,"/home/davidl/load%d.txt",*choice);
 	/*check is save over-writes*/
 	onTopOf=save_game_in_file(fileLocation,cur_game->board,cur_game->cur_player,
 						cur_game->cols,cur_game->rows,(cur_game->get_name()));
-	/*ask user to overwrite*/
 	if(onTopOf==1)
 	{
+         //ask user if he want s to overwrite
 		freeControlList(ui_tree);
 		userAnswer=askWindow("This file already exist.\nDo you wish to overwrite?",OVERWRITE_SIGN);
 		if (userAnswer < 0)
@@ -180,8 +180,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 				return -1;
 			}
 		}
-		/*otherwise, add to ui a tie-message*/
-		else
+		else //if tie, add to ui a tie-message
 		{
 			error=newButtonGeneric(ui_tree->children,300,480,"draw",restartGame,0);
 			if (error<0){
@@ -330,8 +329,6 @@ int loadGame(int *choice,SDL_Event* test_event)
 	sprintf(fileLocation,"/home/davidl/load%d.txt",*choice);
 	/*try loading from file*/
 	error=load_game_from_file(fileLocation,&whichGame,&gameBoard,&player);
-	
-	/*logical error - notify user only*/
 	if (error==-2){
 		error = askWindow("the game is either corrupt or doesn't exist",OK_SIGN);
 		if (error<0)
@@ -421,8 +418,6 @@ int setUnpause(int *choice,SDL_Event* test_event){
 		/*try to repaint GUI*/
 		error=draw_game();
 	}
-	}
-	/*try to repaint GUI*/
 	if (error<0){
 		free(cur_game);
 		gameNum--;

@@ -88,13 +88,13 @@ game* new_game(whichGame game_id)
 		return NULL;
 	}
 	new_game_obj->difficultyP1=new_game_obj->get_difficulty_levels()[0];
-	if (new_game_obj->difficultyP1 == NULL)
+	if (new_game_obj->difficultyP1 >9 || new_game_obj->difficultyP1 <1)
 	{
 		printf("ERROR: could not get initial Difficulty for Player");
 		return NULL;
 	}
 	new_game_obj->difficultyP2=new_game_obj->get_difficulty_levels()[0];
-	if (new_game_obj->difficultyP1 == NULL)
+	if (new_game_obj->difficultyP2 >9 || new_game_obj->difficultyP2 <1)
 	{
 		printf("ERROR: could not get initial Difficulty for Player");
 		return NULL;
@@ -104,7 +104,7 @@ return new_game_obj;
 
 }
 
-/* hanfle an AI v AI game*/
+/* hanfde an AI v AI game*/
 int handelAI_VS_AI(int *pause){
 	int error;
 	/*if game over, terminate*/
