@@ -50,7 +50,7 @@ int saveGame(int *choice,SDL_Event* test_event)
 	int onTopOf,userAnswer,error;
 	char* fileLocation=(char *)malloc(36);
 	sprintf(fileLocation,"C:/Users/davidl/Documents/gameSavings/load%d.txt",*choice);
-	onTopOf=saveGameinFile(fileLocation,cur_game->board,cur_game->cur_player,
+	onTopOf=save_game_in_file(fileLocation,cur_game->board,cur_game->cur_player,
 						cur_game->cols,cur_game->rows,(cur_game->get_name()));
 	if(onTopOf==1){
 		freeControlList(ui_tree);

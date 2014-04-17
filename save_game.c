@@ -1,114 +1,149 @@
 #include "save_game.h"
 //<unistd.h>
 
-
-int saveGameinFile(char* filename, int *game_state, int player, int cols, int rows,char *gameName){
+/* given a game specifier, game state and file name
+ * function creates a saved-game file in provided file path
+ * returns 0 on success, -1 on save failurem and 1 if file not available*/
+int save_game_in_file(char* filename, int *game_state, int player, int cols, int rows,char *game_name)
+{
 	FILE *file=NULL;
-
+	/*open read, check existence*/
 	file = fopen(filename, "r");
 	if(file!=NULL){
 		fclose(file);
 		return 1;
 	}
 	else {
-		if(write_game_to_file(filename,game_state,player,cols,rows,gameName)==0) return 0;
-		else return -1;
+		/*try save*/
+		if(write_game_to_file(filename,game_state,player,cols,rows,game_name)==0) 
+		{
+			if (file != NULL)
+				fclose(file);
+			return 0;
+		}
+		if (file != NULL)
+				fclose(file);
+		return -1;
+
 	}
 }
 
-int write_game_to_file(char* filename, int *game_state, int player, int cols, int rows,char *gameName)
+/*given a game specifier, game state and file name
+ * function creates a saved-game file in provided file path
+ * returns 0 on success, -1 on save failurem and 1 if file not available**/
+int write_game_to_file(char* filename, int *game_state, int player, int cols, int rows,char *game_name)
 {
 	FILE *file=NULL; 
 	int i=0,j=0;
 	
 	/* open file for writing */
 	file = fopen(filename, "w");
-	if (file == NULL)//the file already exists
+	/* file exists, so open failed on some other issue*/
+	if (file == NULL) 
 	{ 
 		printf("ERROR: can't open the file in order to save\n");
 		return -1;
 	}
-	fprintf(file, "%s\n",gameName);//print Game name
-	fprintf(file, "%d\n",player);//print player
+	/*print Game, Player*/
+	fprintf(file, "%s\n",game_name);
+	fprintf(file, "%d\n",player);
+	/*print board*/
 	for(i=0;i<rows;i++){
 		for(j=0;j<cols;j++){
 			fprintf(file,"%d ",game_state[i*cols+j]);
 		}
 		fprintf(file, "\n");
 	}
+	/*close and terminate*/
 	fclose(file);
 	return 0;
 }
 
-int load_game_from_file(char* filename, whichGame* whichG,int** board,int *player){
+/* given a save file, game specifier, and board pointer
+ * loads game content to board. 
+ * return 0 on success, -1 on fatal error, -2 on format, file errors */
+int load_game_from_file(char* filename, whichGame* whichG,int** board,int *player)
+{
 	FILE *file; 
-	char getName[MAX_NAME_SIZE];
-	int *gameBoard;
+	char new_game_name[MAX_NAME_SIZE];
+	int *game_board;
 	int error;
 
+	/*check file existence*/
 	file = fopen(filename, "r");
 	if (file == NULL)
 	{ 
 		printf("ERROR: can't open load file\n");
 		return -2;
 	}
-	fscanf(file,"%s",getName);
-	printf("%s\n",getName);
+	/*scan game attributes*/
+	fscanf(file,"%s",new_game_name);
+	printf("%s\n",new_game_name);
 	fscanf(file,"%d",player);
+
+	
+	/* validate players are legal*/
 	if (*player!=-1 && *player!=1){
 		printf("ERROR: load file in wrong format\n");
 		return -2;
 	}
-	else if(strcmp(getName,"Connect4")==0){
+
+	/*validate game name, set game specifier to relevant game, 
+	assign game board and load game state accordint to file*/
+	else if(strcmp(new_game_name,"Connect4")==0){
 		*whichG=CONNECT4;
-		gameBoard=(int*)calloc(CONNECT4_COLS*CONNECT4_GROWS,sizeof(int));
-		if (gameBoard==NULL){
+		game_board=(int*)calloc(CONNECT4_COLS*CONNECT4_GROWS,sizeof(int));
+		if (game_board==NULL){
 			printf("ERROR: failed to allocae board in load_game_from_file\n");
 			return -1;
 		}
-		error=fill_matrix_loaded(file,gameBoard,CONNECT4_COLS,CONNECT4_GROWS);
-		//set functions to curr game functions and game board and player
+		error=fill_matrix_loaded(file,game_board,CONNECT4_COLS,CONNECT4_GROWS);
 	}
-	else if(strcmp(getName,"Tic-Tac-Toe")==0){
+	else if(strcmp(new_game_name,"Tic-Tac-Toe")==0){
 		*whichG=TTC;
-		gameBoard=(int*)calloc(TTT_COLS*TTT_ROWS,sizeof(int));
-		if (gameBoard==NULL){
+		game_board=(int*)calloc(TTT_COLS*TTT_ROWS,sizeof(int));
+		if (game_board==NULL){
 			printf("ERROR: failed to allocae board in load_game_from_file\n");
 			return -1;
 		}
-		error=fill_matrix_loaded(file,gameBoard,TTT_COLS,TTT_ROWS);
-		//set functions to curr game functions and game board and player
+		error=fill_matrix_loaded(file,game_board,TTT_COLS,TTT_ROWS);
 	}
-	else if(strcmp(getName,"Reversi")==0){
+	else if(strcmp(new_game_name,"Reversi")==0){
 		*whichG=REVERSI;
-		gameBoard=(int*)calloc(REVERSI_COLS*REVERSI_ROWS,sizeof(int));
-		if (gameBoard==NULL){
+		game_board=(int*)calloc(REVERSI_COLS*REVERSI_ROWS,sizeof(int));
+		if (game_board==NULL){
 			printf("ERROR: failed to allocae board in load_game_from_file\n");
 			return -1;
 		}
-		error=fill_matrix_loaded(file,gameBoard,REVERSI_COLS,REVERSI_ROWS);
-		//set functions to curr game functions and game board and player
+		error=fill_matrix_loaded(file,game_board,REVERSI_COLS,REVERSI_ROWS);
 	}
-	else{
+	/*game name wrong*/
+	else 
+	{
 		printf("ERROR: load file in wrong format\n");
 		return -2;
 	}
+	/*if game state creation failed, return error*/
 	if (error==-1){
 		printf("ERROR: load file in wrong format\n");
 		return -2;
 	}
-	*board=gameBoard;
+	/*success*/
+	*board=game_board;
 	return 0;
 }
 
-int fill_matrix_loaded(FILE *file,int *gameMatrix,int cols,int rows){
+/*given a File, matrix and sizes
+* scans saved board to matrix */
+int fill_matrix_loaded(FILE *file,int *game_matrix,int cols,int rows)
+{
 	int i,j,temp;
 	for(i=0;i<rows;i++){
 		for(j=0;j<cols;j++){
 			fscanf(file,"%d ",&temp);
 			if (temp!=1 && temp!=0 && temp!=-1)
 				return -1;
-			gameMatrix[i*(cols)+j]=temp;
+			game_matrix[i*(cols)+j]=temp;
 		}
 	}
 	return 0;

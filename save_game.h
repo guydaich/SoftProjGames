@@ -17,8 +17,8 @@
 #define REVERSI_ROWS 8
 
 
-int write_game_to_file(char* filename, int *game_state, int player, int cols, int rows,char *gameName);
+int write_game_to_file(char* filename, int *game_state, int player, int cols, int rows,char *new_game_name);
 int load_game_from_file(char* filename, whichGame* whichG,int** board,int *player);
-int fill_matrix_loaded(FILE *file,int *gameMatrix,int cols,int rows);
-int saveGameinFile(char* filename, int *game_state, int player, int cols, int rows,char *gameName);
+int fill_matrix_loaded(FILE *file,int *game_matrix,int cols,int rows);
+int save_game_in_file(char* filename, int *game_state, int player, int cols, int rows,char *new_game_name);
 #endif
