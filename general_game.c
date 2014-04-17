@@ -18,6 +18,7 @@ game* new_game(whichGame game_id)
 {
 	game *new_game_obj = (game*)malloc(sizeof(game));  //TODO check new_game_obj!=NULL
 	gameNum++;
+	/*assign game specific pointers, constants, etc.*/
 	switch (game_id)
 	{
 	case TTC:
@@ -79,21 +80,38 @@ game* new_game(whichGame game_id)
 	default:
 		break;
 	}
-
+	/*when init and difficulties are available, assign them to the board*/
 	new_game_obj->board = new_game_obj->get_initial_state();
+	if (new_game_obj->board == NULL)
+	{
+		printf("ERROR: could not get initial game board");
+		return NULL;
+	}
 	new_game_obj->difficultyP1=new_game_obj->get_difficulty_levels()[0];
+	if (new_game_obj->difficultyP1 == NULL)
+	{
+		printf("ERROR: could not get initial Difficulty for Player");
+		return NULL;
+	}
 	new_game_obj->difficultyP2=new_game_obj->get_difficulty_levels()[0];
+	if (new_game_obj->difficultyP1 == NULL)
+	{
+		printf("ERROR: could not get initial Difficulty for Player");
+		return NULL;
+	}
 
 return new_game_obj;
 
 }
 
+/* hanfle an AI v AI game*/
 int handelAI_VS_AI(int *pause){
 	int error;
-	
+	/*if game over, terminate*/
 	if (cur_game->is_game_over( cur_game->board)==1){
 		return 0;
 	}
+	/*attempt move according to player*/
 	if ((cur_game)->cur_player==1){
 		error=cur_game->handle_computer_move(cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
 		if (error<0){
@@ -108,9 +126,11 @@ int handelAI_VS_AI(int *pause){
 			return -1;
 		}
 	}
+	/*switch palyers, redraw UI*/
 	(cur_game)->cur_player = (-1)*(cur_game)->cur_player;
 	draw_game();
 
+	/*check for victory*/
 	if (cur_game->is_game_over( cur_game->board)==1){
 		if (cur_game->is_victory( cur_game->board) == 1){
 			error=cur_game->victoryColor(cur_game->board,1,ui_tree);
