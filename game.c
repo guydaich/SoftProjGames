@@ -249,7 +249,11 @@ int runWindow(choiseWindowSign mainORLoad){
 		}
 	}
 	if (!quit){
-		draw_ui_tree(ui_tree);
+		if (draw_ui_tree(ui_tree) < 0)
+		{
+			printf("ERROR: drawing UI tree Failed");
+			return -1;
+		}
 		SDL_Flip( ui_tree->cntrl->srfc );
 	}
 	
@@ -349,20 +353,24 @@ int draw_game ()
 	}
 	for (i=0;i<2;i++){
 		playerLabel_control = new_label(160+300*i,2,100,30,playerSourses[i],255,0,255,1,playerLabels[i]);
-	if (playerLabel_control==NULL){
-		return -1;
-	}
-	temp_elem = new_control_element(playerLabel_control);
-	if (temp_elem==NULL){
-		return -1;
-	}
-	temp_elem->parent=game_panel;
-	add_control_element_to_list(game_panel->children,temp_elem);
+		if (playerLabel_control==NULL){
+			return -1;
+		}
+		temp_elem = new_control_element(playerLabel_control);
+		if (temp_elem==NULL){
+			return -1;
+		}
+		temp_elem->parent=game_panel;
+		add_control_element_to_list(game_panel->children,temp_elem);
 	}
 
 	add_control_element_to_list(ui_tree->children,game_panel);
 	game_panel->parent= ui_tree;
-	draw_ui_tree(ui_tree);
+	if (draw_ui_tree(ui_tree)<0)
+	{
+		printf("ERROR: drawing UI Tree Failed");
+		return -1;
+	}
 	SDL_Flip( (ui_tree->cntrl->srfc) );
 	return 0;
 }
@@ -373,7 +381,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 	linked_list_cntrl list;
 	int i,error=0;
 	
-	root = new_control_element(new_window(0,0,250,(iterationNum)*80));
+	root = new_control_element(new_window(0,0,250,(iterationNum+2)*60));
 	if (root==NULL){
 		return NULL;
 	}
@@ -410,23 +418,6 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 		free(root);
 		return NULL;
 	}
-	/*label - paint first
-	temp_control = new_label(0,0,100,80,"./gfx/startPanel.bmp",255,0,255,1,"panel");
-	if (temp_control==NULL){
-		freeUnconnectedList(list);
-		free_control(root->cntrl);
-		free(root);
-		return NULL;
-	}
-	temp_elem = new_control_element(temp_control);
-	if (temp_elem==NULL){
-		freeUnconnectedList(list);
-		free_control(root->cntrl);
-		free(root);
-		return NULL;
-	}
-	add_control_element_to_list(list,temp_elem);
-	*/
 
 	for (i=1;i<=iterationNum;i++)
 	{
@@ -529,7 +520,9 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		*pressedButton=chooseGame;
 		*iterationNum=3;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
-		captionArray[0]=(char *)TIC_TAC_TOE_NAME;//casting from const char *
+		captionArray[0]=(char *)calloc(strlen(TIC_TAC_TOE_NAME)+1,sizeof(char));
+		strcpy(captionArray[0],TIC_TAC_TOE_NAME);
+		//captionArray[0]=(char *)TIC_TAC_TOE_NAME;//casting from const char *
 		captionArray[1]=(char *)REVERSI_NAME;
 		captionArray[2]=(char *)Connect4_NAME;
 	}
@@ -720,7 +713,11 @@ int askWindow(char *qustion,qustionWindowsSgin flag){
 		return -1;
 	}
 
-	draw_ui_tree(ui_tree);
+	if (draw_ui_tree(ui_tree) < 0)
+	{
+		printf("ERROR: drawing UI tree Failed");
+		return -1;
+	}
 	SDL_Flip( ui_tree->cntrl->srfc );
 
 	while(!quit)

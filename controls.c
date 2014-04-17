@@ -22,7 +22,6 @@ void get_rect(SDL_Rect *rect_dest, control *cntrl, control *parent_panel)
 	rect_dest->y = cntrl->y + parent_panel->y;
 	rect_dest->w = MIN(cntrl->w, parent_panel->w - cntrl->x);
 	rect_dest->h = MIN(cntrl->h, parent_panel->h - cntrl->y);
-
 }
 
 
@@ -33,6 +32,7 @@ int handle_control_surface_load(control *cntrl, control *container)
 {
 	SDL_Surface *surface=NULL; 
 	SDL_Rect *rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));	
+	char *sdl_err = NULL;
 
 	/*no surface assoicated with control yet*/
 	if (cntrl->ownSurface == NULL)
@@ -42,6 +42,9 @@ int handle_control_surface_load(control *cntrl, control *container)
 			surface = SDL_LoadBMP(cntrl->img);
 			if (surface == NULL)
 			{
+				sdl_err = SDL_GetError();
+				if (sdl_err != NULL)
+					printf("%s",sdl_err);
 				SDL_FreeSurface(surface);
 				return -1;
 			}
@@ -52,6 +55,9 @@ int handle_control_surface_load(control *cntrl, control *container)
 				cntrl->w, cntrl->h, 32, 0, 0, 0, 0);
 			if (surface == NULL)
 			{
+				sdl_err = SDL_GetError();
+				if (sdl_err != NULL)
+					printf("%s",sdl_err);
 				SDL_FreeSurface(surface);
 				return -1;
 			}
@@ -78,14 +84,19 @@ int handle_control_surface_load(control *cntrl, control *container)
 
 			/*set transparancy*/
 			if (cntrl->is_transparant){
-				SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
-					SDL_MapRGB(surface->format, MAGNETAR, MAGNETAG, MAGNETAB));
+				if (SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
+					SDL_MapRGB(surface->format, MAGNETAR, MAGNETAG, MAGNETAB))==-1)
+				{
+					sdl_err = SDL_GetError();
+					if (sdl_err != NULL)
+						printf("%s",sdl_err);
+				}
 			}
 		}
 		/*control has no surface*/
 		else 
 		{
-			/* assign all critical info */
+			/* assign all critical info - no real surface*/
 			cntrl->srfc = container->srfc;
 			cntrl->ownSurface=(SDL_Surface*)NULL;
 			get_rect(rect,cntrl,container);
@@ -100,16 +111,21 @@ int handle_control_surface_load(control *cntrl, control *container)
 /*gets a rectnagle for the text, in the middle of parent rect*/
 int get_text_position(SDL_Rect *rect_source, char* text,TTF_Font *font, SDL_Rect *rect_dest)
 {
-
+	char *ttf_err = NULL;
 	int w,h;
+
 	if (TTF_SizeText(font,text,&w,&h)) {
+		ttf_err = TTF_GetError();
+		if (ttf_err != NULL)
+			printf("ERROR: %s",ttf_err);
 		return -1;
 	} 
 	
-	if (w > rect_source->w)
+	if (w > rect_source->w || h > rect_source->h)
+	{
+		printf("ERORR: text rectangle overflows from parent panel");
 			return -1;
-	if (h > rect_source->h)
-			return -1;
+	}
 
 	rect_dest->w = w; 
 	rect_dest->h = h; 
@@ -124,9 +140,13 @@ int get_text_position(SDL_Rect *rect_source, char* text,TTF_Font *font, SDL_Rect
  * with offset according to previous line*/
 int get_text_position_multi(SDL_Rect *rect_source, char* text,TTF_Font *font, SDL_Rect *rect_dest,int offset)
 {
-
+	char *ttf_err;
 	int w,h;
+
 	if (TTF_SizeText(font,text,&w,&h)) {
+		ttf_err = TTF_GetError();
+		if (ttf_err != NULL)
+			printf("ERROR: %s",ttf_err);
 		return -1;
 	} 
 	rect_dest->w = w; 
@@ -135,23 +155,24 @@ int get_text_position_multi(SDL_Rect *rect_source, char* text,TTF_Font *font, SD
 	rect_dest->y = rect_source->y+offset;
 	
 	/* check for overflow */
-	if ( rect_dest->w > rect_source->w)
+	if (rect_dest->w > rect_source->w || 
+		rect_dest->h > rect_source->w)
+	{
+		printf("ERORR: text rectangle overflows from parent panel");
 		return -1;
-	if (rect_dest->h > rect_source->w)
-		return -1;
+	}
 	
 	return 1;
 }
 
 /*checks if rect values are legal*/
-int is_valid_rect(SDL_Rect *rect)
+int is_valid_rect(SDL_Rect *rect)//?????
 {
 	/*basic*/
-	if (rect->h < 0 || rect->w  < 0 || rect->x  < 0 || rect->y  < 0 ){
-		return 1; 
-	}
-	/* relative to parent - TODO */
+	/*if (rect->h < 0 || rect->w  < 0 || rect->x  < 0 || rect->y  < 0 ){
 	return 0;
+	}*/
+	return 1;
 }
 
 /*assigns values to SDL_Rect struct*/
@@ -167,7 +188,9 @@ void make_rect(SDL_Rect *rect, int h, int w, int x, int y)
 /*draws a single line of caption to center of control*/
 int draw_caption_to_control(control *cntrl)
 {
-	//char* err; 
+	char* sdl_err = NULL;
+	char* ttf_err = NULL;
+
 	TTF_Font *font;
 	SDL_Surface *surface;
 	SDL_Color text_color = {255, 255, 255};
@@ -180,14 +203,19 @@ int draw_caption_to_control(control *cntrl)
 
 	/*make all text Calculations*/
 	make_rect(&soure_rect, cntrl->h,cntrl->w,cntrl->offsetx,cntrl->offsety);
-	//if (!is_valid_rect(&soure_rect))
-	//	return; 
-
+	if (!is_valid_rect(&soure_rect))
+	{	
+		printf("ERROR: control rectangle has illegal size");
+		return -1; 
+	}
 	TTF_Init();
 	
 	font = TTF_OpenFont("arial.ttf", 16);
 	if (font == NULL)  // unable to load font
 	{
+		sdl_err = SDL_GetError();
+				if (sdl_err != NULL)
+					printf("%s",sdl_err);
 		return -1;
 	}
 	
@@ -198,8 +226,12 @@ int draw_caption_to_control(control *cntrl)
 	/*if text surface wan't previously loaded*/
 	if (cntrl->text_surface == NULL)
 	{
-		if ((surface = TTF_RenderText_Blended(font, cntrl->caption, text_color))==NULL)
+		surface = TTF_RenderText_Blended(font, cntrl->caption, text_color);
+		if (surface==NULL)
 		{
+			ttf_err = TTF_GetError();
+			if (ttf_err != NULL)
+				printf("ERORR: %s", ttf_err);
 			SDL_FreeSurface(surface);
 			return -1;
 		}
@@ -207,8 +239,11 @@ int draw_caption_to_control(control *cntrl)
 	}
 
 	/* Blit surface*/
-	if (SDL_BlitSurface(cntrl->text_surface, NULL, cntrl->srfc, &text_rect) != 0){
-		//err=TTF_GetError();
+	if (SDL_BlitSurface(cntrl->text_surface, NULL, cntrl->srfc, &text_rect) != 0)
+	{
+		sdl_err = SDL_GetError();
+		if (sdl_err != NULL)
+			printf("ERROR: %s", sdl_err);
 		return -1;
 	}
 	
@@ -225,6 +260,9 @@ int draw_caption_to_control_multi(control *cntrl)
 	SDL_Color text_color = {0, 0, 0};
 	SDL_Rect text_rect = {0,0,0,0};
 	SDL_Rect soure_rect = {0,0,0,0};
+	char* sdl_err = NULL;
+	char* ttf_err = NULL;
+
 
 	char s[200];
 	char *lines[5];
@@ -235,18 +273,22 @@ int draw_caption_to_control_multi(control *cntrl)
 
 
 	if (cntrl->caption == NULL)	
-		return -2;
+		return 1;
 
 	/*make all text Calculations*/
 	
-	//if (!is_valid_rect(&soure_rect))
-	//	return; 
-
-	//TTF_Init();
+	if (!is_valid_rect(&soure_rect))
+	{
+		printf("ERROR: control rectangle has illegal size");
+		return -1; 
+	}
+	TTF_Init();
 	
 	font = TTF_OpenFont("arial.ttf", 16);
 	if (font == NULL) {
-		return -1;
+		ttf_err = TTF_GetError();
+		if (ttf_err != NULL)
+			printf("ERROR: %s", ttf_err);
 	}
 
 	/*tokenize string*/
@@ -267,7 +309,10 @@ int draw_caption_to_control_multi(control *cntrl)
 		/*calculate text position*/
 		make_rect(&soure_rect, cntrl->h,cntrl->w,cntrl->offsetx,cntrl->offsety);
 		if (get_text_position_multi(&soure_rect, lines[i], font, &text_rect,prev_x_offset)==-1)
+		{
+			printf("ERROR: could not fit text in containing control");
 			return -1;
+		}
 		prev_x_offset = prev_x_offset + text_rect.h;
 
 		/*if this line's text surface doesn't exist*/
@@ -275,6 +320,9 @@ int draw_caption_to_control_multi(control *cntrl)
 		{
 			surface = TTF_RenderText_Blended(font, lines[i], text_color);
 			if (surface==NULL){
+				sdl_err = SDL_GetError();
+				if (sdl_err != NULL)
+					printf("ERROR: %s", sdl_err);
 				SDL_FreeSurface(surface);
 				return -1;
 			}
@@ -282,6 +330,9 @@ int draw_caption_to_control_multi(control *cntrl)
 		}
 
 		if (SDL_BlitSurface(cntrl->multitext[i], NULL, cntrl->srfc, &text_rect) != 0){
+			sdl_err = SDL_GetError();
+			if (sdl_err != NULL)
+				printf("ERROR: %s", sdl_err);
 			return -1;
 		}
 	}
@@ -293,13 +344,14 @@ int draw_caption_to_control_multi(control *cntrl)
 element_cntrl new_control_element(control* cntrl)
 {
 	element_cntrl elem = (element_cntrl)malloc(sizeof(struct element_s_cntrl));
+	
 	if (elem==NULL)
 	{
-		perror("malloc has failed");
-		free_control(cntrl);//important, otherowise thing like "new_control_element(new_panel())" will be lost.
+		printf("ERROR: standard function malloc has failed");
+		free_control(cntrl);
 		return NULL;
-		//TODO: handle malloc failure? ia handled above in null check?
 	}
+
 	controlElementNum++;
 	elem->cntrl = cntrl;
 	elem->next=NULL;
@@ -315,9 +367,9 @@ linked_list_cntrl new_control_list()
 	linked_list_cntrl lst = (linked_list_cntrl)malloc(sizeof(struct linked_list_s_cntrl));
 	if (lst==NULL)
 	{
-		perror("malloc has failed");
+		printf("ERROR: standard function malloc has failed");
+		free(lst);
 		return NULL;
-		//TODO: handle malloc failure? ia handled above in null check?
 	}
 	lst->head = NULL;
 	lst->tail = NULL;
@@ -330,9 +382,16 @@ void add_control_element_to_list(linked_list_cntrl list, element_cntrl elem)
 	element_cntrl prev_tail;
 
 	if (list == NULL)
+	{
+		printf("ERROR: supplied list does not exsist");
 		return; 
+	}
+	
 	if (elem==NULL)
+	{
+		printf("ERROR: supplied elem does not exsist");
 		return; 
+	}
 
 	if (list->head == NULL) // new head
 	{	
@@ -358,9 +417,16 @@ void set_list_as_children(linked_list_cntrl list, element_cntrl elem)
 	element_cntrl cur_elem,run;
 	
 	if (list== NULL)
+	{
+		printf("ERROR: supplied list does not exsist");
 		return;
+	}
+	
 	if (elem== NULL)
+	{
+		printf("ERROR: supplied elem does not exsist");
 		return;
+	}
 	
 	//free prev list
 	if (elem->children!=NULL){
@@ -382,30 +448,51 @@ void set_list_as_children(linked_list_cntrl list, element_cntrl elem)
 			} 
 }
 
-/*gets UI tree root, draws it in DFS trasverse*/
-void draw_ui_tree(element_cntrl root)
+/*gets UI tree root, draws it in DFS trasverse
+ * returns -1 on failure*/
+int draw_ui_tree(element_cntrl root)
+{
+	int ret_val = 1; 
+	ret_val  = draw_with_panel(root,root);
+	return ret_val;
+}
+
+/*recursive drawing, that passes owning panels
+ * to elements for overlay construction */
+int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel)
 {
 		element_cntrl cur_elem;
+	int err = 0; 
 		/* call the controls drawing function */
-		if (root->parent== NULL)
-			root->cntrl->draw(root->cntrl,NULL);
-		else
-			root->cntrl->draw(root->cntrl,root->parent->cntrl);
-
+	if (draw_cntrl->parent== NULL)
+	{
+		err = draw_cntrl->cntrl->draw(draw_cntrl->cntrl,NULL);
+		if (err == -1)
+			return -1;
+	}
+	else
+	{
+		err = draw_cntrl->cntrl->draw(draw_cntrl->cntrl,owning_panel->cntrl);
+		if (err == -1)
+			return -1;
+	}
 		/* reached leaves */
-		if (root->children != NULL)
-		{
+	if (draw_cntrl->children != NULL){
 			/*iterate over children*/
-			for (cur_elem = root->children->head; cur_elem!= NULL ;cur_elem=cur_elem->next)
+		for (cur_elem = draw_cntrl->children->head; 
+			cur_elem!= NULL ;cur_elem=cur_elem->next)
 			{
 				/*draw each child*/
-				draw_ui_tree(cur_elem);
+			if (draw_cntrl->cntrl->is_panel)
+				draw_with_panel(cur_elem,draw_cntrl);
+			else
+				draw_with_panel(cur_elem,owning_panel);
 			}
+		return 0;
 		}
-		else
-		{
-			return;
-		}
+	else{
+		return 0;
+	}
 }
 
 /*init functions*/
@@ -417,7 +504,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	control *label = (control*)malloc(sizeof(control));
 	if (label==NULL)
 	{
-		perror("malloc has failed");
+		printf("ERROR: standard function malloc has failed");
 		return NULL;
 	}
 	labelNum++;
@@ -450,7 +537,8 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	
 	if (label->multitext==NULL)
 	{
-		perror("malloc has failed");
+		printf("ERROR: standard function malloc has failed");
+                free(label);
 		return NULL;
 	}
 	
@@ -469,7 +557,7 @@ control* new_button(int x, int y, char *img, int is_trans ,char *caption, int is
 	control *button = (control*)malloc(sizeof(control));
 	if (button==NULL)
 	{
-		perror("malloc has failed");
+		printf("ERROR: standard function malloc has failed");
 		return NULL;
 	}
 	buttomNum++;
@@ -509,7 +597,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G, int is_bg_re
 	control *panel = (control*)malloc(sizeof(control));
 	if (panel==NULL)
 	{
-		perror("malloc has failed");
+		printf("ERROR: standard function malloc has failed");
 		return NULL;
 	}
 	panelNum++;
@@ -546,7 +634,7 @@ control* new_window(int x, int y, int w, int h)
 	control *window = (control*)malloc(sizeof(control));
 	if (window==NULL)
 	{
-		perror("malloc has failed");
+		printf("ERROR: standard function malloc has failed");
 		return NULL;
 	}
 	windowNum++;
@@ -578,16 +666,27 @@ control* new_window(int x, int y, int w, int h)
 /* drawing function*/
 int draw_button(control *button, control *container)
 {
-	handle_control_surface_load(button,container);
+	char* sdl_err; 
+
+	if (handle_control_surface_load(button,container)==-1)
+	{
+		printf("ERROR: surface load failed");
+		return -1;
+	}
 
 	/* Blit */
-	if (SDL_BlitSurface(button->ownSurface,NULL, container->srfc, button->destination_rect) != 0){
+	if (SDL_BlitSurface(button->ownSurface,NULL, container->srfc, button->destination_rect) != 0)
+	{
+		sdl_err = SDL_GetError();
+		if (sdl_err != NULL)
+			printf("ERROR: %s", sdl_err);
 		return -1;
 	}
 	
 	/*add caption*/
 	if (button->caption != NULL){
 		if (draw_caption_to_control(button)==-1){
+			printf("ERROR: caption load failed");
 			return -1;
 		}
 	}
@@ -597,14 +696,24 @@ int draw_button(control *button, control *container)
 
 int draw_label(control *label, control *container)
 {
+	char* sdl_err = NULL;
+
 	if (handle_control_surface_load(label,container)==-1)
+	{
+		printf("ERROR: surface load failed");
 		return -1;
+	}
 	
 	if (SDL_BlitSurface(label->ownSurface,NULL, container->srfc, label->destination_rect) != 0)
+	{
+		sdl_err = SDL_GetError();
+		if (sdl_err != NULL)
+			printf("ERROR: %s", sdl_err);
 		return -1;
-
+	}
 	if (label->caption != NULL){
 		if (draw_caption_to_control_multi(label)==-1){	
+			printf("ERROR: caption load failed");
 			return -1;
 		}
 	}
@@ -614,30 +723,42 @@ int draw_label(control *label, control *container)
 
 int draw_window(control* window)
 {
-	SDL_WM_SetCaption("SDL Test", "SDL Test");
-	if (window->srfc==NULL)
-	{
-		window->srfc = SDL_SetVideoMode(window->w,window->h,32,SDL_HWSURFACE|SDL_DOUBLEBUF);
-		if (window->srfc == NULL)
+	char* sdl_err=NULL;
+	SDL_Surface *surface; 
+	SDL_WM_SetCaption("gamesprog", "gamesprog");
+
+	surface = SDL_SetVideoMode(window->w,window->h,32,SDL_HWSURFACE|SDL_DOUBLEBUF);
+		
+	if (surface == NULL)
 		{
+		sdl_err = SDL_GetError();
+		if (sdl_err != NULL)
+			printf("ERROR: %s", sdl_err);
 			SDL_FreeSurface(window->srfc);
 			return -1;
-			//todo: no window! terminate!
 		}
+	
+	window->srfc = surface; 
+
 		surfaceNum++;
 		window->x = 0; 
 		window->y = 0; 
 		window->offsetx = 0; 
 		window->offsety = 0; 
-	}
+
 	return 0;
 }
 
 /*add this functionality to window as well. use it to paiunt background in white*/
 int draw_panel(control* panel, control *container)
-{
+{ 
+	char* sdl_err = NULL;
+
 	if (handle_control_surface_load(panel,container)==-1)
+	{
+		printf("ERROR: loading surface failed");
 		return -1;
+	}
 
 	/* blit panel surface*/
 	if (panel->ownSurface != NULL)
@@ -645,6 +766,9 @@ int draw_panel(control* panel, control *container)
 	if ((int)SDL_FillRect(container->srfc,panel->destination_rect, 
 			SDL_MapRGB(panel->ownSurface->format, panel->R, panel->G, panel->B)) != 0)
 		{
+			sdl_err = SDL_GetError();
+			if (sdl_err != NULL)
+				printf("ERROR: %s", sdl_err);
 				return -1;
 		}
 	}
@@ -843,12 +967,13 @@ void free_control(control *cntrl)
 int newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,int (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise){
 	control* temp_control;
 	int error;
-	char *captionCopy;
+	char *caption_cpy;
 
-	//in order to free caprion freely
-	captionCopy=calloc(strlen(caption)+1,sizeof(char));
-	strcpy(captionCopy,caption);
-	temp_control = new_button(x,y,"./gfx/generic_button.bmp",1,captionCopy,0);
+	//in order to free caption freely
+	caption_cpy=calloc(strlen(caption)+1,sizeof(char));
+	strcpy(caption_cpy,caption);
+	/*assigne control*/
+	temp_control = new_button(x,y,"./gfx/generic_button.bmp",1,caption_cpy,0);
 	if (temp_control == NULL)
 	{
 		freeUnconnectedList(fathersList);
@@ -857,10 +982,13 @@ int newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,int
 	temp_control->buttonChoise=buttonChoise;
 	temp_control->pressedButton=pressedButton;
 	error=addNewControlToList(temp_control,fathersList);
+	
 	if (error==-1){
 		free_control(temp_control);
+		printf("ERROR: failed to add control to list");
 		return -1;
 	}
+
 	return 0;
 }
 

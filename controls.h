@@ -72,7 +72,6 @@ struct linked_list_s_cntrl {
 typedef struct linked_list_s_cntrl *  linked_list_cntrl;
 
 
-
 /*element functions*/
 element_cntrl new_control_element(control* cntrl);
 linked_list_cntrl new_control_list();
@@ -82,7 +81,7 @@ void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl 
 
 
 /* control functions */
-void draw_ui_tree(element_cntrl root);
+int draw_ui_tree(element_cntrl root);
 int draw_button(control *button, control *container);
 int draw_label(control *label, control *container);
 int draw_window(control* window);
@@ -92,6 +91,7 @@ control* new_button(int x, int y, char *img, int is_trans,char *caption, int is_
 control* new_window(int x, int y, int w, int h);
 control* new_panel(int x, int y, int w, int h,int R, int G, int B, int is_bg_rect);
 void free_control(control *cntrl);
+int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel);
 
 void clear_game_panel(element_cntrl ui_tree);
 void freeControlList(element_cntrl node);
