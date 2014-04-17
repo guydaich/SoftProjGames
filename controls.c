@@ -198,7 +198,7 @@ int draw_caption_to_control(control *cntrl)
 	SDL_Rect soure_rect = {0,0,0,0};
 
 	// no caption is drawn with success
-	if (cntrl->caption == NULL)	
+	if (cntrl->caption == NULL || cntrl->caption = "")	
 		return 1;
 
 	/*make all text Calculations*/
@@ -272,7 +272,7 @@ int draw_caption_to_control_multi(control *cntrl)
 	int prev_x_offset = 0;
 
 
-	if (cntrl->caption == NULL)	
+	if (cntrl->caption == NULL || cntrl->caption = "")	
 		return 1;
 
 	/*make all text Calculations*/
