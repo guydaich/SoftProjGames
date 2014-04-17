@@ -1,14 +1,14 @@
 #include "tic_tac_toe_bl.h"
-#include "ttc_ui.h"
 
-char* TIC_TAC_TOE_NAME = "Tic-Tac-Toe";
-int tic_tac_toe_diffficulties[] = {9};
+int tic_tac_toe_diffficulties[] = {9};//possible didiffficulty levels
 
 char* ttc_get_name()
 {
 	return TIC_TAC_TOE_NAME;
 }
 
+/*this function makes and returns a empty ttc game board(logic, not gui) 
+on failure return null*/
 int* ttc_get_initial_state()
 {
 	int i=0,j=0;
@@ -29,6 +29,8 @@ int* ttc_get_initial_state()
 	return initial_board;
 }
 
+/*this function copys a ttc board and makes a move(according to move_col) on the copy
+ returns null on failure*/
 int* ttc_copy_and_make_move(int* game_state, int move_row, int move_col, int player)
 {
 	int i=0,j=0;
@@ -50,6 +52,10 @@ int* ttc_copy_and_make_move(int* game_state, int move_row, int move_col, int pla
 	return copied_state;
 }
 
+/*this functions returns a list of minimax elements.
+ * each of these elements represents a possible move that a player can do in his turn
+ * if game_state is the current board.
+ * on success the function returns with *error=0, on failure returns with *error=-1*/
 linked_list ttc_get_state_children(int* game_state, int player,int *error)
 {
 	int i,j, return_value = 1 ;
@@ -60,7 +66,7 @@ linked_list ttc_get_state_children(int* game_state, int player,int *error)
 		return NULL;
 	}
 
-	/*if game is over - no more steps*/
+	//if game is over - no more steps
 	if (ttc_is_game_over(game_state))
 	{
 		list->head = NULL;
@@ -72,21 +78,20 @@ linked_list ttc_get_state_children(int* game_state, int player,int *error)
 	{
 		for(j=0; j  <TIC_TAC_TOE_COLS; j++)
 		{
-			/* we may place a piece in any open slot */
+			// we may place at the slot i*TIC_TAC_TOE_ROWS + j on the board-add this move as a child
 			if (game_state[i*TIC_TAC_TOE_ROWS + j] == 0)
 			{
-				/* add this move to children list*/
 				return_value = ttc_add_to_children_list(list,game_state,i,j,player);
 				if (return_value==-1){
 					break;
+				}
 			}
 		}
-	}
 		if (return_value==-1){
 			break;
 		}
 	}
-	if (return_value==-1){
+	if (return_value==-1){//if ttc_add_to_children_list failed at any time within the for- clear list and return with failure
 		for (run_elem=list->head;run_elem!=NULL && run_elem->next!=NULL;run_elem=run_elem->next){
 			free(run_elem->node->game_state);
 			free(run_elem->node);
@@ -103,35 +108,32 @@ linked_list ttc_get_state_children(int* game_state, int player,int *error)
 		*error=-1;
 		return NULL;
 	}
-	*error=0;
+	*error=0;//ttc_get_state_children successeded
 	return list; 
 }
 
 
-/* creates a node and element for each child-state, and adds to list*/
+/* creates a minimax node and element for each child-state(game_state+move), and adds to list
+on failure return null*/
 int ttc_add_to_children_list(linked_list list, int* game_state, int row, int col, int player)
 {
-	int* moved_state;
-	vertex node;
-	element new_elem,prev_tail;
+	int* moved_state=NULL;
+	vertex node=NULL;
+	element new_elem=NULL,prev_tail=NULL;
 
 	moved_state = ttc_copy_and_make_move(game_state,row,col,player);
 	if (moved_state==NULL){
 		return -1;
 	}
 	node = new_node(row*TIC_TAC_TOE_ROWS + col,(int*)moved_state,ttc_get_state_score(moved_state,player));
-
-	/*check for errors*/
 	if (node == NULL)
 	{
 		free(moved_state);
 		return -1;
 	}
 
-	/*create new element */
+	//create new element
 	new_elem = new_element();
-	
-	/*handle errors*/ 
 	if (new_elem == NULL)
 	{
 		free(moved_state);
@@ -139,10 +141,10 @@ int ttc_add_to_children_list(linked_list list, int* game_state, int row, int col
 		return -1;
 	}
 				
-	/*assign node to element*/
+	//assign node to element
 	new_elem->node = node;
-	/* add to list */
-	if (list->head == NULL)
+	// add node to list
+	if (list->head == NULL)//if the list is empty- set as both head and tail
 	{	
 		list->head = new_elem;
 		list->tail = new_elem;
@@ -159,8 +161,9 @@ int ttc_add_to_children_list(linked_list list, int* game_state, int row, int col
 	return 1;
 }
 
-/*we always work in difficulty 9, so either win, loose or neutral. 
- the winning moves will bubble up*/
+/*this is a function which evaluate each board.
+* we always work in difficulty 9(wich means we allways looks to max depth), so either win, loose or neutral. 
+* the winning moves will bubble up because of the minimax*/
 int ttc_get_state_score(int* game_state,int player)
 {
 	if (ttc_is_victory(game_state)==1)

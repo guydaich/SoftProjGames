@@ -1,7 +1,6 @@
 #include "windowsDrawing.h"
 
 extern int quit;
-extern char* TIC_TAC_TOE_NAME;
 extern char* REVERSI_NAME;
 extern char* Connect4_NAME;
 extern int gameNum;
@@ -446,8 +445,8 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		*pressedButton=chooseGame;
 		*iterationNum=3;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
-		captionArray[0]=(char *)calloc(strlen(TIC_TAC_TOE_NAME)+1,sizeof(char));//alocate so we can free them freely
-		strcpy(captionArray[0],TIC_TAC_TOE_NAME);
+		captionArray[0]=(char *)calloc(strlen(ttc_get_name())+1,sizeof(char));//alocate so we can free them freely
+		strcpy(captionArray[0],ttc_get_name());
 		captionArray[1]=(char *)calloc(strlen(REVERSI_NAME)+1,sizeof(char));
 		strcpy(captionArray[1],REVERSI_NAME);
 		captionArray[2]=(char *)calloc(strlen(Connect4_NAME)+1,sizeof(char));

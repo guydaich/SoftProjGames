@@ -5,6 +5,8 @@
 #include "minimax.h"
 #include "ttc_ui.h"
 
+#define TIC_TAC_TOE_NAME "Tic-Tac-Toe"
+
 /* functions */
 char*			ttc_get_name();
 int*			ttc_get_initial_state();

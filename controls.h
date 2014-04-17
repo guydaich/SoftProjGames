@@ -11,7 +11,7 @@
 
 /* generic control struct */
 typedef struct _control{
-	/* type identifiers */
+	//* type identifiers */
 	int is_window;
 	int is_panel;
 	int is_button;
@@ -21,33 +21,33 @@ typedef struct _control{
 	/* caption for window */
 	char *caption; 
 	/* coordinates and sizes */
-	int x; 
+	int x;// x and y offset are relative to the x and y offset of the controls parent panel 
 	int y;
-	int h;
+	int h;//actual sizes.they are caculated in the code
 	int w;
-	int offsetx;
+	int offsetx;//actual coordinates (unlike x and y). they are caculated in the code
 	int offsety;
-	SDL_Rect *destination_rect;
-	/*image path */
-	char *img; 
-	/* colors for tranparancy */
+	SDL_Rect *destination_rect;//rect for SDL_Blit.uses actual coordinates
+	char *img; //background images path
+	// colors for tranparancy 
 	int is_transparant;
+	//colors in case there is no background image (a RGBSurface will be created to serve as background)
 	int R;
 	int B;
 	int G;
-	/*surface to blit to, always window*/
-	SDL_Surface *srfc;
-	SDL_Surface *ownSurface;
+	SDL_Surface *srfc;//the srfc is the surface of the window upon which the control will be drawn
+	SDL_Surface *ownSurface;//this surface represents the control to the user
 	SDL_Surface *text_surface;
 	SDL_Surface **multitext;
-	int num_texts;
-	int (*pressedButton)(int *choise,SDL_Event* test_event);
+	int num_texts;//number of lines in control's text
+	int (*pressedButton)(int *choise,SDL_Event* test_event);//which function sould be invoked in this button is "pressed".
 	int buttonChoise;
 	/*if is grid - when pressed, will act like a lowest-level button*/
 	int is_grid; 
 	/*flags for loading background from image or painting RGB rect*/
 	int is_bg_img; 
 	int is_bg_rect;
+
 
 } control;
 
