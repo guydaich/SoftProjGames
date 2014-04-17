@@ -53,4 +53,5 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,choiseWindowSign flag);
 int askWindow(char *qustion,qustionWindowsSgin flag);
 int qustionORtext(qustionWindowsSgin flag);
+int handelAI_VS_AI(int *pause);
 #endif

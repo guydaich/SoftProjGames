@@ -340,6 +340,9 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 			{
 				return 1;
 			}
+			else if(game_state[(i)*REVERSI_COLS + cols]!=other){
+				break;
+			}
 		}
 	}
 	//check row down
@@ -350,6 +353,9 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 			if (game_state[(i)*REVERSI_COLS + cols]==player)
 			{
 				return 1;
+			}
+			else if(game_state[(i)*REVERSI_COLS + cols]!=other){
+				break;
 			}
 		}
 	}
@@ -362,6 +368,9 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 			{
 				return 1;
 			}
+			else if(game_state[(rows)*REVERSI_COLS + i]!=other){
+				break;
+			}
 		}
 	}
 	//check colnum left
@@ -372,6 +381,9 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 			if (game_state[(rows)*REVERSI_COLS + i]==player)
 			{
 				return 1;
+			}
+			else if(game_state[(rows)*REVERSI_COLS + i]!=other){
+				break;
 			}
 		}
 	}
@@ -384,6 +396,9 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 			{
 				return 1;
 			}
+			else if(game_state[(rows+i)*REVERSI_COLS + cols+i]!=other){
+				break;
+			}
 		}
 	}
 	//check diaganal up right
@@ -394,6 +409,9 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 			if (game_state[(rows+i)*REVERSI_COLS + cols-i]==player)
 			{
 				return 1;
+			}
+			else if(game_state[(rows+i)*REVERSI_COLS + cols-i]!=other){
+				break;
 			}
 		}
 	}
@@ -406,6 +424,9 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 			{
 				return 1;
 			}
+			else if(game_state[(rows-i)*REVERSI_COLS + cols-i]!=other){
+				break;
+			}
 		}
 	}
 	//check diaganal up right
@@ -416,6 +437,9 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 			if (game_state[(rows-i)*REVERSI_COLS + cols+i]==player)
 			{
 				return 1;
+			}
+			else if(game_state[(rows-i)*REVERSI_COLS + cols+i]!=other){
+				break;
 			}
 		}
 	}

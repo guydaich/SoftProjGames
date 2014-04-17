@@ -382,7 +382,7 @@ int loadGame(int *choice,SDL_Event* test_event)
 
 int runsaveManu(int *choice,SDL_Event* test_event)
 {
-	int error;
+	int error=0;
 	//freeControlList(ui_tree);
 	error=game_init(SAVE_SIGN);
 	if (error<0){
@@ -393,7 +393,7 @@ int runsaveManu(int *choice,SDL_Event* test_event)
 
 int runDiffManuP1(int *choice,SDL_Event* test_event)
 {
-	int error;
+	int error=0;
 	//freeControlList(ui_tree);
 	error=game_init(DIFF1_SIGN);
 	if (error<0){
@@ -404,7 +404,7 @@ int runDiffManuP1(int *choice,SDL_Event* test_event)
 
 int runDiffManuP2(int *choice,SDL_Event* test_event)
 {
-	int error;
+	int error=0;
 	//freeControlList(ui_tree);
 	error=game_init(DIFF2_SIGN);
 	if (error<0){
@@ -414,7 +414,7 @@ int runDiffManuP2(int *choice,SDL_Event* test_event)
 }
 
 int setUnpause(int *choice,SDL_Event* test_event){
-	int error;
+	int error=0;
 	*choice=!(*choice);// form 1 to 0 and 0 to 1
 	if (cur_game->is_multiplayer==3 && cur_game->cur_player==1){
 		if (cur_game->cur_player==1){
@@ -427,8 +427,8 @@ int setUnpause(int *choice,SDL_Event* test_event){
 			return -1;
 		}
 		cur_game->cur_player = (-1)*(cur_game->cur_player);
+		error=draw_game();
 	}
-	error=draw_game();
 	if (error<0){
 		free(cur_game);
 		gameNum--;

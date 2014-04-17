@@ -69,15 +69,17 @@ int main( int argc, char* args[] )
 				break;
 			}
 			if (cur_game!=NULL && cur_game->is_multiplayer==1 && pause==0){
-				if ((cur_game)->cur_player==1){
-					cur_game->handle_computer_move(cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
+				error=handelAI_VS_AI(&pause);
+				if (error<0 ||cur_game==NULL){
+					printf("a catchAble error occured\n");
+					freeControlList(ui_tree);
+					if (cur_game!=NULL)
+					{
+						free(cur_game);
+						gameNum--;
 				}
-				else {
-					cur_game->handle_computer_move(cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
+					return 0;
 				}
-				(cur_game)->cur_player = (-1)*(cur_game)->cur_player;
-				draw_game();
-				pause=1;
 			}
 		}
 	}
@@ -770,5 +772,60 @@ int qustionORtext(qustionWindowsSgin flag){
 		}
 	}
 	set_list_as_children(list,ui_tree->children->tail);
+	return 0;
+}
+
+int handelAI_VS_AI(int *pause){
+	int error;
+	
+	if (cur_game->is_game_over( cur_game->board)==1){
+		return 0;
+	}
+	if ((cur_game)->cur_player==1){
+		error=cur_game->handle_computer_move(cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
+		if (error<0){
+			printf("failed in handle_computer_move\n");
+			return -1;
+		}
+	}
+	else {
+		error=cur_game->handle_computer_move(cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
+		if (error<0){
+			printf("failed in handle_computer_move\n");
+			return -1;
+		}
+	}
+	(cur_game)->cur_player = (-1)*(cur_game)->cur_player;
+	draw_game();
+
+	if (cur_game->is_game_over( cur_game->board)==1){
+		if (cur_game->is_victory( cur_game->board) == 1){
+			error=cur_game->victoryColor(cur_game->board,1,ui_tree);
+			if (error<0){
+				printf("failed in victoryColor\n");
+				return -1;
+			}
+		}
+		else if (cur_game->is_victory( cur_game->board) == -1){
+			error=cur_game->victoryColor(cur_game->board,-1,ui_tree);
+			if (error<0){
+				printf("failed in victoryColor\n");
+				return -1;
+			}
+		}
+		else
+		{
+			error=newButtonGeneric(ui_tree->children,300,480,"draw",restartGame,0);
+			if (error<0){
+				printf("failed in makeing draw button\n");
+				return -1;
+			}
+			ui_tree->children->tail->parent=ui_tree;
+		}
+		draw_ui_tree(ui_tree);
+		SDL_Flip(ui_tree->cntrl->srfc);
+	}
+
+	*pause=1;
 	return 0;
 }
