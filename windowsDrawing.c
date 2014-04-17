@@ -440,6 +440,7 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 	char** captionArray=NULL;
 	char* buttonName;
 	int i,error=0;
+	char *transporter;
 
 	if (flag==MAIN_SIGN){
 		*pressedButton=chooseGame;
@@ -451,56 +452,7 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		strcpy(captionArray[1],REVERSI_NAME);
 		captionArray[2]=(char *)calloc(strlen(Connect4_NAME)+1,sizeof(char));
 		strcpy(captionArray[2],Connect4_NAME);
-	}
-	else if (flag==LOAD_SIGN){
-		*pressedButton=loadGame;
-		*iterationNum=5;
-		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
-		if (captionArray==NULL){
-			return NULL;
-		}
-		for (i=0;i<*iterationNum;i++){
-			captionArray[i]=(char *)LOAD_SLOT;
-			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
-			if (buttonName==NULL){
-				error =-1;
-				break;
-			}
-			sprintf(buttonName,"%s %d",captionArray[i],i);
-			captionArray[i]=buttonName;
-		}
-		if (error ==-1){
-			for (;i>=0;i--){
-				free(captionArray[i]);
-			}
-			free(captionArray);
-			return NULL;
-		}
-	}
-	else if (flag==SAVE_SIGN){
-		*pressedButton=saveGame;
-		*iterationNum=5;
-		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
-		if (captionArray==NULL){
-			return NULL;
-		}
-		for (i=0;i<*iterationNum;i++){
-			captionArray[i]=(char *)SAVE_SLOT;
-			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
-			if (buttonName==NULL){
-				error =-1;
-				break;
-			}
-			sprintf(buttonName,"%s %d",captionArray[i],i);
-			captionArray[i]=buttonName;
-		}
-		if (error ==-1){
-			for (;i>=0;i--){
-				free(captionArray[i]);
-			}
-			free(captionArray);
-			return NULL;
-		}
+		return captionArray;
 	}
 	else if (flag==AI_SIGN){
 		*pressedButton=setmultiplayer;
@@ -514,6 +466,25 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		strcpy(captionArray[2],AI_3);
 		captionArray[3]=(char *)calloc(strlen(AI_4)+1,sizeof(char));//alocate so we can free them freely
 		strcpy(captionArray[3],AI_4);
+		return captionArray;
+	}
+	else if (flag==LOAD_SIGN){
+		*pressedButton=loadGame;
+		*iterationNum=5;
+		transporter=(char *)LOAD_SLOT;
+		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
+		if (captionArray==NULL){
+			return NULL;
+		}
+	}
+	else if (flag==SAVE_SIGN){
+		*pressedButton=saveGame;
+		*iterationNum=5;
+		transporter=(char *)SAVE_SLOT;
+		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
+		if (captionArray==NULL){
+			return NULL;
+		}
 	}
 	else if (flag==DIFF1_SIGN){
 		if (cur_game==NULL){
@@ -521,25 +492,9 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		}
 		*pressedButton=setDifficaltyP1;
 		*iterationNum=cur_game->difficulty_num;
+		transporter=(char *)DIFFICALTY;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
 		if (captionArray==NULL){
-			return NULL;
-		}
-		for (i=0;i<*iterationNum;i++){
-			captionArray[i]=(char *)DIFFICALTY;
-			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
-			if (buttonName==NULL){
-				error =-1;
-				break;
-			}
-			sprintf(buttonName,"%s %d",captionArray[i],i);
-			captionArray[i]=buttonName;
-		}
-		if (error ==-1){
-			for (;i>=0;i--){
-				free(captionArray[i]);
-			}
-			free(captionArray);
 			return NULL;
 		}
 	}
@@ -549,12 +504,14 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		}
 		*pressedButton=setDifficaltyP2;
 		*iterationNum=cur_game->difficulty_num;
+		transporter=(char *)DIFFICALTY;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
 		if (captionArray==NULL){
 			return NULL;
 		}
+	}
 		for (i=0;i<*iterationNum;i++){
-			captionArray[i]=(char *)DIFFICALTY;
+		captionArray[i]=transporter;
 			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak;
 			if (buttonName==NULL){
 				error =-1;
@@ -570,7 +527,6 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 			free(captionArray);
 			return NULL;
 		}
-	 }
 	return captionArray;
 }
 

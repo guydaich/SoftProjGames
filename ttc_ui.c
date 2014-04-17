@@ -1,5 +1,6 @@
 # include "ttc_ui.h"
 
+extern int buttomNum;
 
 element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_Event* test_event))
 { 
@@ -246,6 +247,7 @@ int set_victory_control(int i,int j,element_cntrl game_panel,int player){
 	if (player==1){
 		// free previous control
 		free_control(ttc_button->cntrl);
+		buttomNum--;
 
 		ttc_button->cntrl=new_button(ttc_button->cntrl->x,
 			ttc_button->cntrl->y,TTC_BTNXPATH_VICTORY,1,NULL,0);
@@ -257,6 +259,7 @@ int set_victory_control(int i,int j,element_cntrl game_panel,int player){
 	else {
 		// free previous control
 		free_control(ttc_button->cntrl);
+		buttomNum--;
 
 		ttc_button->cntrl=new_button(ttc_button->cntrl->x,
 			ttc_button->cntrl->y,TTC_BTNOPATH_VICTORY,1,NULL,0); 
