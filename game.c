@@ -34,6 +34,14 @@ int main( int argc, char* args[] )
 	gui_init();
 	error=runStartManu(&pause,&test_event);
 	if (error<0 || cur_game==NULL){
+		if (quit==1){
+			freeControlList(ui_tree);
+			if (cur_game!=NULL)
+			{
+				free(cur_game);
+				gameNum--;
+			}
+		}
 		return 0;
 	}
 	while(!quit)

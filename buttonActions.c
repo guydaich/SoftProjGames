@@ -191,8 +191,10 @@ int  setmultiplayer(int *choice,SDL_Event* test_event)
 
 int  chooseGame(int *choice,SDL_Event* test_event)
 {
+	if (cur_game!=NULL){
 	free(cur_game);
 	gameNum--;
+	}
 	cur_game=new_game(*choice);
 	if(cur_game==NULL){
 		return -1;
@@ -220,11 +222,11 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 	int error;
 	//freeControlList(ui_tree);
 	error=runWindow(START_SIGN);
-	if(error<0){
+	if(error<0 || cur_game==NULL && quit!=1){
 		return -1;
 	}
-	if (cur_game==NULL){
-		return -1;
+	else if (quit==1){
+		return 0;
 	}
 	error=runWindow(AI_SIGN);
 	if(error<0){
@@ -234,7 +236,7 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 		return -1;
 	}
 	if (cur_game->is_multiplayer==1 || cur_game->is_multiplayer==3){
-		*choice=1;
+		*choice=1;//set puase to be 1
 	}
 	switch(cur_game->is_multiplayer){
 		case 1:

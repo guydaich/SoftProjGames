@@ -1,5 +1,7 @@
 #include "connect4_ui.h"
 
+extern int buttomNum;
+
 element_cntrl	C4_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_Event* test_event))
 {
 	control *C4_grid=NULL;
@@ -298,6 +300,7 @@ int c4_set_victory_control(int i,int j,element_cntrl game_panel,int player)
 	if (player==1){
 		// free previous control
 		free_control(c4_button->cntrl); 
+		buttomNum--;
 
 		c4_button->cntrl=new_button(c4_button->cntrl->x,
 			c4_button->cntrl->y,C4_BTN_RED_VICTORY_PATH,1,NULL,0);
@@ -309,6 +312,7 @@ int c4_set_victory_control(int i,int j,element_cntrl game_panel,int player)
 	else {
 		// free previous control
 		free_control(c4_button->cntrl); 
+		buttomNum--;
 
 		c4_button->cntrl=new_button(c4_button->cntrl->x,
 			c4_button->cntrl->y,C4_BTN_BLUE_VICTORY_PATH,1,NULL,0);
