@@ -198,7 +198,7 @@ int draw_caption_to_control(control *cntrl)
 	SDL_Rect soure_rect = {0,0,0,0};
 
 	// no caption is drawn with success
-	if (cntrl->caption == NULL || cntrl->caption == "")	
+	if (cntrl->caption == NULL || strcmp(cntrl->caption,"")== 0)	
 		return 1;
 
 	/*make all text Calculations*/
@@ -272,7 +272,7 @@ int draw_caption_to_control_multi(control *cntrl)
 	int prev_x_offset = 0;
 
 
-	if (cntrl->caption == NULL || cntrl->caption == "")	
+	if (cntrl->caption == NULL || strcmp(cntrl->caption,"")== 0	)
 		return 1;
 
 	/*make all text Calculations*/
@@ -343,7 +343,9 @@ int draw_caption_to_control_multi(control *cntrl)
 /* returns an element pointing to cntrl*/
 element_cntrl new_control_element(control* cntrl)
 {
-	element_cntrl elem = (element_cntrl)malloc(sizeof(struct element_s_cntrl));
+	element_cntrl elem =NULL;
+
+	elem=(element_cntrl)malloc(sizeof(struct element_s_cntrl));
 	
 	if (elem==NULL)
 	{
@@ -994,7 +996,8 @@ int newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,int
 
 /* wraps control in elemnt and adds to a linked list */
 int addNewControlToList(control* control,linked_list_cntrl fathersList){
-	element_cntrl temp_elem;
+	element_cntrl temp_elem=NULL;
+
 
 	temp_elem = new_control_element(control);
 	if (temp_elem==NULL)

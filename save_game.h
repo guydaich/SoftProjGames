@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "game_enum.h"
 
 #define MAX_NAME_SIZE 12

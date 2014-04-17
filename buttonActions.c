@@ -47,9 +47,9 @@ int goToMainMenu(int *choice,SDL_Event* test_event)
 
 int saveGame(int *choice,SDL_Event* test_event)
 {
-	int onTopOf,userAnswer,error;
+	int onTopOf=0,userAnswer=0,error=0;
 	char* fileLocation=(char *)malloc(36);
-	sprintf(fileLocation,"C:/Users/davidl/Documents/gameSavings/load%d.txt",*choice);
+	sprintf(fileLocation,"/home/davidl/load%d.txt",*choice);
 	onTopOf=save_game_in_file(fileLocation,cur_game->board,cur_game->cur_player,
 						cur_game->cols,cur_game->rows,(cur_game->get_name()));
 	if(onTopOf==1){
@@ -222,7 +222,7 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 	int error;
 	//freeControlList(ui_tree);
 	error=runWindow(START_SIGN);
-	if(error<0 || cur_game==NULL && quit!=1){
+	if(error<0 || (cur_game==NULL && quit!=1)){
 		return -1;
 	}
 	else if (quit==1){
@@ -277,7 +277,7 @@ int loadGame(int *choice,SDL_Event* test_event)
 	int error,player;
 	int *gameBoard; 
 	char* fileLocation=(char *)malloc(36);
-	sprintf(fileLocation,"C:/Users/davidl/Documents/gameSavings/load%d.txt",*choice);
+	sprintf(fileLocation,"/home/davidl/load%d.txt",*choice);
 	error=load_game_from_file(fileLocation,&whichGame,&gameBoard,&player);
 	if (error==-2){
 		askWindow("the game is either corrupt or non-exsistant",OK_SIGN);

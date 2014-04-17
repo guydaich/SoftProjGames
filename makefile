@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g -Wall
 INCS=-I/usr/include/SDL
-OBJS=game.o general_game.o tic_tac_toe_bl.o connect4_bl.o reversi_bl.o ttc_ui.o connect4_ui.o reversi_ui.o controls.o save_game.o minimax.o
+OBJS=game.o general_game.o tic_tac_toe_bl.o connect4_bl.o reversi_bl.o ttc_ui.o connect4_ui.o reversi_ui.o controls.o save_game.o minimax.o buttonActions.o windowsDrawing.o
 
 all: games
 
@@ -11,10 +11,10 @@ clean:
 games: $(OBJS)
 	$(CC) -o games $(OBJS) -lSDL -lSDL_ttf
 
-game.o:game.c game.h general_game.h save_game.h
+game.o:game.c game.h windowsDrawing.h
 	$(CC) $(CFLAGS) -c $*.c $(INCS)
 
-general_game.o:general_game.c general_game.h game.h tic_tac_toe_bl.h connect4_bl.h reversi_bl.h game_enum.h
+general_game.o:general_game.c general_game.h game.h tic_tac_toe_bl.h connect4_bl.h reversi_bl.h
 	$(CC) $(CFLAGS) -c $*.c $(INCS)
 
 tic_tac_toe_bl.o:tic_tac_toe_bl.c tic_tac_toe_bl.h ttc_ui.h minimax.h
@@ -43,3 +43,9 @@ minimax.o:minimax.c minimax.h
 
 save_game.o:save_game.c save_game.h game_enum.h
 	$(CC) $(CFLAGS) -c $*.c
+
+buttonActions.o:buttonActions.c buttonActions.h general_game.h game.h tic_tac_toe_bl.h connect4_bl.h reversi_bl.h game_enum.h
+	$(CC) $(CFLAGS) -c $*.c $(INCS)
+
+windowsDrawing.o:windowsDrawing.c windowsDrawing.h buttonActions.h save_game.h general_game.h
+	$(CC) $(CFLAGS) -c $*.c $(INCS)

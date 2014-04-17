@@ -1,30 +1,27 @@
 #include "save_game.h"
-//<unistd.h>
 
 /* given a game specifier, game state and file name
  * function creates a saved-game file in provided file path
  * returns 0 on success, -1 on save failurem and 1 if file not available*/
 int save_game_in_file(char* filename, int *game_state, int player, int cols, int rows,char *game_name)
 {
-	FILE *file=NULL;
+	int statCheck=0;
 	/*open read, check existence*/
-	file = fopen(filename, "r");
-	if(file!=NULL){
-		fclose(file);
+	statCheck=access (filename,R_OK);
+	if(statCheck>=0){
 		return 1;
 	}
 	else {
 		/*try save*/
 		if(write_game_to_file(filename,game_state,player,cols,rows,game_name)==0) 
 		{
-			if (file != NULL)
-				fclose(file);
+			//if (file != NULL)
+			//	fclose(file);
 			return 0;
 		}
-		if (file != NULL)
-				fclose(file);
-		return -1;
-
+		else {
+			return -1;
+		}
 	}
 }
 
@@ -64,18 +61,20 @@ int write_game_to_file(char* filename, int *game_state, int player, int cols, in
  * return 0 on success, -1 on fatal error, -2 on format, file errors */
 int load_game_from_file(char* filename, whichGame* whichG,int** board,int *player)
 {
-	FILE *file; 
+	int statCheck=0;
+	FILE *file=NULL;
 	char new_game_name[MAX_NAME_SIZE];
 	int *game_board;
 	int error;
 
 	/*check file existence*/
-	file = fopen(filename, "r");
-	if (file == NULL)
+	statCheck=access (filename,W_OK);
+	if (statCheck <0)
 	{ 
 		printf("ERROR: can't open load file\n");
 		return -2;
 	}
+	file = fopen(filename, "r");
 	/*scan game attributes*/
 	fscanf(file,"%s",new_game_name);
 	printf("%s\n",new_game_name);
