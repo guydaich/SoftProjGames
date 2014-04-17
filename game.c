@@ -394,7 +394,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 	}
 
 	/*button panel*/
-	temp_control = new_panel(0,0,250,(iterationNum)*80,220,220,220,1);
+	temp_control = new_panel(0,0,250,(iterationNum+2)*60,220,220,220,1);
 	if (temp_control==NULL){
 		freeUnconnectedList(list);
 		free_control(root->cntrl);
@@ -422,6 +422,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 	for (i=1;i<=iterationNum;i++)
 	{
 		error=newButtonGeneric(list,20,20+(i-1)*50,captionStart[i-1],buttonAction,i);
+		free(captionStart[i-1]);
 		if (error<0){
 			break;
 		}
@@ -520,11 +521,12 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		*pressedButton=chooseGame;
 		*iterationNum=3;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
-		captionArray[0]=(char *)calloc(strlen(TIC_TAC_TOE_NAME)+1,sizeof(char));
+		captionArray[0]=(char *)calloc(strlen(TIC_TAC_TOE_NAME)+1,sizeof(char));//alocate so we can free them freely
 		strcpy(captionArray[0],TIC_TAC_TOE_NAME);
-		//captionArray[0]=(char *)TIC_TAC_TOE_NAME;//casting from const char *
-		captionArray[1]=(char *)REVERSI_NAME;
-		captionArray[2]=(char *)Connect4_NAME;
+		captionArray[1]=(char *)calloc(strlen(REVERSI_NAME)+1,sizeof(char));
+		strcpy(captionArray[1],REVERSI_NAME);
+		captionArray[2]=(char *)calloc(strlen(Connect4_NAME)+1,sizeof(char));
+		strcpy(captionArray[2],Connect4_NAME);
 	}
 	else if (flag==LOAD_SIGN){
 		*pressedButton=loadGame;
@@ -541,7 +543,6 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 				break;
 			}
 			sprintf(buttonName,"%s %d",captionArray[i],i);
-			//free(captionArray[i]);
 			captionArray[i]=buttonName;
 		}
 		if (error ==-1){
@@ -567,7 +568,6 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 				break;
 			}
 			sprintf(buttonName,"%s %d",captionArray[i],i);
-			//free(captionArray[i]);
 			captionArray[i]=buttonName;
 		}
 		if (error ==-1){
@@ -582,10 +582,14 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		*pressedButton=setmultiplayer;
 		*iterationNum=4;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
-		captionArray[0]=(char *)AI_1;//casting from const char *
-		captionArray[1]=(char *)AI_2;
-		captionArray[2]=(char *)AI_3;
-		captionArray[3]=(char *)AI_4;
+		captionArray[0]=(char *)calloc(strlen(AI_1)+1,sizeof(char));//alocate so we can free them freely
+		strcpy(captionArray[0],AI_1);
+		captionArray[1]=(char *)calloc(strlen(AI_2)+1,sizeof(char));//alocate so we can free them freely
+		strcpy(captionArray[1],AI_2);
+		captionArray[2]=(char *)calloc(strlen(AI_3)+1,sizeof(char));//alocate so we can free them freely
+		strcpy(captionArray[2],AI_3);
+		captionArray[3]=(char *)calloc(strlen(AI_4)+1,sizeof(char));//alocate so we can free them freely
+		strcpy(captionArray[3],AI_4);
 	}
 	else if (flag==DIFF1_SIGN){
 		if (cur_game==NULL){
@@ -605,7 +609,6 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 				break;
 			}
 			sprintf(buttonName,"%s %d",captionArray[i],i);
-			//free(captionArray[i]);
 			captionArray[i]=buttonName;
 		}
 		if (error ==-1){
@@ -634,7 +637,6 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 				break;
 			}
 			sprintf(buttonName,"%s %d",captionArray[i],i);
-			//free(captionArray[i]);
 			captionArray[i]=buttonName;
 		}
 		if (error ==-1){

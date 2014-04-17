@@ -23,7 +23,7 @@ element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 		free(root);
 		return NULL;
 	}
-	rv_grid = new_button(0,0,RVR_GRIDPATH,1,"",1);
+	rv_grid = new_button(0,0,RVR_GRIDPATH,1,NULL,1);
 	if (rv_grid==NULL){
         printf("can't make rv_grid in rv_panel_function\n");
 		freeUnconnectedList(list);

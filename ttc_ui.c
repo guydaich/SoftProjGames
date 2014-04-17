@@ -23,7 +23,7 @@ element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_
 		free(root);
 		return NULL;
 	}
-	ttc_grid = new_button(0,0,TTC_GRIDPATH,0,"",1);	
+	ttc_grid = new_button(0,0,TTC_GRIDPATH,0,NULL,1);	
 	if (ttc_grid==NULL){
 		printf("can't make ttc_grid in ttc_panel_function\n");
 		freeUnconnectedList(list);
