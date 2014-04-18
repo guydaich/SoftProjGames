@@ -1,6 +1,6 @@
 #include "tic_tac_toe_bl.h"
 
-int tic_tac_toe_diffficulties[] = {9};//possible didiffficulty levels
+int tic_tac_toe_diffficulties[] = {9};//possible didiffficulty levels. this is a global array so it won't be freed at any point on the game.
 
 char* ttc_get_name()
 {
@@ -29,7 +29,7 @@ int* ttc_get_initial_state()
 	return initial_board;
 }
 
-/*this function copys a ttc board and makes a move(according to move_col) on the copy
+/*this function copys a ttc board and makes a move(according to move_col and move_row) on the copy
  returns null on failure*/
 int* ttc_copy_and_make_move(int* game_state, int move_row, int move_col, int player)
 {
@@ -78,7 +78,7 @@ linked_list ttc_get_state_children(int* game_state, int player,int *error)
 	{
 		for(j=0; j  <TIC_TAC_TOE_COLS; j++)
 		{
-			// we may place at the slot i*TIC_TAC_TOE_ROWS + j on the board-add this move as a child
+			// if we may place at the slot i*TIC_TAC_TOE_ROWS + j on the board-add this move as a child
 			if (game_state[i*TIC_TAC_TOE_ROWS + j] == 0)
 			{
 				return_value = ttc_add_to_children_list(list,game_state,i,j,player);
@@ -180,12 +180,13 @@ int ttc_get_state_score(int* game_state,int player)
 	}
 };
 
-/* gets difficult level for game*/
+/* get difficult levels for game*/
 int* ttc_get_difficulty_levels()
 {
 	return tic_tac_toe_diffficulties;
 }
 
+/*make a ttc move on the board of the current ttc game*/
 int ttc_make_move(int* game_state, int row, int col, int player)
 {
 	if (game_state[row*TIC_TAC_TOE_ROWS + col] == 0)
@@ -198,8 +199,10 @@ int ttc_make_move(int* game_state, int row, int col, int player)
 	}
 }
 
+/*check if the game represented in game_state is over*/
 int ttc_is_game_over(int* game_state)
 {
+	//the game is over if the board is full or somebody won
 	if (ttc_is_victory(game_state)==-1 ||
 		ttc_is_victory(game_state)==1 ||
 		ttc_is_board_full(game_state))
@@ -207,6 +210,7 @@ int ttc_is_game_over(int* game_state)
 	return 0;
 }
 
+/*check if the board represented in game_state is full */
 int ttc_is_board_full(int* game_state)
 {
 	int i,j;
@@ -214,7 +218,7 @@ int ttc_is_board_full(int* game_state)
 	{
 		for(j=0; j  <TIC_TAC_TOE_COLS; j++)
 		{
-			/* if there is an open slot - not full */
+			// if there is an open slot - the board isn't full
 			if (game_state[i*TIC_TAC_TOE_ROWS + j] == 0)
 			{
 				return 0;
@@ -223,6 +227,7 @@ int ttc_is_board_full(int* game_state)
 	}
 	return 1;
 }
+
 /* checks if there is a victory in passed game state */
 int ttc_is_victory(int* game_state){
 	if (ttc_is_victory_player(game_state,1)) return 1;
@@ -230,6 +235,7 @@ int ttc_is_victory(int* game_state){
 	return 0;
 }
 
+/*this function look at evrey row,col,diagnal and checks for 4  of the same color together(victory)*/
 int ttc_is_victory_player(int* game_state, int player)
 {
 	int i,j,flag; 
@@ -304,42 +310,44 @@ int ttc_is_victory_player(int* game_state, int player)
 	return 0;
 }
 
-
+/*this function act as a wraper for minimax while playing ttc*/
 int	ttc_handle_computer_turn(int* game_state, int depth,int player)
 {
 	int comp_move=0;
+	//get the best move for computer with minimax
 	if (player==-1){
 		comp_move = get_computer_move(game_state, depth, ttc_get_state_children);
 	}
 	else {
 		comp_move=get_suggested_move(game_state,depth, ttc_get_state_children);
 	}
-	if (comp_move<0){
+	if (comp_move<0){//check move validity(and for erros in minimax)
 		printf("failure in ttc_handle_computer_turn(minimax)\n");
 		return -1;
 	}
+	//make the computer move
 	ttc_make_move(game_state,comp_move/TIC_TAC_TOE_ROWS,comp_move%TIC_TAC_TOE_ROWS,player);
 	return 0;
 }
 
+/*this unction interpets a mouse cliking on the GUI game board into a move on the board*/
 int ttc_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 {
 	int x=0,y=0;
 	int succes;
 	x=event->button.x;
 	y=event->button.y;
-	/* elem get's the elemnt to update (grid slot) */
 
-	if(ttc_is_game_over(game_state))
+	if(ttc_is_game_over(game_state))//if the game is over no more moves allowed
 	{
 		return 0;
 	}
-	if (y < TTC_YOFFSET || x < TTC_XOFFSET)
+	if (y < TTC_YOFFSET || x < TTC_XOFFSET)//check coordinates are inside ethe board
 	{
 		return 0;
 	}
-	succes=ttc_make_move(game_state,(y-TTC_YOFFSET)/TTC_HBTN,(x-TTC_XOFFSET)/TTC_WBTN,player);
-	if(succes == 0)
+	succes=ttc_make_move(game_state,(y-TTC_YOFFSET)/TTC_HBTN,(x-TTC_XOFFSET)/TTC_WBTN,player);//make move(if possible)
+	if(succes == 0)//return if the move is possible by game rules
 	{
 		return 0;
 	}

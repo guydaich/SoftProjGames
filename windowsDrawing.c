@@ -1,8 +1,6 @@
 #include "windowsDrawing.h"
 
 extern int quit;
-extern char* REVERSI_NAME;
-extern char* Connect4_NAME;
 extern int gameNum;
 extern int controlElementNum;
 extern int buttomNum;

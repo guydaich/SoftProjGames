@@ -11,7 +11,7 @@ element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 	int i=0,j=0,error=0;
  	
 	/*create root panel and grid as a child*/
-	root = new_control_element(new_panel(0,0,600,600,255,255,255,1));
+	root = new_control_element(new_panel(0,0,700,700,255,255,255,1));
 	if (root==NULL){
 		printf("can't make root in rv_panel_function\n");
 		return NULL;

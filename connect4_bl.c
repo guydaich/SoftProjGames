@@ -1,23 +1,21 @@
-/*						io.c									*/
-/* module handles game main loop: iterates until game is over,	*/
-/* reacts to user commands, and calls for computer moves		*/
+
 #include "connect4_bl.h"
 
-char* Connect4_NAME = "Connect4";
 int Connect4_diffficulties[] = {1,2,3,4,5,6,7};
-int max_col_heights[CONNECT4_COLS];
+int max_col_heights[CONNECT4_COLS];//the array helps as make a human move at O(1)-this array remembers the height of evrey colunm on the board
 
-/* adds a piece in top of given Column, for stated player)*/
+/* adds a piece in top of given column*/
 void add_piece_to_board_C4(int* game_state,int column, int player)
 {
-	/* set Human piece at top of selected column */
+	// updated the column hight at the array max_col_heights
 	max_col_heights[column-1]--;
-	/* update player pieces*/
+	// update player piece
 	game_state[max_col_heights[column - 1]*CONNECT4_COLS +column - 1] = player;
 }
 
 
-/* initializes a game matrix */
+/*this function makes and returns a empty ttc game board(logic, not gui) 
+on failure return null*/
 int *get_initial_state_C4()
 {
 	int i,j = 0;
@@ -36,7 +34,7 @@ int *get_initial_state_C4()
 	return game_matrix;
 }
 
-/* sets all columns to empty */ 
+/* initializes the array max_col_heights(for a new game)*/ 
 void init_col_heights_C4()
 {
 int i =0;
@@ -63,7 +61,9 @@ for (i=0; i<CONNECT4_COLS; i++)
 return 1;
 }
 
-// Calculates Scoring for a Board
+/*this is a function which evaluate each board
+* in case of player 1 victory returns INT_MAX,
+* and in case of player 2 victory returns INT_MIN*/
 int get_state_score_C4(int* game_matrix,int player)
 {
 	int sizesOFLine[8] = { 0 };
@@ -165,10 +165,10 @@ int get_state_score_C4(int* game_matrix,int player)
 	}
 
 	if (sizesOFLine[0] > 0){
-		return INT_MIN; //COMPUTER won
+		return INT_MIN; //Player 2 won
 	}
 	if (sizesOFLine[7] > 0){
-		return INT_MAX; //HUMAN won
+		return INT_MAX; //Player 1 won
 	}
 
 	for (i = 1; i < 7; i++){
@@ -177,13 +177,13 @@ int get_state_score_C4(int* game_matrix,int player)
 	return totalScore;
 }
 
-//make a copy of the board
+/*this function copys a C4 board and makes a move(according to move_col) on the copy
+ returns null on failure*/
 int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player) 
 {
 	int i, j;
 	int *new_board_ptr = // allocate new board
 		(int*)calloc(CONNECT4_ROWS*CONNECT4_COLS, sizeof(int));	
-	// handle calloc error
 	if (new_board_ptr == NULL)
 	{
 		perror("Error: standard function calloc has failed");
@@ -200,7 +200,7 @@ int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player)
 		}
 	}
 	
-	for (i = CONNECT4_ROWS - 1; i >= 0; i--) // find appropriate row for column move
+	for (i = CONNECT4_ROWS - 1; i >= 0; i--) // find appropriate row for column move and make move
 	{
 		if (new_board_ptr[i*CONNECT4_COLS + move_col] == 0)
 		{
@@ -211,7 +211,10 @@ int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player)
 	return new_board_ptr;
 }
 
-// adds children to a node in the process of building the tree
+/*this functions returns a list of minimax elements.
+ * each of these elements represents a possible move that a player can do in his turn
+ * if game_state is the current board.
+ * on success the function returns with *error=0, on failure returns with *error=-1*/
 linked_list get_state_children_C4(int* matrix, int player,int *error)
 {
 	linked_list newList;
@@ -229,7 +232,7 @@ linked_list get_state_children_C4(int* matrix, int player,int *error)
 	if (get_state_score_C4(matrix,0) == INT_MAX ||
 		get_state_score_C4(matrix,0) == INT_MIN)		//if victory achieved stop building
 	{
-		return newList;							//return
+		return newList;
 	}
 
 	for (move = 1; move < 8; move++)
@@ -263,7 +266,8 @@ linked_list get_state_children_C4(int* matrix, int player,int *error)
 	return newList;
 }
 
-
+/* creates a minimax node and element for each child-state(game_state+move), and adds to list
+on failure return null*/
 int add_to_children_list_C4(linked_list list, int* game_state, int row, int col, int player)
 {
 	int move=col;
@@ -309,10 +313,12 @@ char* get_name_C4()
 	return Connect4_NAME;
 }
 
+/* get difficult levels for game*/
 int* get_difficulty_levels_C4(){
 	return Connect4_diffficulties;
 }
 
+/*for given board, if the game is over (full board or victory) return 1. else return 0*/
 int is_game_over_C4(int* game_state)
 {
 	int score=get_state_score_C4(game_state,0);
@@ -322,6 +328,7 @@ int is_game_over_C4(int* game_state)
 	return 0;
 }
 
+/*for given board, if one of the players achived victory return 1. else return 0*/
 int is_victory_C4(int* game_state)
 {
 	int score=get_state_score_C4(game_state,0);
@@ -334,6 +341,7 @@ int is_victory_C4(int* game_state)
 	return 0;
 }
 
+/*this unction interpets a mouse cliking on the GUI game board into a move on the board*/
 int C4_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 {
 	int x=0;
@@ -353,6 +361,7 @@ int C4_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 	return 1;
 }
 
+/*this function act as a wraper for minimax while playing C4*/
 int	C4_handle_computer_turn(int* game_state, int depth, int player)
 {
 	int comp_move;
@@ -365,7 +374,7 @@ int	C4_handle_computer_turn(int* game_state, int depth, int player)
 	if(comp_move<0){
 		return -1;
 	}
-	else if (comp_move==0){
+	else if (comp_move==0){//zero cann't be valid move in this game
 		return -2;
 	}
 	C4_make_move(game_state,0,comp_move-1,player);//return 0 doesn't mean error??

@@ -8,6 +8,8 @@
 #include "minimax.h"
 #include "connect4_ui.h"
 
+#define Connect4_NAME "Connect4"
+
 extern int boardCount;
 extern vertex mainRoot;
 

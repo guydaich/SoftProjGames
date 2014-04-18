@@ -1,9 +1,8 @@
 #include "reversi_bl.h"
 
-int *reversi_board; 
-char *REVERSI_NAME="Reversi";
-int reversi_diffficulties[] = {1,2,3,4};
-/* all possible {delta_x,delta_y} directions on board*/
+int *reversi_board=NULL; 
+int reversi_diffficulties[] = {1,2,3,4};//possible didiffficulty levels. this is a global array so it won't be freed at any point on the game.
+/* all possible move directions({delta_x,delta_y}) on board*/
 int move_directions[8][2] = {{1,1},{-1,-1},{1,-1},{-1,1},{0,1},{1,0},{-1,0},{0,-1}};
 /*region score matrix*/
 int region_scores[REVERSI_ROWS][REVERSI_COLS] = 
@@ -22,6 +21,8 @@ char* rv_get_name()
 	return REVERSI_NAME;
 }
 
+/*this function makes and returns a satrting board(logic, not gui) for reversi game
+on failure return null*/
 int* rv_get_initial_state()
 {
 	int i=0,j=0;
@@ -56,7 +57,6 @@ int rv_make_node(int* game_state, int row, int col, int player)
 		return -1;
 	}
 	node = new_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state,player));
-	/*check for errors*/
 	if (node == NULL)
 	{
 		free(moved_state);
@@ -65,6 +65,8 @@ int rv_make_node(int* game_state, int row, int col, int player)
 	return 1;
 }
 
+/* creates a minimax node and element for each child-state(game_state+move), and adds to list
+on failure return null*/
 int rv_add_to_children_list(linked_list list, int* game_state, int row, int col, int player)
 {
 	int* moved_state=NULL;
@@ -76,18 +78,14 @@ int rv_add_to_children_list(linked_list list, int* game_state, int row, int col,
 		return -1;
 	}
 	node = new_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state,player));
-
-	/*check for errors*/
 	if (node == NULL)
 	{
 		free(moved_state);
 		return -1;
 	}
 
-	/*create new element */
+	//create new element 
 	new_elem = new_element();
-				
-	/*handle errors*/ 
 	if (new_elem == NULL)
 	{
 		free(moved_state);
@@ -95,9 +93,9 @@ int rv_add_to_children_list(linked_list list, int* game_state, int row, int col,
 		return -1;
 	}
 				
-	/*assign node to element*/
+	//assign node to element
 	new_elem->node = node;
-	/* add to list */
+	// add to list
 	if (list->head == NULL)
 	{	
 		list->head = new_elem;
@@ -113,7 +111,10 @@ int rv_add_to_children_list(linked_list list, int* game_state, int row, int col,
 	return 1;
 }
 
-
+/*this functions returns a list of minimax elements.
+ * each of these elements represents a possible move that a player can do in his turn
+ * if game_state is the current board.
+ * on success the function returns with *error=0, on failure returns with *error=-1*/
 linked_list rv_get_state_children(int* game_state, int player,int *error)
 {
 	int i=0,j=0,return_value=0;
@@ -124,10 +125,9 @@ linked_list rv_get_state_children(int* game_state, int player,int *error)
 	{
 		for(j=0; j < REVERSI_COLS; j++)
 		{
-			/*if possible to place piece in this position*/
+			//if we may place at the slot i*TIC_TAC_TOE_ROWS + j on the board-add this move as a child
 			if (rv_is_valid_move(game_state, player,i,j))
 			{
-				/*add move to list*/
 				return_value = rv_add_to_children_list(list,game_state,i,j,player);
 				if (return_value==-1){
 					break;
@@ -138,7 +138,7 @@ linked_list rv_get_state_children(int* game_state, int player,int *error)
 			break;
 		}
 	}
-	if (return_value==-1){
+	if (return_value==-1){//if ttc_add_to_children_list failed at any time within the for- clear list and return with failure
 		for (run_elem=list->head;run_elem!=NULL && run_elem->next!=NULL;run_elem=run_elem->next){
 			free(run_elem->node->game_state);
 			free(run_elem->node);
@@ -155,7 +155,7 @@ linked_list rv_get_state_children(int* game_state, int player,int *error)
 		*error=-1;
 		return NULL;
 	}
-	else if (list->head==NULL){
+	else if (list->head==NULL){//if no childern where created- this means the enemy has no moves
 		if (rv_player_has_moves(game_state,(-1)*player)==1){//pass move
 			rv_add_to_children_list(list,game_state,-1,-1,player);
 		}
@@ -164,16 +164,20 @@ linked_list rv_get_state_children(int* game_state, int player,int *error)
 	return list;
 }
 
+/*this functions returns a list of minimax elements.
+ * each of these elements represents a possible move that a player can do in his turn
+ * if game_state is the current board.
+ * on success the function returns with *error=0, on failure returns with *error=-1*/
 int* rv_copy_and_make_move(int* game_state, int move_row, int move_col, int player)
 {
 	int i=0,j=0;
-	/*assign new board*/
+	//assign new board
 	int* copied_state = (int*)calloc(REVERSI_ROWS * REVERSI_COLS, sizeof(int));
 	if (copied_state==NULL){
 		return NULL;
 	}
 	
-	/*copy current state*/
+	//copy current state
 	for (i=0; i < REVERSI_ROWS; i++)
 	{
 		for(j=0; j < REVERSI_COLS; j++)
@@ -181,15 +185,16 @@ int* rv_copy_and_make_move(int* game_state, int move_row, int move_col, int play
 			copied_state[i*REVERSI_ROWS + j] = game_state[i*REVERSI_ROWS + j]; 
 		}
 	}
-	if (move_row==-1 && move_col==-1){//pass 
+	if (move_row==-1 && move_col==-1){//pass move(return the same board-the enemy can't make any move)
 		return copied_state;
 	}
-	/*make new move - turning enemy pieces as you go*/
+	//make move
 	rv_make_move(copied_state,move_row,move_col,player);
 
 	return copied_state;
 }
 
+/*return the number of pieces a player have on the board*/
 int get_player_pieces(int* game_state, int player)
 {
 	int i,j,count=0;
@@ -206,7 +211,8 @@ int get_player_pieces(int* game_state, int player)
 	return count;
 }
 
-/* returns score state, (+) for PLAYER_1, (-) for PLAYER_2 */
+/*this is a function which evaluate each board.
+* we use this function for the minimax algorithm */
 int rv_get_state_score(int* game_state,int player)
 {
 	int i=0,j = 0, player_pieces =0, other_pieces = 0; 
@@ -249,12 +255,13 @@ int rv_get_state_score(int* game_state,int player)
 	return score;
 }
 
+/* get difficult level for game*/
 int* rv_get_difficulty_levels()
 {
 	return reversi_diffficulties;
 }
 
-/*get a position, flips other player's pieces*/
+/*make a given move on the board, flips other player's pieces accordingly*/
 int rv_make_move(int* game_state, int rows, int cols, int player)
 {
 	int i=0,t_rows=-1,t_cols=-1, length=0;
@@ -265,13 +272,16 @@ int rv_make_move(int* game_state, int rows, int cols, int player)
 		return 0; 
 	}
 
-	/* for every possible direction */
+	// for every possible direction check if can flip enemys pieces
 	for (i=0;i<REVERSI_ROWS; i++)
 	{
 		length = 0; 
 		t_rows = rows + move_directions[i][0]; 
 		t_cols = cols + move_directions[i][1];
-
+		//if the derection lead as out of the board, try another 
+		if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS){
+			continue;
+		}
 		while (game_state[t_rows*REVERSI_ROWS + t_cols] == other)
 		{
 			length++;
@@ -279,17 +289,17 @@ int rv_make_move(int* game_state, int rows, int cols, int player)
 			t_rows += move_directions[i][0]; 
 			t_cols += move_directions[i][1];
 
-			/* encoutered another piece */
+			// if encoutered enemy piece at that derection
 			if (game_state[t_rows*REVERSI_ROWS + t_cols] == player )
 			{
-				/*	retract moves and change colors */
+				//	retract moves and change colors
 				while (t_rows != rows || t_cols != cols)
 				{
 					t_rows -= move_directions[i][0]; 
 					t_cols -= move_directions[i][1];
 					game_state[t_rows*REVERSI_ROWS + t_cols] = player;
 				}
-				/* finished in this direction, break*/
+				// finished fliping in this direction, break
 				break;
 			}
 		}
@@ -298,155 +308,55 @@ int rv_make_move(int* game_state, int rows, int cols, int player)
 }
 
 /* a move is valid iff another piece of the player is encoutered 
-   in one or more*/ 
+   in one or more- this fuction checks if the move is valid*/ 
 int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 {
-	int i;
+	int i=0,t_rows=-1,t_cols=-1, length=0;
 	int other = player*(-1); 
-
+	
+	//if there is another piece at the same place,can't make this move
 	if (game_state[rows*REVERSI_ROWS+cols]!=0)
 	{
 		return 0;
 	}
-	/*
-	// for every possible direction 
+	// for every possible direction flip enemys pieces
 	for (i=0;i<REVERSI_ROWS; i++)
 	{
+		length = 0; 
 		t_rows = rows + move_directions[i][0]; 
 		t_cols = cols + move_directions[i][1];
-
-		// advance in this direction as long as enemy pieces are encountered 
+		
+		//if the derection lead as out of the board, try another  
+		if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS){
+			continue;
+		}
+		// if encoutered enemy piece at that derection
 		while (game_state[t_rows*REVERSI_ROWS + t_cols] == other)
 		{
+			length++;
+			
 			t_rows += move_directions[i][0]; 
-			t_cols += move_directions[i][1];	
-			// if encoutered another piece - move is legal 
-			if (game_state[t_rows*REVERSI_ROWS + t_cols] == player)
-			{
-				return 1;
-			}
-		}
-	}
-	//didn't encouter enemy piece - move illegal
-	return 0;
-	*/
+			t_cols += move_directions[i][1];
 
-	//check row up
-	if (rows!=0 && game_state[(rows-1)*REVERSI_COLS + cols]==other)
-	{
-		for (i=rows-1; i>=0; i--)
-		{
-			if (game_state[(i)*REVERSI_COLS + cols]==player)
+			// if encoutered another piece
+			if (game_state[t_rows*REVERSI_ROWS + t_cols] == player )
 			{
+				//	retract moves and change colors
+				while (t_rows != rows || t_cols != cols)
+				{
+					t_rows -= move_directions[i][0]; 
+					t_cols -= move_directions[i][1];
+					//game_state[t_rows*REVERSI_ROWS + t_cols] = player;
+				}
+				// finished fliping in this direction, break
 				return 1;
-			}
-			else if(game_state[(i)*REVERSI_COLS + cols]!=other){
-				break;
-			}
-		}
-	}
-	//check row down
-	if (rows!=REVERSI_ROWS-1 && game_state[(rows+1)*REVERSI_COLS + cols]==other)
-	{
-		for (i=rows+1; i<REVERSI_ROWS; i++)
-		{
-			if (game_state[(i)*REVERSI_COLS + cols]==player)
-			{
-				return 1;
-			}
-			else if(game_state[(i)*REVERSI_COLS + cols]!=other){
-				break;
-			}
-		}
-	}
-	//check colnum right 
-	if (cols!=REVERSI_COLS-1 && game_state[(rows)*REVERSI_COLS + cols+1]==other)
-	{
-		for (i=cols+1; i<REVERSI_COLS; i++)
-		{
-			if (game_state[(rows)*REVERSI_COLS + i]==player)
-			{
-				return 1;
-			}
-			else if(game_state[(rows)*REVERSI_COLS + i]!=other){
-				break;
-			}
-		}
-	}
-	//check colnum left
-	if (cols!=0 && game_state[(rows)*REVERSI_COLS + cols-1]==other)
-	{
-		for (i=cols-1; i>=0; i--)
-		{
-			if (game_state[(rows)*REVERSI_COLS + i]==player)
-			{
-				return 1;
-			}
-			else if(game_state[(rows)*REVERSI_COLS + i]!=other){
-				break;
-			}
-		}
-	}
-	//check diaganal down right
-	if (cols!=REVERSI_COLS-1 && rows!=REVERSI_ROWS-1 && game_state[(rows+1)*REVERSI_COLS + cols+1]==other)
-	{
-		for (i=1; rows+i<REVERSI_ROWS && cols+i<REVERSI_COLS; i++)
-		{
-			if (game_state[(rows+i)*REVERSI_COLS + cols+i]==player)
-			{
-				return 1;
-			}
-			else if(game_state[(rows+i)*REVERSI_COLS + cols+i]!=other){
-				break;
-			}
-		}
-	}
-	//check diaganal up right
-	if (cols!=0 && rows!=REVERSI_ROWS-1 && game_state[(rows+1)*REVERSI_COLS + cols-1]==other)
-	{
-		for (i=1; rows+i<REVERSI_ROWS && cols-i>=0; i++)
-		{
-			if (game_state[(rows+i)*REVERSI_COLS + cols-i]==player)
-			{
-				return 1;
-			}
-			else if(game_state[(rows+i)*REVERSI_COLS + cols-i]!=other){
-				break;
-			}
-		}
-	}
-	//check diaganal up left
-	if (cols!=0 && rows!=0 && game_state[(rows-1)*REVERSI_COLS + cols-1]==other)
-	{
-		for (i=1; rows-i>=0 && cols-i>=0; i++)
-		{
-			if (game_state[(rows-i)*REVERSI_COLS + cols-i]==player)
-			{
-				return 1;
-			}
-			else if(game_state[(rows-i)*REVERSI_COLS + cols-i]!=other){
-				break;
-			}
-		}
-	}
-	//check diaganal up right
-	if (cols!=REVERSI_COLS-1 && rows!=0 && game_state[(rows-1)*REVERSI_COLS + cols+1]==other)
-	{
-		for (i=1; 0<=rows-i && cols+i<REVERSI_COLS; i++)
-		{
-			if (game_state[(rows-i)*REVERSI_COLS + cols+i]==player)
-			{
-				return 1;
-			}
-			else if(game_state[(rows-i)*REVERSI_COLS + cols+i]!=other){
-				break;
 			}
 		}
 	}
 	return 0;
 }
 
-/* game is over if : (1) board is full or (2) no-one can place pieces legally*/
+/* game is over if : (1) board is full or (2) no-one can place pieces legally-this function checks if one of the condition exist*/
 int rv_is_game_over(int* game_state)
 {
 	int i,j; 
@@ -468,7 +378,7 @@ int rv_is_game_over(int* game_state)
 	return 1;
 }
 
-// checks if there is a victory in passed: return 0 for tie, 1/-1 for victory . for error return -2
+/* checks if there is a victory in passed: return 0 for tie, 1/-1 for victory . for error return -2*/
 int rv_is_victory(int* game_state)
 {
 	int player_pieces,other_pieces;
@@ -493,6 +403,7 @@ int rv_is_victory(int* game_state)
 	return -2;
 }
 
+/*this unction interpets a mouse cliking on the GUI game board into a move on the board*/
 int rv_handle_mouse_button_down (SDL_Event *event, int* game_state,int player)
 {
 	int x=0,y=0;
@@ -515,6 +426,7 @@ int rv_handle_mouse_button_down (SDL_Event *event, int* game_state,int player)
 	return 1;
 }
 
+/*this function act as a wraper for minimax while playing reversi*/
 int rv_handle_computer_turn(int* game_state, int depth,int player)
 {
 	int comp_move;
@@ -532,21 +444,17 @@ int rv_handle_computer_turn(int* game_state, int depth,int player)
 		return -1;
 	}
 	if (!rv_is_valid_move(game_state,player,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS)){
-		return -2;
+		return -2;//if the minimax algorithm return unvalid move,an error accord
 	}
 	rv_make_move(game_state,comp_move/REVERSI_ROWS,comp_move%REVERSI_COLS,player);
 	} while (rv_player_has_moves(game_state,-1*player)==0 && rv_player_has_moves(game_state,player)==1);
 	return 0;
 }
 
-/*check if player can make another move*/
+/*check if given player can make a move. if cam returns 1,else 0.*/
 int rv_player_has_moves(int* game_state, int player)
 {
 	int i,j;
-	/*linked_list children = rv_get_state_children(game_state,player);
-	if (children->head == NULL)
-		return 0; 
-	return 1;*/
 
 	for (i=0; i < REVERSI_ROWS; i++)
 	{
