@@ -275,7 +275,10 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 	else if (quit==1){
 		return 0;
 	}
-	error=run_window(AI_SIGN);
+	if (cur_game->is_multiplayer<0)//run AI choise only if AI wasn't chosen yet
+	{
+		error=run_window(AI_SIGN);
+	}
 	if(error<0){
 		return -1;
 	}
@@ -287,23 +290,35 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 	}
 	switch(cur_game->is_multiplayer){
 		case 1:
-			error=run_window(DIFF1_SIGN);
+			if (cur_game->difficultyP1<0)//run DIFF1 choise only if DIFF1 wasn't chosen yet
+			{
+				error=run_window(DIFF1_SIGN);
+			}
 			if(error<0){
 				return -1;
 			}
-			error=game_init(DIFF2_SIGN);
+			if (cur_game->difficultyP2<0)//run DIFF2 choise only if DIFF2 wasn't chosen yet
+			{
+				error=game_init(DIFF2_SIGN);
+			}
 			if(error<0){
 				return -1;
 			}
 			break;
 		case 2:
-			error=game_init(DIFF2_SIGN);
+			if (cur_game->difficultyP2<0)//run DIFF2 choise only if DIFF2 wasn't chosen yet
+			{
+				error=game_init(DIFF2_SIGN);
+			}
 			if(error<0){
 				return -1;
 			}
 			break;
 		case 3:
-			error=game_init(DIFF1_SIGN);
+			if (cur_game->difficultyP1<0)//run DIFF1 choise only if DIFF1 wasn't chosen yet
+			{
+				error=game_init(DIFF1_SIGN);
+			}
 			if(error<0){
 				return -1;
 			}
@@ -341,7 +356,6 @@ int loadGame(int *choice,SDL_Event* test_event)
 		if (error<0){
 			return -1;
 		}
-		cur_game=NULL;
 		return 0;
 	}
 	if (error==-1){

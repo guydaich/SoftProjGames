@@ -34,7 +34,6 @@ game* new_game(whichGame game_id)
 		new_game_obj->handle_mouse_button_down= ttc_handle_mouse_button_down;
 		new_game_obj->handle_computer_move=ttc_handle_computer_turn;
 		new_game_obj->is_game_over=ttc_is_game_over;
-		new_game_obj->is_multiplayer = 0;
 		new_game_obj->is_victory = ttc_is_victory;
 		new_game_obj->player_has_moves = NULL;
 		new_game_obj->difficulty_num=1;
@@ -53,7 +52,6 @@ game* new_game(whichGame game_id)
 		new_game_obj->handle_mouse_button_down= rv_handle_mouse_button_down;
 		new_game_obj->handle_computer_move=rv_handle_computer_turn;
 		new_game_obj->is_game_over=rv_is_game_over;
-		new_game_obj->is_multiplayer = 0;
 		new_game_obj->is_victory = rv_is_victory;
 		new_game_obj->player_has_moves = rv_player_has_moves;
 		new_game_obj->difficulty_num=4;
@@ -72,7 +70,6 @@ game* new_game(whichGame game_id)
 		new_game_obj->handle_mouse_button_down= C4_handle_mouse_button_down;
 		new_game_obj->handle_computer_move=C4_handle_computer_turn;
 		new_game_obj->is_game_over=is_game_over_C4;
-		new_game_obj->is_multiplayer = 0;
 		new_game_obj->is_victory = is_victory_C4;
 		new_game_obj->difficulty_num=7;
 		new_game_obj->victoryColor=color_c4;
@@ -87,18 +84,19 @@ game* new_game(whichGame game_id)
 		printf("ERROR: could not get initial game board");
 		return NULL;
 	}
-	new_game_obj->difficultyP1=new_game_obj->get_difficulty_levels()[0];
-	if (new_game_obj->difficultyP1 >9 || new_game_obj->difficultyP1 <1)
+	new_game_obj->is_multiplayer = -1;
+	new_game_obj->difficultyP1=-1;//new_game_obj->get_difficulty_levels()[0];
+	/*if (new_game_obj->difficultyP1 >9 || new_game_obj->difficultyP1 <1)
 	{
 		printf("ERROR: could not get initial Difficulty for Player");
 		return NULL;
-	}
-	new_game_obj->difficultyP2=new_game_obj->get_difficulty_levels()[0];
-	if (new_game_obj->difficultyP2 >9 || new_game_obj->difficultyP2 <1)
+	}*/
+	new_game_obj->difficultyP2=-1;//new_game_obj->get_difficulty_levels()[0];
+	/*if (new_game_obj->difficultyP2 >9 || new_game_obj->difficultyP2 <1)
 	{
 		printf("ERROR: could not get initial Difficulty for Player");
 		return NULL;
-	}
+	}*/
 
 return new_game_obj;
 
