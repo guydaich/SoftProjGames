@@ -148,7 +148,7 @@ int handelAI_VS_AI(int *pause){
 		}
 		else
 		{
-			error=newButtonGeneric(ui_tree->children,300,480,"draw",restartGame,0);
+			error=new_generic_button(ui_tree->children,300,480,"draw",restartGame,0);
 			if (error<0){
 				printf("failed in makeing draw button\n");
 				return -1;

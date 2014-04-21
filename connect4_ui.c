@@ -27,16 +27,16 @@ element_cntrl	C4_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 	C4_grid = new_button(0,0,C4_GRIDPATH,0,NULL,1);
 	if (C4_grid==NULL){
 	        printf("can't make C4_grid in C4_panel_function\n");
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
-	C4_grid->pressedButton=makeMove;
+	C4_grid->pressed_button=makeMove;
 	grid = new_control_element(C4_grid);
 	if (grid==NULL){
 		printf("can't make control element for C4_grid in C4_panel_function\n");
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
@@ -108,7 +108,7 @@ element_cntrl	C4_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 		}
 	}
 	if(error==1){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;

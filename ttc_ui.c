@@ -27,16 +27,16 @@ element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_
 	ttc_grid = new_button(0,0,TTC_GRIDPATH,0,NULL,1);	
 	if (ttc_grid==NULL){
 		printf("can't make ttc_grid in ttc_panel_function\n");
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
-	ttc_grid->pressedButton=makeMove;
+	ttc_grid->pressed_button=makeMove;
 	grid = new_control_element(ttc_grid);
 	if (grid==NULL){
 		printf("can't make control element for ttc_grid in ttc_panel_function\n");
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
@@ -106,7 +106,7 @@ element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_
 		}
 	}
 	if(error==1){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;

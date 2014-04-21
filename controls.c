@@ -5,7 +5,7 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
-#define MAX_CAPTION_LINES 5
+#define MAX_CAPTION_LINES 25
 
 int controlElementNum=0;
 int buttomNum=0;
@@ -212,14 +212,15 @@ int draw_caption_to_control(control *cntrl)
 		printf("ERROR: control rectangle has illegal size");
 		return -1; 
 	}
-	TTF_Init();
+	
 	
 	font = TTF_OpenFont("arial.ttf", 16);
 	if (font == NULL)  // unable to load font
 	{
-		sdl_err = SDL_GetError();
-				if (sdl_err != NULL)
-					printf("%s",sdl_err);
+		ttf_err = TTF_GetError();
+		if (sdl_err != NULL)
+			printf("%s",ttf_err);
+		TTF_CloseFont(font);
 		return -1;
 	}
 	
@@ -237,6 +238,7 @@ int draw_caption_to_control(control *cntrl)
 			if (ttf_err != NULL)
 				printf("ERORR: %s", ttf_err);
 			SDL_FreeSurface(surface);
+			TTF_CloseFont(font);
 			return -1;
 		}
 		cntrl->text_surface = surface; 
@@ -248,16 +250,16 @@ int draw_caption_to_control(control *cntrl)
 		sdl_err = SDL_GetError();
 		if (sdl_err != NULL)
 			printf("ERROR: %s", sdl_err);
+		TTF_CloseFont(font);
 		return -1;
 	}
-	
+	TTF_CloseFont(font);
 	return 1; 
 }
 
 
-/*regards line-breaks in controls caption
- *of up-to 5 lines, adjusted to top left 
- * quit similar to get_text_position*/
+/* regards line-breaks in controls caption
+ *of up-to MAX_LINES lines, adjusted to top left */
 int draw_caption_to_control_multi(control *cntrl)
 {
 	TTF_Font *font=NULL;
@@ -268,14 +270,12 @@ int draw_caption_to_control_multi(control *cntrl)
 	char* sdl_err = NULL;
 	char* ttf_err = NULL;
 
-
-	char s[200];
-	char *lines[5];
+	char *lines[MAX_CAPTION_LINES];
 	char* token;
 	int i=0;
 	int linecount=0;
+	char *s=NULL;
 	int prev_x_offset = 0;
-
 
 	if (cntrl->caption == NULL || strcmp(cntrl->caption,"")== 0	)
 		return 1;
@@ -287,17 +287,27 @@ int draw_caption_to_control_multi(control *cntrl)
 		printf("ERROR: control rectangle has illegal size");
 		return -1; 
 	}
-	TTF_Init();
 	
+	/*get font */
 	font = TTF_OpenFont("arial.ttf", 16);
 	if (font == NULL) {
 		ttf_err = TTF_GetError();
 		if (ttf_err != NULL)
 			printf("ERROR: %s", ttf_err);
+		TTF_CloseFont(font);
 	}
 
-	//tokenize string and calculate the number of lines-the token will be \n
-	strcpy(s, cntrl->caption);
+
+	/*assign a string to destory, and tokenize it*/
+	s = (char*)malloc(strlen(cntrl->caption) + 1); 
+	if (s == NULL)
+	{
+		printf("ERROR: standard function malloc has failed");
+		TTF_CloseFont(font);
+		return -1;
+	}
+
+	strcpy(s,cntrl->caption);
 	token = strtok(s, "\n");
 	while (token) {
 		lines[linecount] = token;
@@ -329,6 +339,7 @@ int draw_caption_to_control_multi(control *cntrl)
 				if (sdl_err != NULL)
 					printf("ERROR: %s", sdl_err);
 				SDL_FreeSurface(surface);
+				TTF_CloseFont(font);
 				return -1;
 			}
 			cntrl->multitext[i] = surface; 
@@ -339,9 +350,11 @@ int draw_caption_to_control_multi(control *cntrl)
 			sdl_err = SDL_GetError();
 			if (sdl_err != NULL)
 				printf("ERROR: %s", sdl_err);
+			TTF_CloseFont(font);
 			return -1;
 		}
 	}
+	TTF_CloseFont(font);
 	return 1;
 }
 
@@ -442,7 +455,7 @@ void set_list_as_children(linked_list_cntrl list, element_cntrl elem)
 	if (elem->children!=NULL){
 		for (run=elem->children->head;run!=NULL;run=run->next)
 		{
-			freeControlList(run);
+			free_control_list(run);
 		}
 		free(elem->children);
 	}
@@ -531,10 +544,19 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->img = img;
 	label->draw=draw_label;
 	label->ownSurface=NULL;
-	label->caption=caption;
-	label->pressedButton=emptryButton;
+	if (caption != NULL)
+	{
+		label->caption = (char *) malloc (strlen (caption) + 1); 
+		if (label->caption == NULL)
+		{
+			printf("ERROR: standard function malloc has failed");
+			return NULL;
+		}
+		strcpy(label->caption,caption);
+	}
+	label->pressed_button=empty_click_handle;
 	label->srfc=NULL;
-	label->buttonChoise=0;
+	label->button_choice=0;
 	label->text_surface=NULL;
 	label->destination_rect=NULL;
 	label->is_grid=0;
@@ -584,10 +606,10 @@ control* new_button(int x, int y, char *img, int is_trans ,char *caption, int is
 	button->draw=draw_button;
 	button->caption=caption;
 	button->ownSurface=NULL;
-	button->pressedButton=emptryButton;
+	button->pressed_button=empty_click_handle;
 	button->srfc=NULL;
 	button->text_surface=NULL;
-	button->buttonChoise=0;
+	button->button_choice=0;
 	button->destination_rect=NULL;
 	button->is_grid=is_grid;
 	button->is_bg_img =1;
@@ -626,9 +648,9 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G, int is_bg_re
 	panel->draw = draw_panel;// drawing funct
 	panel->ownSurface=NULL;
 	panel->caption=NULL;
-	panel->pressedButton=emptryButton;
+	panel->pressed_button=empty_click_handle;
 	panel->srfc=NULL;
-	panel->buttonChoise=0;
+	panel->button_choice=0;
 	panel->text_surface = NULL;
 	panel->destination_rect=NULL;
 	panel->is_grid=0;
@@ -664,9 +686,9 @@ control* new_window(int x, int y, int w, int h)
 	window->draw = draw_window;// drawing funct
 	window->ownSurface=NULL;
 	window->caption=NULL;
-	window->pressedButton=emptryButton;
+	window->pressed_button=empty_click_handle;
 	window->srfc=NULL;
-	window->buttonChoise=0;
+	window->button_choice=0;
 	window->text_surface = NULL;
 	window->destination_rect=NULL;
 	window->is_grid=0;
@@ -874,7 +896,7 @@ void clear_game_panel(element_cntrl ui_tree)
 	// choose game panel in ui tree
 	game_panel=ui_tree->children->tail; 
 	//call recursive free
-	freeControlList(game_panel);
+	free_control_list(game_panel);
 	//set pre_tail as new tail
 	pre_tail->next=NULL;
 	ui_tree->children->tail=pre_tail;
@@ -882,7 +904,7 @@ void clear_game_panel(element_cntrl ui_tree)
 
 /* Recursively free all Dynamically Allocated Memory : 
  * SDL objects, strings, and data structure */
-void freeControlList(element_cntrl node)
+void free_control_list(element_cntrl node)
 {
 	element_cntrl cur_elem,next_elem;
 	int i;
@@ -896,7 +918,7 @@ void freeControlList(element_cntrl node)
 		for (cur_elem=node->children->head;
 			cur_elem != NULL; cur_elem=next_elem){
 			next_elem=cur_elem->next;
-			freeControlList(cur_elem);
+			free_control_list(cur_elem);
 		}
 	}
 
@@ -954,7 +976,7 @@ void freeControlList(element_cntrl node)
 }
 
 /*if a control with this function is pressed, do nothing and continue.*/
-int emptryButton(int *choice,SDL_Event* test_event)
+int empty_click_handle(int *choice,SDL_Event* test_event)
 {
 	return 0;
 }
@@ -982,7 +1004,7 @@ void free_control(control *cntrl)
 }
 
 /*a function which creates a button with generic_button.bmp and addes it to the list*/
-int newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,int (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise){
+int new_generic_button(linked_list_cntrl parent_element_list,int x,int y,char* caption,int (*pressed_button)(int *choice,SDL_Event* test_event),int button_choice){
 	control* temp_control;
 	int error;
 	char *caption_cpy;
@@ -994,12 +1016,12 @@ int newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,int
 	temp_control = new_button(x,y,"./gfx/generic_button.bmp",1,caption_cpy,0);
 	if (temp_control == NULL)
 	{
-		freeUnconnectedList(fathersList);
+		free_detached_list(parent_element_list);
 		return -1;
 	}
-	temp_control->buttonChoise=buttonChoise;
-	temp_control->pressedButton=pressedButton;
-	error=addNewControlToList(temp_control,fathersList);
+	temp_control->button_choice=button_choice;
+	temp_control->pressed_button=pressed_button;
+	error=add_control_to_element_list(temp_control,parent_element_list);
 	
 	if (error==-1){
 		free_control(temp_control);
@@ -1011,31 +1033,31 @@ int newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,int
 }
 
 /* wraps control in elemnt and adds to a linked list */
-int addNewControlToList(control* control,linked_list_cntrl fathersList){
+int add_control_to_element_list(control* control,linked_list_cntrl parent_element_list){
 	element_cntrl temp_elem=NULL;
 
 
 	temp_elem = new_control_element(control);
 	if (temp_elem==NULL)
 	{
-		freeUnconnectedList(fathersList);
+		free_detached_list(parent_element_list);
 		return -1;
 	}
-	add_control_element_to_list(fathersList,temp_elem);
+	add_control_element_to_list(parent_element_list,temp_elem);
 	return 0;
 }
 
 /*free a list and its children- withou the element which contains the list(if there is any)*/
-void freeUnconnectedList(linked_list_cntrl fathersList){
+void free_detached_list(linked_list_cntrl parent_element_list){
 	element_cntrl cur_elem,next_elem;
 	//free list's children
-	if (fathersList != NULL){
-		for (cur_elem=fathersList->head;
+	if (parent_element_list != NULL){
+		for (cur_elem=parent_element_list->head;
 			cur_elem != NULL; cur_elem=next_elem){
 			next_elem=cur_elem->next;
-			freeControlList(cur_elem);
+			free_control_list(cur_elem);
 		}
 		//free list
-		free(fathersList);
+		free(parent_element_list);
 	}
 }

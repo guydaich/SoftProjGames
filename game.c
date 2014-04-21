@@ -35,7 +35,7 @@ int main( int argc, char* args[] )
 	error=runStartManu(&pause,&test_event);
 	if (error<0 || cur_game==NULL){
 		if (quit==1){
-			freeControlList(ui_tree);
+			free_control_list(ui_tree);
 			if (cur_game!=NULL)
 			{
 				free(cur_game);
@@ -58,7 +58,7 @@ int main( int argc, char* args[] )
 				{
 					 break;
 				}
-				error=pressed_Button->cntrl->pressedButton(&pause,&test_event);
+				error=pressed_Button->cntrl->pressed_button(&pause,&test_event);
 				if (error<0 ||cur_game==NULL){
 					printf("a catchAble error occured\n");
 					return 0;
@@ -71,7 +71,7 @@ int main( int argc, char* args[] )
 				error=handelAI_VS_AI(&pause);
 				if (error<0 ||cur_game==NULL){
 					printf("a catchAble error occured\n");
-					freeControlList(ui_tree);
+					free_control_list(ui_tree);
 					if (cur_game!=NULL)
 					{
 						free(cur_game);
@@ -82,7 +82,7 @@ int main( int argc, char* args[] )
 			}
 		}
 	}
-	freeControlList(ui_tree);
+	free_control_list(ui_tree);
 	if (cur_game!=NULL)
 	{
 		free(cur_game);

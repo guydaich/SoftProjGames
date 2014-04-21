@@ -6,6 +6,7 @@
 #include "save_game.h"
 #include "buttonActions.h"
 
+/* constants */
 #define RESTART "Rsestart"
 #define QUIT "Quit"
 #define CANCEL "Cancel"
@@ -32,26 +33,40 @@
 #define P_COLORED "./gfx/coloredPlayer.bmp"
 #define P_EMPTY "./gfx/emptyPlayer.bmp"
 
-enum qustionWindowsSgin {
-	OVERWRITE_SIGN,OK_SIGN
+enum notification_type {
+	OVERWRITE_SIGN,
+	OK_SIGN
 };
-typedef enum qustionWindowsSgin qustionWindowsSgin;
+typedef enum notification_type notification_type;
 
-enum choiseWindowSign {
-	MAIN_SIGN,LOAD_SIGN,SAVE_SIGN,DIFF1_SIGN,DIFF2_SIGN,START_SIGN,AI_SIGN,ZERO_SIGN
+/*TODO : explain meanings of signs*/
+enum user_selection_type {
+	MAIN_SIGN,
+	LOAD_SIGN,
+	SAVE_SIGN,
+	DIFF1_SIGN,
+	DIFF2_SIGN,
+	START_SIGN,
+	AI_SIGN,
+	ZERO_SIGN
 };
-typedef enum choiseWindowSign choiseWindowSign;
+typedef enum user_selection_type user_selection_type;
 
+/* SDL */
+int				SDL_Init(Uint32 flags);
 
-int SDL_Init(Uint32 flags);
-int get_default_ui_tree();
-element_cntrl mainMenuWindow();
-int runWindow(choiseWindowSign mainORLoad);
-int game_init(choiseWindowSign mainORLoad);
-int draw_game ();
-element_cntrl startWindow();
-element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart);
-char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,choiseWindowSign flag);
-int askWindow(char *qustion,qustionWindowsSgin flag);
-int qustionORtext(qustionWindowsSgin flag);
+/* general ui */
+int				get_default_ui_tree();
+int				draw_game();
+
+/* windows */
+element_cntrl	main_menu_window();
+int				run_window(user_selection_type start_type);
+int				game_init(user_selection_type start_type);
+element_cntrl	start_window();
+element_cntrl	choice_window(int iter_num,int (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart);
+char**			init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event),int *iter_num,user_selection_type flag);
+int				question_window(char *qustion,notification_type flag);
+int				notfication_window(notification_type flag);
+
 #endif

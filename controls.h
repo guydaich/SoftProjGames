@@ -3,67 +3,74 @@
 
 #include <SDL.h>
 #include <SDL_video.h>
-#include <SDL_ttf.h>
+#include "SDL_ttf.h"
 
 #define MAGNETAR 255
 #define MAGNETAG 0
 #define MAGNETAB 255
 
+/* Data structres - control abstract class, and control linked list*/
+
 /* generic control struct */
 typedef struct _control{
-	//* type identifiers */
-	int is_window;
-	int is_panel;
-	int is_button;
-	int is_label; 
-	/*drawing function pointer*/
-	int (* draw)(struct _control *mySelf,struct _control *container); 
-	/* caption for window */
-	char *caption; 
-	/* coordinates and sizes */
-	int x;// x and y offset are relative to the x and y offset of the controls parent panel 
-	int y;
-	int h;//actual sizes.they are caculated in the code
-	int w;
-	int offsetx;//actual coordinates (unlike x and y). they are caculated in the code
-	int offsety;
-	SDL_Rect *destination_rect;//rect for SDL_Blit.uses actual coordinates
-	char *img; //background images path
-	// colors for tranparancy 
-	int is_transparant;
-	//colors in case there is no background image (a RGBSurface will be created to serve as background)
-	int R;
-	int B;
-	int G;
-	SDL_Surface *srfc;//the srfc is the surface of the window upon which the control will be drawn
-	SDL_Surface *ownSurface;//this surface represents the control to the user
-	SDL_Surface *text_surface;
-	SDL_Surface **multitext;
-	int num_texts;//number of lines in control's text
-	int (*pressedButton)(int *choise,SDL_Event* test_event);//which function sould be invoked in this button is "pressed".
-	int buttonChoise;
-	/*if is grid - when pressed, will act like a lowest-level button*/
-	int is_grid; 
-	/*flags for loading background from image or painting RGB rect*/
-	int is_bg_img; 
-	int is_bg_rect;
+	/* identifiers */
+	int				is_window;			/*boolean indicating this control is a window*/
+	int				is_panel;			/*boolean indicating this control is a panel*/
+	int				is_button;			/*boolean indicating this control is a button*/
+	int				is_label;			/*boolean indicating this control is a label*/
+
+	/* position */
+	int				x;					/* relative x-coordinate within panel */
+	int				y;					/* relative y-coordinate within panel */
+	int				h;					/* control rect height */		
+	int				w;					/* control rect width */
+	int				offsetx;			/* abosulte x-coordinate in window*/
+	int				offsety;			/* abosulte y-coordinate in window*/
+	SDL_Rect		*destination_rect;	/* rect for blitting onto this surface */
+	
+	/* captions */
+	char			*caption;			/* caption to write on control */
+	SDL_Surface		*text_surface;		/* surface of written caption */
+	SDL_Surface		**multitext;		/* surface array of multiline texts*/
+	int				num_texts;			/* size of text surface array */
+
+	/* background */
+	char			*img;				/* image path to this control's background*/
+	int				is_transparant;		/* boolean indicating if image is to be loaded transparant */
+	int				R;					/* R-elemnt of background, if BG is simply and RGB surface */
+	int				B;					/* B-elemnt of background, if BG is simply and RGB surface */
+	int				G;					/* G-elemnt of background, if BG is simply and RGB surface */
+	int				is_bg_img;			/* boolean indicating if BG is an image */
+	int				is_bg_rect;			/* boolean indicating if BG is an RGB rect */
+	
+	/* surfaces */
+	SDL_Surface		*srfc;				/* the surface of the panel blitted onto */
+	SDL_Surface		*ownSurface;		/* this controls own surface*/
+
+	/*misc*/
+	int				button_choice;		/* a button behavior associated with this control*/
+	int				is_grid;			/* determines finding of element according to coordinates, in the game grid area*/
+	
+	/*methods */
+	int				(* draw)(struct _control *mySelf,struct _control *container);	/*drawing function relevant to this element*/
+	int				(*pressed_button)(int *choise,SDL_Event* test_event);			/*function to be ivoked on clicking the button*/
 
 
 } control;
 
-/*linked list for control tree*/
-
+/* a link in a control linked list represantation of a tree*/
 struct element_s_cntrl {
-	control	*cntrl;
-	struct linked_list_s_cntrl *children;
-	struct element_s_cntrl	*parent;
-	struct element_s_cntrl	*next;
-	struct element_s_cntrl	*prev;
+	control						*cntrl;		/* the actual control stored in this link */
+	struct linked_list_s_cntrl	*children;	/* children of link */
+	struct element_s_cntrl		*parent;	/* parent of link */
+	struct element_s_cntrl		*next;		/* next link */	
+	struct element_s_cntrl		*prev;		/*	previous link */
 	
 };
 
 typedef struct element_s_cntrl*  element_cntrl;
 
+/* a linked list of controls*/
 struct linked_list_s_cntrl {
 	element_cntrl head;
 	element_cntrl tail;
@@ -71,34 +78,42 @@ struct linked_list_s_cntrl {
 
 typedef struct linked_list_s_cntrl *  linked_list_cntrl;
 
+/* functions 
+ * detailed documentation next to implementation */
 
-/*element functions*/
-element_cntrl new_control_element(control* cntrl);
-linked_list_cntrl new_control_list();
-void add_control_element_to_list(linked_list_cntrl list, element_cntrl elem);
-void set_list_as_children(linked_list_cntrl list, element_cntrl elem);
-void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl *target);
+/*data structure functions*/
+element_cntrl		new_control_element(control* cntrl);
+linked_list_cntrl	new_control_list();
+void				add_control_element_to_list(linked_list_cntrl list, element_cntrl elem);
+void				set_list_as_children(linked_list_cntrl list, element_cntrl elem);
+void				find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl *target);
+int					add_control_to_element_list(control* control,linked_list_cntrl parent_element_list);
 
+/* control initializers */
+control*	new_label(int x, int y, int w, int h, char *img, int R, 
+					  int G, int B, int is_trans,char *caption);
+control*	new_button(int x, int y, char *img, int is_trans,char *caption, int is_grid);
+control*	new_window(int x, int y, int w, int h);
+control*	new_panel(int x, int y, int w, int h,int R, int G, int B, int is_bg_rect);
+int			new_generic_button(linked_list_cntrl parent_element_list,int x,int y,char* caption,
+							   int (*pressed_button)(int *choice,SDL_Event* test_event),int button_choice);
+int			empty_click_handle(int *quit,SDL_Event* test_event);
 
-/* control functions */
-int draw_ui_tree(element_cntrl root);
-int draw_button(control *button, control *container);
-int draw_label(control *label, control *container);
-int draw_window(control* window);
-int draw_panel(control* panel, control *container);
-control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, int is_trans,char *caption);
-control* new_button(int x, int y, char *img, int is_trans,char *caption, int is_grid);
-control* new_window(int x, int y, int w, int h);
-control* new_panel(int x, int y, int w, int h,int R, int G, int B, int is_bg_rect);
-void free_control(control *cntrl);
-int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel);
+/* control drawing*/
+int			draw_button(control *button, control *container);
+int			draw_label(control *label, control *container);
+int			draw_window(control* window);
+int			draw_panel(control* panel, control *container);
 
-void clear_game_panel(element_cntrl ui_tree);
-void freeControlList(element_cntrl node);
-int emptryButton(int *quit,SDL_Event* test_event);
+/* ui tree drawing */
+int			draw_ui_tree(element_cntrl root);
+int			draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel);
 
-int newButtonGeneric(linked_list_cntrl fathersList,int x,int y,char* caption,int (*pressedButton)(int *choice,SDL_Event* test_event),int buttonChoise);
-int addNewControlToList(control* control,linked_list_cntrl fathersList);
-void freeUnconnectedList(linked_list_cntrl fathersList);
+/* memory cleanup*/
+void		free_control(control *cntrl);
+void		free_control_list(element_cntrl node);
+void		clear_game_panel(element_cntrl ui_tree);
+void		free_detached_list(linked_list_cntrl parent_element_list);
+
 #endif
 

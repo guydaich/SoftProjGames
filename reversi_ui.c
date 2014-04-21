@@ -26,16 +26,16 @@ element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 	rv_grid = new_button(0,0,RVR_GRIDPATH,1,NULL,1);
 	if (rv_grid==NULL){
         printf("can't make rv_grid in rv_panel_function\n");
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
-	rv_grid->pressedButton=makeMove;
+	rv_grid->pressed_button=makeMove;
 	grid = new_control_element(rv_grid);
 	if (grid==NULL){
 		printf("can't make control element for rv_grid in rv_panel_function\n");
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
@@ -104,7 +104,7 @@ element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 		}
 	}
 	if(error==1){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
@@ -123,14 +123,14 @@ int color_rv(int* game_state,int player,element_cntrl ui_tree){
 	gameUiBoard=ui_tree->children->tail->children->head->children->head;
 	victoriusPlayer=rv_is_victory(game_state);
 	if (victoriusPlayer==REVERSI_PLAYER_1){
-		error=newButtonGeneric(gameUiBoard->children,25,25,"Player 1 won!",emptryButton,0);
+		error=new_generic_button(gameUiBoard->children,25,25,"Player 1 won!",empty_click_handle,0);
 		if(error==-1){
 			printf("ERROR: failed to make button for victory in color_rv\n");
 			return -1;
 		}
 	}
 	else if (victoriusPlayer==REVERSI_PLAYER_2){
-		error=newButtonGeneric(gameUiBoard->children,25,25,"Player 2 won!",emptryButton,0);
+		error=new_generic_button(gameUiBoard->children,25,25,"Player 2 won!",empty_click_handle,0);
 		if(error==-1){
 			printf("ERROR: failed to make button for victory in color_rv\n");
 			return -1;

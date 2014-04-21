@@ -32,14 +32,14 @@ int get_default_ui_tree()
 	/*button panel*/
 	temp_control = new_panel(700,0,300,1000,255,255,255,1);
 	if (temp_control==NULL){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
-	error=addNewControlToList(temp_control,list);
+	error=add_control_to_element_list(temp_control,list);
 	if (error<0){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return -1;
@@ -57,62 +57,62 @@ int get_default_ui_tree()
 	/*label - paint first*/
 	temp_control = new_label(0,0,0,0,"./gfx/button_label.bmp",255,0,255,1,"this is a text");
 	if (temp_control==NULL){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
-	error=addNewControlToList(temp_control,list);
+	error=add_control_to_element_list(temp_control,list);
 	if (error<0){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
 
 	/*restart*/
-	error=newButtonGeneric(list,25,20,RESTART,restartGame,0);
+	error=new_generic_button(list,25,20,RESTART,restartGame,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
 	/*save*/
-	error=newButtonGeneric(list,25,120,SAVE,runsaveManu,0);
+	error=new_generic_button(list,25,120,SAVE,runsaveManu,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
 	/*pause- unpause*/
-	error=newButtonGeneric(list,25,220,PAUSE,setUnpause,0);
+	error=new_generic_button(list,25,220,PAUSE,setUnpause,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
 	/*main menu*/
-	error=newButtonGeneric(list,25,320,MAIN_MENU,runStartManu,0);
+	error=new_generic_button(list,25,320,MAIN_MENU,runStartManu,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
 	/*difficulties menus*/
-	error=newButtonGeneric(list,25,420,DIFFP1,runDiffManuP1,0);
+	error=new_generic_button(list,25,420,DIFFP1,runDiffManuP1,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
-	error=newButtonGeneric(list,25,520,DIFFP2,runDiffManuP2,0);
+	error=new_generic_button(list,25,520,DIFFP2,runDiffManuP2,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
 	/*quit*/
-	error=newButtonGeneric(list,25,620,QUIT,quitGame,0);
+	error=new_generic_button(list,25,620,QUIT,quitGame,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
@@ -125,19 +125,19 @@ int get_default_ui_tree()
 }
 
 //run window in which a game is chosen
-int runWindow(choiseWindowSign mainORLoad){
+int run_window(user_selection_type mainORLoad){
 	element_cntrl pressed_Button=NULL;
 	int whichGame,iterationNum=1,error=0;
 	SDL_Event test_event; 
-	int (*buttonAction)(int *choise,SDL_Event* test_event)=emptryButton;
+	int (*buttonAction)(int *choise,SDL_Event* test_event)=empty_click_handle;
 	char** captionArray;
 
 	if (ui_tree!=NULL){
-		freeControlList(ui_tree);
+		free_control_list(ui_tree);
 		ui_tree=NULL;
 	}
 	if (mainORLoad==START_SIGN){
-		ui_tree=startWindow();
+		ui_tree=start_window();
 		if (ui_tree==NULL){
 			if (cur_game!=NULL){
 				free(cur_game);
@@ -150,7 +150,7 @@ int runWindow(choiseWindowSign mainORLoad){
 		return 0;
 	}
 	else {
-		captionArray=initialazeChoiseWindow(&buttonAction,&iterationNum,mainORLoad);
+		captionArray=init_choice_window(&buttonAction,&iterationNum,mainORLoad);
 		if (captionArray==NULL){
 			if (cur_game!=NULL){
 				free(cur_game);
@@ -159,7 +159,7 @@ int runWindow(choiseWindowSign mainORLoad){
 			}
 			return -1;
 		}
-		ui_tree=choiseWindow(iterationNum,buttonAction,captionArray);
+		ui_tree=choice_window(iterationNum,buttonAction,captionArray);
 		if (ui_tree==NULL){
 			if (cur_game!=NULL){
 				free(cur_game);
@@ -183,7 +183,7 @@ int runWindow(choiseWindowSign mainORLoad){
 	while(SDL_PollEvent(&test_event)) {
 		if(test_event.type == SDL_QUIT){
 			quit=1;
-			//freeControlList(ui_tree);
+			//free_control_list(ui_tree);
 			break;
 		}
 		switch(test_event.type) {
@@ -193,10 +193,10 @@ int runWindow(choiseWindowSign mainORLoad){
 			 {
 				 break;
 			 }
-			 whichGame=pressed_Button->cntrl->buttonChoise;
-			 error=pressed_Button->cntrl->pressedButton(&whichGame,&test_event);
+			 whichGame=pressed_Button->cntrl->button_choice;
+			 error=pressed_Button->cntrl->pressed_button(&whichGame,&test_event);
 			 if (error<0){
-				freeControlList(ui_tree);
+				free_control_list(ui_tree);
 				ui_tree=NULL;
 				if (cur_game!=NULL){
 					free(cur_game);
@@ -216,19 +216,19 @@ int runWindow(choiseWindowSign mainORLoad){
 }
 
 //go to main menu,choose game and initiate ui_tree
-int game_init(choiseWindowSign mainORLoad)
+int game_init(user_selection_type mainORLoad)
 {
 	int error;
 	if (ui_tree!=NULL){
-		freeControlList(ui_tree);
+		free_control_list(ui_tree);
 		ui_tree=NULL;
 	}
-	error=runWindow(mainORLoad);
+	error=run_window(mainORLoad);
 	if (error<0){
 		return -1;
 	}
 	else{
-		freeControlList(ui_tree);
+		free_control_list(ui_tree);
 		ui_tree=NULL;
 	}
 	if (cur_game==NULL){
@@ -240,7 +240,7 @@ int game_init(choiseWindowSign mainORLoad)
 	}
 	error=draw_game();
 	if (error<0){
-		freeControlList(ui_tree);
+		free_control_list(ui_tree);
 		ui_tree=NULL;
 		free(cur_game);//checked for null before
 		gameNum--;
@@ -296,7 +296,7 @@ int draw_game ()
 	return 0;
 }
 
-element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart){
+element_cntrl choice_window(int iterationNum,int (*buttonAction)(int *choise,SDL_Event* test_event),char** captionStart){
 	element_cntrl root, temp_elem;
 	control* temp_control;
 	linked_list_cntrl list;
@@ -317,14 +317,14 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 	/*button panel*/
 	temp_control = new_panel(0,0,250,(iterationNum+2)*60,220,220,220,1);
 	if (temp_control==NULL){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
 	temp_elem = new_control_element(temp_control);
 	if (temp_elem==NULL){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
@@ -342,22 +342,22 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 
 	for (i=1;i<=iterationNum;i++)
 	{
-		error=newButtonGeneric(list,20,20+(i-1)*50,captionStart[i-1],buttonAction,i);
+		error=new_generic_button(list,20,20+(i-1)*50,captionStart[i-1],buttonAction,i);
 		free(captionStart[i-1]);
 		if (error<0){
 			break;
 		}
 	}
 	if (error<0){
-		//newButtonGeneric frees list 
+		//new_generic_button frees list 
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
 	free(captionStart);
-	error=newButtonGeneric(list,20,20+(i-1)*50,CANCEL,runStartManu,0);
+	error=new_generic_button(list,20,20+(i-1)*50,CANCEL,runStartManu,0);
 	if (error<0){
-		//newButtonGeneric frees list 
+		//new_generic_button frees list 
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
@@ -367,7 +367,7 @@ element_cntrl choiseWindow(int iterationNum,int (*buttonAction)(int *choise,SDL_
 
 }
 
-element_cntrl startWindow(){
+element_cntrl start_window(){
 	element_cntrl root;
 	control* temp_control;
 	linked_list_cntrl list; 
@@ -388,12 +388,12 @@ element_cntrl startWindow(){
 	/*button panel*/
 	temp_control = new_panel(0,0,240,300,220,220,220,1);
 	if(temp_control==NULL){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
-	error=addNewControlToList(temp_control,list);
+	error=add_control_to_element_list(temp_control,list);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
@@ -409,19 +409,19 @@ element_cntrl startWindow(){
 		return NULL;
 	}
 
-	error=newButtonGeneric(list,20,20,CHOOSE_GAME,goToMainMenu,0);
+	error=new_generic_button(list,20,20,CHOOSE_GAME,goToMainMenu,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
-	error=newButtonGeneric(list,20,80,LOAD,runLoadManu,0);
+	error=new_generic_button(list,20,80,LOAD,runLoadManu,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
-	error=newButtonGeneric(list,20,160,CANCEL,quitGame,0);
+	error=new_generic_button(list,20,160,CANCEL,quitGame,0);
 	if (error<0){
 		free_control(root->cntrl);
 		free(root);
@@ -433,14 +433,14 @@ element_cntrl startWindow(){
 }
 
 
-char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_event),int *iterationNum,choiseWindowSign flag){
+char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event),int *iterationNum,user_selection_type flag){
 	char** captionArray=NULL;
 	char* buttonName;
 	int i,error=0;
 	char *transporter;
 
 	if (flag==MAIN_SIGN){
-		*pressedButton=chooseGame;
+		*pressed_button=chooseGame;
 		*iterationNum=3;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
 		captionArray[0]=(char *)calloc(strlen(ttc_get_name())+1,sizeof(char));//alocate so we can free them freely
@@ -452,7 +452,7 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		return captionArray;
 	}
 	else if (flag==AI_SIGN){
-		*pressedButton=setmultiplayer;
+		*pressed_button=setmultiplayer;
 		*iterationNum=4;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
 		captionArray[0]=(char *)calloc(strlen(AI_1)+1,sizeof(char));//alocate so we can free them freely
@@ -466,7 +466,7 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		return captionArray;
 	}
 	else if (flag==LOAD_SIGN){
-		*pressedButton=loadGame;
+		*pressed_button=loadGame;
 		*iterationNum=5;
 		transporter=(char *)LOAD_SLOT;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
@@ -475,7 +475,7 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		}
 	}
 	else if (flag==SAVE_SIGN){
-		*pressedButton=saveGame;
+		*pressed_button=saveGame;
 		*iterationNum=5;
 		transporter=(char *)SAVE_SLOT;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
@@ -487,7 +487,7 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		if (cur_game==NULL){
 			return NULL;
 		}
-		*pressedButton=setDifficaltyP1;
+		*pressed_button=setDifficaltyP1;
 		*iterationNum=cur_game->difficulty_num;
 		transporter=(char *)DIFFICALTY;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
@@ -499,7 +499,7 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 		if (cur_game==NULL){
 			return NULL;
 		}
-		*pressedButton=setDifficaltyP2;
+		*pressed_button=setDifficaltyP2;
 		*iterationNum=cur_game->difficulty_num;
 		transporter=(char *)DIFFICALTY;
 		captionArray=(char**)calloc(*iterationNum,sizeof(char*));
@@ -527,7 +527,7 @@ char** initialazeChoiseWindow(int (**pressedButton)(int *quit,SDL_Event* test_ev
 	return captionArray;
 }
 
-int askWindow(char *qustion,qustionWindowsSgin flag){
+int question_window(char *qustion,notification_type flag){
 	element_cntrl pressed_Button=NULL;
 	int whichGame,error;
 	SDL_Event test_event;
@@ -537,7 +537,7 @@ int askWindow(char *qustion,qustionWindowsSgin flag){
 	linked_list_cntrl list; 
 
 	if (ui_tree!=NULL){
-		freeControlList(ui_tree);
+		free_control_list(ui_tree);
 		ui_tree=NULL;
 	}
 
@@ -556,12 +556,12 @@ int askWindow(char *qustion,qustionWindowsSgin flag){
 	/*button panel*/
 	temp_control = new_panel(0,0,500,250,255,255,255,1);
 	if(temp_control==NULL){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
-	error=addNewControlToList(temp_control,list);
+	error=add_control_to_element_list(temp_control,list);
 	if(error<0){
 		free_control(root->cntrl);
 		free(root);
@@ -571,12 +571,12 @@ int askWindow(char *qustion,qustionWindowsSgin flag){
 	//label - paint first
 	temp_control = new_label(0,0,500,250,"./gfx/textArea.bmp",255,0,255,1,qustion);
 	if(temp_control==NULL){
-		freeUnconnectedList(list);
+		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return -1;
 	}
-	error=addNewControlToList(temp_control,list);
+	error=add_control_to_element_list(temp_control,list);
 	if(error<0){
 		free_control(root->cntrl);
 		free(root);
@@ -585,7 +585,7 @@ int askWindow(char *qustion,qustionWindowsSgin flag){
 
 	set_list_as_children(list,root);
 	ui_tree=root;
-	error=qustionORtext(flag);
+	error=notfication_window(flag);
 	if(error<0){
 		free_control(root->cntrl);
 		free(root);
@@ -604,7 +604,7 @@ int askWindow(char *qustion,qustionWindowsSgin flag){
 	while(SDL_PollEvent(&test_event)) {
 		if(test_event.type == SDL_QUIT){
 			quit=1;
-			//freeControlList(ui_tree);
+			//free_control_list(ui_tree);
 			break;
 		}
 		switch(test_event.type) {
@@ -614,7 +614,7 @@ int askWindow(char *qustion,qustionWindowsSgin flag){
 			 {
 				 break;
 			 }
-			 whichGame=pressed_Button->cntrl->buttonChoise;
+			 whichGame=pressed_Button->cntrl->button_choice;
 			 return whichGame;
 		}
 	}
@@ -622,7 +622,7 @@ int askWindow(char *qustion,qustionWindowsSgin flag){
 	return -2;
 }
 
-int qustionORtext(qustionWindowsSgin flag){
+int notfication_window(notification_type flag){
 	linked_list_cntrl list;
 	int error;
 
@@ -631,17 +631,17 @@ int qustionORtext(qustionWindowsSgin flag){
 		return -1;
 	}
 	if(flag==OVERWRITE_SIGN){
-		error=newButtonGeneric(list,170,20,YES,emptryButton,1);
+		error=new_generic_button(list,170,20,YES,empty_click_handle,1);
 		if (error<0){
 			return -1;
 		}
-		error=newButtonGeneric(list,170,190,NO,emptryButton,0);
+		error=new_generic_button(list,170,190,NO,empty_click_handle,0);
 		if (error<0){
 			return -1;
 		}
 	}
 	else if(flag==OK_SIGN){
-		error=newButtonGeneric(list,170,190,OK,emptryButton,0);
+		error=new_generic_button(list,170,190,OK,empty_click_handle,0);
 		if (error<0){
 			return -1;
 		}

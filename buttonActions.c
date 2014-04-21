@@ -43,8 +43,8 @@ int quitGame(int *choice,SDL_Event* test_event)
 int goToMainMenu(int *choice,SDL_Event* test_event)
 {
 	int error;
-	//freeControlList(ui_tree);
-	error=runWindow(MAIN_SIGN);
+	//free_control_list(ui_tree);
+	error=run_window(MAIN_SIGN);
 	if (error<0){
 		return -1;
 	}
@@ -65,8 +65,8 @@ int saveGame(int *choice,SDL_Event* test_event)
 	if(onTopOf==1)
 	{
          //ask user if he want s to overwrite
-		freeControlList(ui_tree);
-		userAnswer=askWindow("This file already exist.\nDo you wish to overwrite?",OVERWRITE_SIGN);
+		free_control_list(ui_tree);
+		userAnswer=question_window("This file already exist.\nDo you wish to overwrite?",OVERWRITE_SIGN);
 		if (userAnswer < 0)
 		{
 			printf("ERROR: failed to interact with user\n");
@@ -112,7 +112,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 		printf("failed in handle_mouse_button_down\n");
 		free(cur_game);
 		gameNum--;
-		freeControlList(ui_tree);
+		free_control_list(ui_tree);
 		return -1;
 	}
 	cur_game->cur_player = (-1)*cur_game->cur_player;
@@ -129,7 +129,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 					printf("failed in handle_computer_move\n");
 					free(cur_game);
 					gameNum--;
-					freeControlList(ui_tree);
+					free_control_list(ui_tree);
 					return -1;
 				}
 			}
@@ -139,7 +139,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 					printf("failed in handle_computer_move\n");
 					free(cur_game);
 					gameNum--;
-					freeControlList(ui_tree);
+					free_control_list(ui_tree);
 					return -1;
 				}
 			}
@@ -153,7 +153,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 		printf("failed in draw_game\n");
 		free(cur_game);
 		gameNum--;
-		freeControlList(ui_tree);
+		free_control_list(ui_tree);
 		return -1;
 	}
 	/*check if game ended*/
@@ -166,7 +166,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 				printf("failed in victoryColor\n");
 				free(cur_game);
 				gameNum--;
-				freeControlList(ui_tree);
+				free_control_list(ui_tree);
 				return -1;
 			}
 		}
@@ -176,18 +176,18 @@ int  makeMove(int *choice,SDL_Event* test_event)
 				printf("failed in victoryColor\n");
 				free(cur_game);
 				gameNum--;
-				freeControlList(ui_tree);
+				free_control_list(ui_tree);
 				return -1;
 			}
 		}
 		else //if tie, add to ui a tie-message
 		{
-			error=newButtonGeneric(ui_tree->children,300,480,"draw",restartGame,0);
+			error=new_generic_button(ui_tree->children,300,480,"draw",restartGame,0);
 			if (error<0){
 				printf("failed in makeing draw button\n");
 				free(cur_game);
 				gameNum--;
-				freeControlList(ui_tree);
+				free_control_list(ui_tree);
 				return -1;
 			}
 			ui_tree->children->tail->parent=ui_tree;
@@ -254,8 +254,8 @@ int  chooseGame(int *choice,SDL_Event* test_event)
 int  runLoadManu(int *choice,SDL_Event* test_event)
 {
 	int error;
-	//freeControlList(ui_tree);
-	error=runWindow(LOAD_SIGN);
+	//free_control_list(ui_tree);
+	error=run_window(LOAD_SIGN);
 	if(error<0){
 		return -1;
 	}
@@ -266,8 +266,8 @@ int  runLoadManu(int *choice,SDL_Event* test_event)
 int  runStartManu(int *choice,SDL_Event* test_event)
 {
 	int error;
-	//freeControlList(ui_tree);
-	error=runWindow(START_SIGN);
+	//free_control_list(ui_tree);
+	error=run_window(START_SIGN);
 	if(error<0 || (cur_game==NULL && quit!=1)){
 		printf("ERORR: could not move to new window");
 		return -1;
@@ -275,7 +275,7 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 	else if (quit==1){
 		return 0;
 	}
-	error=runWindow(AI_SIGN);
+	error=run_window(AI_SIGN);
 	if(error<0){
 		return -1;
 	}
@@ -287,7 +287,7 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 	}
 	switch(cur_game->is_multiplayer){
 		case 1:
-			error=runWindow(DIFF1_SIGN);
+			error=run_window(DIFF1_SIGN);
 			if(error<0){
 				return -1;
 			}
@@ -330,7 +330,7 @@ int loadGame(int *choice,SDL_Event* test_event)
 	/*try loading from file*/
 	error=load_game_from_file(fileLocation,&whichGame,&gameBoard,&player);
 	if (error==-2){
-		error = askWindow("the game is either corrupt or doesn't exist",OK_SIGN);
+		error = question_window("the game is either corrupt or doesn't exist",OK_SIGN);
 		if (error<0)
 		{
 			printf("ERROR: could not notify user of problem");
@@ -365,7 +365,7 @@ int loadGame(int *choice,SDL_Event* test_event)
 int runsaveManu(int *choice,SDL_Event* test_event)
 {
 	int error=0;
-	//freeControlList(ui_tree);
+	//free_control_list(ui_tree);
 	error=game_init(SAVE_SIGN);
 	if (error<0){
 		return -1;
@@ -377,7 +377,7 @@ int runsaveManu(int *choice,SDL_Event* test_event)
 int runDiffManuP1(int *choice,SDL_Event* test_event)
 {
 	int error=0;
-	//freeControlList(ui_tree);
+	//free_control_list(ui_tree);
 	error=game_init(DIFF1_SIGN);
 	if (error<0){
 		return -1;
@@ -389,7 +389,7 @@ int runDiffManuP1(int *choice,SDL_Event* test_event)
 int runDiffManuP2(int *choice,SDL_Event* test_event)
 {
 	int error=0;
-	//freeControlList(ui_tree);
+	//free_control_list(ui_tree);
 	error=game_init(DIFF2_SIGN);
 	if (error<0){
 		return -1;
@@ -421,7 +421,7 @@ int setUnpause(int *choice,SDL_Event* test_event){
 	if (error<0){
 		free(cur_game);
 		gameNum--;
-		freeControlList(ui_tree);
+		free_control_list(ui_tree);
 		return -1;
 	}
 	return 0;
