@@ -623,15 +623,15 @@ int question_window(char *qustion,notification_type flag){
 }
 
 int notfication_window(notification_type flag){
-	linked_list_cntrl list;
-	int error;
+	linked_list_cntrl list=NULL;
+	int error=0;
 
 	list = new_control_list();
 	if(list==NULL){
 		return -1;
 	}
 	if(flag==OVERWRITE_SIGN){
-		error=new_generic_button(list,170,20,YES,empty_click_handle,1);
+		error=new_generic_button(list,170,30,YES,empty_click_handle,1);
 		if (error<0){
 			return -1;
 		}

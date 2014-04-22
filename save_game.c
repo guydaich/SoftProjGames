@@ -8,7 +8,7 @@ int save_game_in_file(char* filename, int *game_state, int player, int cols, int
 	int statCheck=0;
 	/*open read, check existence*/
 	statCheck=access (filename,R_OK);
-	if(statCheck>=0){
+	if(statCheck==0){
 		return 1;
 	}
 	else {

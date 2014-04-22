@@ -23,7 +23,7 @@ element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 		free(root);
 		return NULL;
 	}
-	rv_grid = new_button(0,0,RVR_GRIDPATH,1,NULL,1);
+	rv_grid = new_button(0,0,RVR_GRIDPATH,0,NULL,1);
 	if (rv_grid==NULL){
         printf("can't make rv_grid in rv_panel_function\n");
 		free_detached_list(list);
@@ -78,11 +78,11 @@ element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 			rv_button= NULL;
 			if (game_state[i*REVERSI_ROWS + j] == REVERSI_PLAYER_1)	
 			{
-				rv_button=new_button((j)*RVR_WBTN,(i)*RVR_HBTN,RVR_BTN_BLACK_PATH,1,"",0);
+				rv_button=new_button((j)*RVR_WBTN,(i)*RVR_HBTN,RVR_BTN_BLACK_PATH,1,NULL,0);
 			}
 			else if (game_state[i*REVERSI_ROWS + j] == REVERSI_PLAYER_2)	
 			{
-				rv_button=new_button((j)*RVR_WBTN,(i)*RVR_HBTN,RVR_BTN_WHITE_PATH,1,"",0);
+				rv_button=new_button((j)*RVR_WBTN,(i)*RVR_HBTN,RVR_BTN_WHITE_PATH,1,NULL,0);
 			}
 			if (rv_button != NULL)
 			{

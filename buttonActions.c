@@ -65,7 +65,6 @@ int saveGame(int *choice,SDL_Event* test_event)
 	if(onTopOf==1)
 	{
          //ask user if he want s to overwrite
-		free_control_list(ui_tree);
 		userAnswer=question_window("This file already exist.\nDo you wish to overwrite?",OVERWRITE_SIGN);
 		if (userAnswer < 0)
 		{
