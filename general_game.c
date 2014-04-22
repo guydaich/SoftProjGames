@@ -84,19 +84,10 @@ game* new_game(whichGame game_id)
 		printf("ERROR: could not get initial game board");
 		return NULL;
 	}
+	//init with imposable values in order not to double init the game.
 	new_game_obj->is_multiplayer = -1;
-	new_game_obj->difficultyP1=-1;//new_game_obj->get_difficulty_levels()[0];
-	/*if (new_game_obj->difficultyP1 >9 || new_game_obj->difficultyP1 <1)
-	{
-		printf("ERROR: could not get initial Difficulty for Player");
-		return NULL;
-	}*/
-	new_game_obj->difficultyP2=-1;//new_game_obj->get_difficulty_levels()[0];
-	/*if (new_game_obj->difficultyP2 >9 || new_game_obj->difficultyP2 <1)
-	{
-		printf("ERROR: could not get initial Difficulty for Player");
-		return NULL;
-	}*/
+	new_game_obj->difficultyP1=-1;
+	new_game_obj->difficultyP2=-1;
 
 return new_game_obj;
 

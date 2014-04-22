@@ -7,7 +7,7 @@ int save_game_in_file(char* filename, int *game_state, int player, int cols, int
 {
 	int statCheck=0;
 	/*open read, check existence*/
-	//statCheck=access (filename,R_OK);
+	statCheck=access (filename,R_OK);
 	if(statCheck>=0){
 		return 1;
 	}
@@ -65,10 +65,10 @@ int load_game_from_file(char* filename, whichGame* whichG,int** board,int *playe
 	FILE *file=NULL;
 	char new_game_name[MAX_NAME_SIZE];
 	int *game_board;
-	int error;
+	int error=0;
 
 	/*check file existence*/
-	//statCheck=access (filename,W_OK);
+	statCheck=access (filename,W_OK);
 	if (statCheck <0)
 	{ 
 		printf("ERROR: can't open load file\n");

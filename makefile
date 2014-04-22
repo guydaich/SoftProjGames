@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-g -Wall
-INCS=-I/usr/include/SDL
+INCS=-I/usr/include/SDL -Isdl-ttf-lib
 OBJS=game.o general_game.o tic_tac_toe_bl.o connect4_bl.o reversi_bl.o ttc_ui.o connect4_ui.o reversi_ui.o controls.o save_game.o minimax.o buttonActions.o windowsDrawing.o
 
 all: games
@@ -9,7 +9,7 @@ clean:
 	-rm games $(OBJS)
 
 games: $(OBJS)
-	$(CC) -o games $(OBJS) -lSDL -lSDL_ttf
+	$(CC) -o games $(OBJS) -lSDL -Lsdl-ttf-lib -lSDL_ttf
 
 game.o:game.c game.h windowsDrawing.h
 	$(CC) $(CFLAGS) -c $*.c $(INCS)
