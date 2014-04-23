@@ -645,6 +645,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G, int is_bg_re
 	panel->R = R;
 	panel->B = B;
 	panel->G = G;
+	panel->img = NULL;
 	panel->draw = draw_panel;// drawing funct
 	panel->ownSurface=NULL;
 	panel->caption=NULL;
@@ -906,8 +907,8 @@ void clear_game_panel(element_cntrl ui_tree)
  * SDL objects, strings, and data structure */
 void free_control_list(element_cntrl node)
 {
-	element_cntrl cur_elem,next_elem;
-	int i;
+	element_cntrl cur_elem=NULL,next_elem=NULL;
+	int i=0;
 
 	if (node == NULL){
 		return;

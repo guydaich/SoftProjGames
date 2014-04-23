@@ -1,4 +1,5 @@
 #include "reversi_bl.h"
+int dynamic_heuristic_evaluation_function(int* grid);
 
 int *reversi_board=NULL; 
 int reversi_diffficulties[] = {1,2,3,4};//possible didiffficulty levels. this is a global array so it won't be freed at any point on the game.
@@ -215,7 +216,9 @@ int get_player_pieces(int* game_state, int player)
 * we use this function for the minimax algorithm */
 int rv_get_state_score(int* game_state,int player)
 {
-	int i=0,j = 0, player_pieces =0, other_pieces = 0; 
+	return dynamic_heuristic_evaluation_function(game_state);
+
+	/*int i=0,j = 0, player_pieces =0, other_pieces = 0; 
 	int score=0; 
 
 	if (rv_is_game_over(game_state))
@@ -240,8 +243,8 @@ int rv_get_state_score(int* game_state,int player)
 	{
 		for(j=0; j < REVERSI_COLS; j++)
 		{
-			/* if position is empty: multiply by zero, else, (+1)/(-1) according to piece*/ 
-			/*score += game_state[i*REVERSI_ROWS + j] * region_scores[i][j]; */
+			// if position is empty: multiply by zero, else, (+1)/(-1) according to piece 
+			//score += game_state[i*REVERSI_ROWS + j] * region_scores[i][j];
 			if (game_state[i*REVERSI_ROWS + j] == player)
 			{
 				score += region_scores[i][j];
@@ -253,6 +256,7 @@ int rv_get_state_score(int* game_state,int player)
 		}
 	}
 	return score;
+	*/
 }
 
 /* get difficult level for game*/
@@ -279,7 +283,7 @@ int rv_make_move(int* game_state, int rows, int cols, int player)
 		t_rows = rows + move_directions[i][0]; 
 		t_cols = cols + move_directions[i][1];
 		//if the derection lead as out of the board, try another 
-		if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS){
+		if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS|| t_cols<0 || t_rows<0){
 			continue;
 		}
 		while (game_state[t_rows*REVERSI_ROWS + t_cols] == other)
@@ -327,7 +331,7 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 		t_cols = cols + move_directions[i][1];
 		
 		//if the derection lead as out of the board, try another  
-		if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS){
+		if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS || t_cols<0 || t_rows<0){
 			continue;
 		}
 		// if encoutered enemy piece at that derection
