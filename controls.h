@@ -1,3 +1,8 @@
+/* controls.h																		*/
+/* this class handles the controls of the GUI. It defines the general control Factory 
+ * and specifies concrete control initializers. all controls have a specific drawing
+ * drawing function */
+
 #ifndef CONTROLS_H
 #define CONTROLS_H
 
@@ -52,8 +57,8 @@ typedef struct _control{
 	int				is_grid;			/* determines finding of element according to coordinates, in the game grid area*/
 	
 	/*methods */
-	int				(* draw)(struct _control *mySelf,struct _control *container);	/*drawing function relevant to this element*/
-	int				(*pressed_button)(int *choise,SDL_Event* test_event);			/*function to be ivoked on clicking the button*/
+	int				(*draw)(struct _control *mySelf,struct _control *container);	/*drawing function relevant to this element*/
+	int				(*pressed_button)(int *choise,SDL_Event* test_event);			/*function to be invoked on clicking the button*/
 
 
 } control;

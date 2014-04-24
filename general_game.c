@@ -93,7 +93,7 @@ return new_game_obj;
 
 }
 
-/* hanfde an AI v AI game*/
+/* since no user interaction is nesscarry, expet for pause un-pausem the AI v AI game is handled herem istead of button_action*/
 int handelAI_VS_AI(int *pause){
 	int error;
 	/*if game over, terminate*/
@@ -137,7 +137,7 @@ int handelAI_VS_AI(int *pause){
 		}
 		else
 		{
-			error=new_generic_button(ui_tree->children,300,480,"draw",restartGame,0);
+			error=new_generic_button(ui_tree->children,300,480,"draw",restart_game,0);
 			if (error<0){
 				printf("failed in makeing draw button\n");
 				return -1;

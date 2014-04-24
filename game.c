@@ -32,7 +32,7 @@ int main( int argc, char* args[] )
 	int pause=0,error;
 
 	gui_init();
-	error=runStartManu(&pause,&test_event);
+	error=go_to_start_menu(&pause,&test_event);
 	if (error<0 || cur_game==NULL){
 		if (quit==1){
 			free_control_list(ui_tree);
@@ -60,7 +60,7 @@ int main( int argc, char* args[] )
 				}
 				error=pressed_Button->cntrl->pressed_button(&pause,&test_event);
 				if (error<0 ||cur_game==NULL){
-					printf("a catchAble error occured\n");
+					printf("ERROR: an exception was caught\n");
 					return 0;
 				}
 				break;
@@ -70,7 +70,7 @@ int main( int argc, char* args[] )
 			if (cur_game!=NULL && cur_game->is_multiplayer==1 && pause==0){
 				error=handelAI_VS_AI(&pause);
 				if (error<0 ||cur_game==NULL){
-					printf("a catchAble error occured\n");
+					printf("ERROR: an exception was caught\n");
 					free_control_list(ui_tree);
 					if (cur_game!=NULL)
 					{

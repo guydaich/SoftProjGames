@@ -2,7 +2,7 @@
 
 int rv_is_victory(int* game_state);
 
-element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_Event* test_event))
+element_cntrl	rv_panel_function(int* game_state,int  (*handle_next_move)(int *quit,SDL_Event* test_event))
 {
 	control *rv_grid=NULL;
 	control *rv_button=NULL;
@@ -31,7 +31,7 @@ element_cntrl	rv_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 		free(root);
 		return NULL;
 	}
-	rv_grid->pressed_button=makeMove;
+	rv_grid->pressed_button=handle_next_move;
 	grid = new_control_element(rv_grid);
 	if (grid==NULL){
 		printf("can't make control element for rv_grid in rv_panel_function\n");

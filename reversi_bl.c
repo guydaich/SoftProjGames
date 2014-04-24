@@ -1,5 +1,5 @@
 #include "reversi_bl.h"
-int dynamic_heuristic_evaluation_function(int* grid);
+//int dynamic_heuristic_evaluation_function(int* grid);
 
 int *reversi_board=NULL; 
 int reversi_diffficulties[] = {1,2,3,4};//possible didiffficulty levels. this is a global array so it won't be freed at any point on the game.
@@ -216,9 +216,9 @@ int get_player_pieces(int* game_state, int player)
 * we use this function for the minimax algorithm */
 int rv_get_state_score(int* game_state,int player)
 {
-	return dynamic_heuristic_evaluation_function(game_state);
+	//return dynamic_heuristic_evaluation_function(game_state);
 
-	/*int i=0,j = 0, player_pieces =0, other_pieces = 0; 
+	int i=0,j = 0, player_pieces =0, other_pieces = 0; 
 	int score=0; 
 
 	if (rv_is_game_over(game_state))
@@ -256,7 +256,7 @@ int rv_get_state_score(int* game_state,int player)
 		}
 	}
 	return score;
-	*/
+	
 }
 
 /* get difficult level for game*/

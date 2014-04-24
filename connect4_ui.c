@@ -2,7 +2,7 @@
 
 extern int buttomNum;
 
-element_cntrl	C4_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_Event* test_event))
+element_cntrl	C4_panel_function(int* game_state,int  (*handle_next_move)(int *quit,SDL_Event* test_event))
 {
 	control *C4_grid=NULL;
 	control *C4_button=NULL;
@@ -32,7 +32,7 @@ element_cntrl	C4_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_E
 		free(root);
 		return NULL;
 	}
-	C4_grid->pressed_button=makeMove;
+	C4_grid->pressed_button=handle_next_move;
 	grid = new_control_element(C4_grid);
 	if (grid==NULL){
 		printf("can't make control element for C4_grid in C4_panel_function\n");

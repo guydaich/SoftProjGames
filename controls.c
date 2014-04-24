@@ -543,7 +543,8 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->G = G;
 	label->img = img;
 	label->draw=draw_label;
-	label->ownSurface=NULL;
+	label->ownSurface = NULL;
+	label->caption = NULL;
 	if (caption != NULL)
 	{
 		label->caption = (char *) malloc (strlen (caption) + 1); 
@@ -915,6 +916,10 @@ void free_control_list(element_cntrl node)
 	}
 
 	//free node children
+	if (node->cntrl->img != NULL)
+	{
+		printf("%s\n",node->cntrl->img);	
+	}
 	if (node->children != NULL){
 		for (cur_elem=node->children->head;
 			cur_elem != NULL; cur_elem=next_elem){
@@ -964,6 +969,11 @@ void free_control_list(element_cntrl node)
 	}
 	
 	//free node caption
+	if (node->cntrl->caption != NULL)
+	{
+		printf("%s\n",node->cntrl->caption);	
+	}
+
 	if (node->cntrl->caption != NULL)
 	{
 		free(node->cntrl->caption);

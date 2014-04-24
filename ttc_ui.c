@@ -2,7 +2,7 @@
 
 extern int buttomNum;
 
-element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_Event* test_event))
+element_cntrl ttc_panel_function(int* game_state,int  (*handle_next_move)(int *quit,SDL_Event* test_event))
 { 
 	control *ttc_grid=NULL;
 	control *ttc_button=NULL;
@@ -32,7 +32,7 @@ element_cntrl ttc_panel_function(int* game_state,int  (*makeMove)(int *quit,SDL_
 		free(root);
 		return NULL;
 	}
-	ttc_grid->pressed_button=makeMove;
+	ttc_grid->pressed_button=handle_next_move;
 	grid = new_control_element(ttc_grid);
 	if (grid==NULL){
 		printf("can't make control element for ttc_grid in ttc_panel_function\n");

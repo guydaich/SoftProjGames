@@ -1,6 +1,10 @@
 #include "buttonActions.h"
 #include "windowsDrawing.h"
 
+#define SAVE_FILE_PREFIX "./save_file_"
+#define SAVE_FILE_SUFFIX ".txt"
+#define SAVE_FILE_MAX_DIGITS 1
+
 int gameNum=0;
 
 extern int quit;
@@ -9,7 +13,7 @@ extern element_cntrl ui_tree;
 
 /* restarts game, according to user selection and caught sdl_event
  * returns 0 on success, -1 on failure */
-int restartGame(int *choice,SDL_Event* test_event)
+int restart_game(int *choice,SDL_Event* test_event)
 {
 	int error=0;
 	if(cur_game->board!=NULL){//free prev 
@@ -32,19 +36,20 @@ int restartGame(int *choice,SDL_Event* test_event)
 
 /* ends game, according to user selection and caught sdl_event
  * by ending the main while(!quit) loop */
-int quitGame(int *choice,SDL_Event* test_event)
+int quit_game(int *choice,SDL_Event* test_event)
 {
+	/*global that breaks SDL loops*/
 	quit=1;
 	return 0;
 }
 
-/* changes the current window to main menu window,
+/* changes the current window to game selection window,
  * retuns -1 on failure*/
-int goToMainMenu(int *choice,SDL_Event* test_event)
+int go_to_game_selection(int *choice,SDL_Event* test_event)
 {
 	int error;
 	//free_control_list(ui_tree);
-	error=run_window(MAIN_SIGN);
+	error=run_window(SELECT_GAME);
 	if (error<0){
 		return -1;
 	}
@@ -53,19 +58,34 @@ int goToMainMenu(int *choice,SDL_Event* test_event)
 
 /* saves the game, according to selected save-game
  * slot. returns -1 on failure*/
-int saveGame(int *choice,SDL_Event* test_event)
+int save_game(int *choice,SDL_Event* test_event)
 {
-	int onTopOf=0,userAnswer=0,error=0;
+	int is_rewrite=0,userAnswer=0,error=0,file_length=0;
+	char* fileLocation = NULL;
+	
 	/*allocate file path*/
-	char* fileLocation=(char *)malloc(36);
-	sprintf(fileLocation,"/home/davidl/load%d.txt",*choice);
+	file_length = strlen(SAVE_FILE_PREFIX) + strlen(SAVE_FILE_SUFFIX) + SAVE_FILE_MAX_DIGITS;
+	if (file_length <= 0 )
+	{
+		printf("ERROR: illegal save file path");
+		return -1; 
+	}
+	
+	fileLocation=(char *)malloc(file_length);
+	if (fileLocation == NULL)
+	{
+		printf("ERROR: standart function malloc has failed");
+		return -1; 
+	}
+	sprintf(fileLocation,"%s%d%s",SAVE_FILE_PREFIX,*choice,SAVE_FILE_SUFFIX);
+	
 	/*check is save over-writes*/
-	onTopOf=save_game_in_file(fileLocation,cur_game->board,cur_game->cur_player,
+	is_rewrite=save_game_in_file(fileLocation,cur_game->board,cur_game->cur_player,
 						cur_game->cols,cur_game->rows,(cur_game->get_name()));
-	if(onTopOf==1)
+	if(is_rewrite==1)
 	{
          //ask user if he want s to overwrite
-		userAnswer=question_window("This file already exist.\nDo you wish to overwrite?",OVERWRITE_SIGN);
+		userAnswer=question_window("This file already exist.\nDo you wish to overwrite?",USER_PROMPT);
 		if (userAnswer < 0)
 		{
 			printf("ERROR: failed to interact with user\n");
@@ -87,7 +107,7 @@ int saveGame(int *choice,SDL_Event* test_event)
 
 	/* makes next move on board, according to current game,
  	* types of players. returns -1 on failure.*/
-	else if(onTopOf<0){
+	else if(is_rewrite<0){
 		printf("failed to write to file\n");
 		free(fileLocation);
 		return -1;
@@ -96,13 +116,17 @@ int saveGame(int *choice,SDL_Event* test_event)
 	return 0;
 }
 
-/*handle the move request by game implementation, and check success*/
-int  makeMove(int *choice,SDL_Event* test_event)
+/* handle the move request by game implementation: 
+ * detect and handle user's move, call AI move, 
+ * check for changes in the game state: victory, etc. */
+
+int  handle_next_move(int *choice,SDL_Event* test_event)
 {
 	int move_success = 0,error=0;
 	if (*choice==1){//paused
 		return 0;
 	}
+	/* handle mouse click by user */
 	move_success = cur_game->handle_mouse_button_down(test_event, cur_game->board, cur_game->cur_player);		
 	if (move_success==0){
 		return 0; 
@@ -181,7 +205,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 		}
 		else //if tie, add to ui a tie-message
 		{
-			error=new_generic_button(ui_tree->children,300,480,"draw",restartGame,0);
+			error=new_generic_button(ui_tree->children,300,480,"draw",restart_game,0);
 			if (error<0){
 				printf("failed in makeing draw button\n");
 				free(cur_game);
@@ -203,7 +227,7 @@ int  makeMove(int *choice,SDL_Event* test_event)
 }
 
 /* assign difficulty level for player 1*/
-int  setDifficaltyP1(int *choice,SDL_Event* test_event)
+int  set_player1_difficulty(int *choice,SDL_Event* test_event)
 {
 	cur_game->difficultyP1=(cur_game->get_difficulty_levels())[*choice-1];
 	if (cur_game->difficultyP1<1 || cur_game->difficultyP1>9){
@@ -213,7 +237,7 @@ int  setDifficaltyP1(int *choice,SDL_Event* test_event)
 }
 
 /* assign difficulty level for player 2*/
-int  setDifficaltyP2(int *choice,SDL_Event* test_event)
+int  set_player2_difficulty(int *choice,SDL_Event* test_event)
 {
 	cur_game->difficultyP2=(cur_game->get_difficulty_levels())[*choice-1];
 	if (cur_game->difficultyP2<1 || cur_game->difficultyP2>9){
@@ -223,14 +247,14 @@ int  setDifficaltyP2(int *choice,SDL_Event* test_event)
 }
 
 /* set the type of game: AI v AI, Human v AI, etc. */
-int  setmultiplayer(int *choice,SDL_Event* test_event)
+int  set_game_player_types(int *choice,SDL_Event* test_event)
 {
 	cur_game->is_multiplayer=*choice;
 	return 0;
 }
 
 /* handle game selection */
-int  chooseGame(int *choice,SDL_Event* test_event)
+int  set_current_game(int *choice,SDL_Event* test_event)
 {
 	/* clear current game */
 	if (cur_game!=NULL){
@@ -250,23 +274,23 @@ int  chooseGame(int *choice,SDL_Event* test_event)
 }
 
 /* move to load game window*/
-int  runLoadManu(int *choice,SDL_Event* test_event)
+int  go_to_load_menu(int *choice,SDL_Event* test_event)
 {
 	int error;
 	//free_control_list(ui_tree);
-	error=run_window(LOAD_SIGN);
+	error=run_window(LOAD_GAME);
 	if(error<0){
 		return -1;
 	}
 	return 0;
 }
 
-/*move to start game window*/
-int  runStartManu(int *choice,SDL_Event* test_event)
+/*move to the first start window*/
+int  go_to_start_menu(int *choice,SDL_Event* test_event)
 {
 	int error;
 	//free_control_list(ui_tree);
-	error=run_window(START_SIGN);
+	error=run_window(SELECT_MAIN_MENU);
 	if(error<0 || (cur_game==NULL && quit!=1)){
 		printf("ERORR: could not move to new window");
 		return -1;
@@ -274,9 +298,14 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 	else if (quit==1){
 		return 0;
 	}
-	if (cur_game->is_multiplayer<0)//run AI choise only if AI wasn't chosen yet
+	
+	/* all these game parameters are intiilised with -1
+	 * it is possible that a game is partially loaded, so,
+	 * only if they are unfilled, ask for these paramters */
+
+	if (cur_game->is_multiplayer<0)
 	{
-		error=run_window(AI_SIGN);
+		error=run_window(SELECT_PLAYER_TYPES);
 	}
 	if(error<0){
 		return -1;
@@ -285,20 +314,22 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 		return -1;
 	}
 	if (cur_game->is_multiplayer==1 || cur_game->is_multiplayer==3){
-		*choice=1;//set puase to be 1
+		*choice=1; /* pauses game on start*/
 	}
+
+	/* ask for player's difficulties, according to player types */
 	switch(cur_game->is_multiplayer){
 		case 1:
 			if (cur_game->difficultyP1<0)//run DIFF1 choise only if DIFF1 wasn't chosen yet
 			{
-				error=run_window(DIFF1_SIGN);
+				error=run_window(SET_DIFF_PLAYER1);
 			}
 			if(error<0){
 				return -1;
 			}
 			if (cur_game->difficultyP2<0)//run DIFF2 choise only if DIFF2 wasn't chosen yet
 			{
-				error=game_init(DIFF2_SIGN);
+				error=game_init(SET_DIFF_PLAYER2);
 			}
 			if(error<0){
 				return -1;
@@ -307,7 +338,7 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 		case 2:
 			if (cur_game->difficultyP2<0)//run DIFF2 choise only if DIFF2 wasn't chosen yet
 			{
-				error=game_init(DIFF2_SIGN);
+				error=game_init(SET_DIFF_PLAYER2);
 			}
 			if(error<0){
 				return -1;
@@ -316,14 +347,14 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 		case 3:
 			if (cur_game->difficultyP1<0)//run DIFF1 choise only if DIFF1 wasn't chosen yet
 			{
-				error=game_init(DIFF1_SIGN);
+				error=game_init(SET_DIFF_PLAYER1);
 			}
 			if(error<0){
 				return -1;
 			}
 			break;
 		case 4:
-			error=game_init(ZERO_SIGN);//idea-ZERO_SIGN
+			error=game_init(EMPTY_WINDOW);//idea-EMPTY_WINDOW
 			if(error<0){
 				return -1;
 			}
@@ -332,26 +363,41 @@ int  runStartManu(int *choice,SDL_Event* test_event)
 	return 0;
 }
 
-/* load a game from save game file */
-int loadGame(int *choice,SDL_Event* test_event)
+/* load a game from save game file handle*/
+int load_game(int *choice,SDL_Event* test_event)
 {
 	whichGame whichGame;
-	int error,player;
+	int error=0,player,file_length=0;
 	int *gameBoard; 
-	/*assign file_path*/
-	char* fileLocation=(char *)malloc(36);
-	sprintf(fileLocation,"/home/davidl/load%d.txt",*choice);
+	char *fileLocation = NULL;
+
+	/*allocate file path*/
+	file_length = strlen(SAVE_FILE_PREFIX) + strlen(SAVE_FILE_SUFFIX) + SAVE_FILE_MAX_DIGITS;
+	if (file_length <= 0 )
+	{
+		printf("ERROR: illegal save file path");
+		return -1; 
+	}
+	
+	fileLocation=(char *)malloc(file_length);
+	if (fileLocation == NULL)
+	{
+		printf("ERROR: standart function malloc has failed");
+		return -1; 
+	}
+	sprintf(fileLocation,"%s%d%s",SAVE_FILE_PREFIX,*choice,SAVE_FILE_SUFFIX);
+
 	/*try loading from file*/
 	error=load_game_from_file(fileLocation,&whichGame,&gameBoard,&player);
 	if (error==-2){
-		error = question_window("the game is either corrupt or doesn't exist",OK_SIGN);
+		error = question_window("the game is either corrupt or doesn't exist",USER_NOTIF);
 		if (error<0)
 		{
 			printf("ERROR: could not notify user of problem");
 			return -1;
 		}
 		/* resume program */
-		error=runStartManu(choice,test_event);
+		error=go_to_start_menu(choice,test_event);
 		if (error<0){
 			return -1;
 		}
@@ -375,11 +421,11 @@ int loadGame(int *choice,SDL_Event* test_event)
 }
 
 /* go to save menu*/
-int runsaveManu(int *choice,SDL_Event* test_event)
+int go_to_save_menu(int *choice,SDL_Event* test_event)
 {
 	int error=0;
 	//free_control_list(ui_tree);
-	error=game_init(SAVE_SIGN);
+	error=game_init(SAVE_GAME);
 	if (error<0){
 		return -1;
 	}
@@ -387,11 +433,11 @@ int runsaveManu(int *choice,SDL_Event* test_event)
 }
 
 /* go to difficulty Selection menu for Player 1*/
-int runDiffManuP1(int *choice,SDL_Event* test_event)
+int go_to_difficulty_player1(int *choice,SDL_Event* test_event)
 {
 	int error=0;
 	//free_control_list(ui_tree);
-	error=game_init(DIFF1_SIGN);
+	error=game_init(SET_DIFF_PLAYER1);
 	if (error<0){
 		return -1;
 	}
@@ -399,11 +445,11 @@ int runDiffManuP1(int *choice,SDL_Event* test_event)
 }
 
 /* go to difficulty Selection menu for Player 2*/
-int runDiffManuP2(int *choice,SDL_Event* test_event)
+int go_to_difficulty_player2(int *choice,SDL_Event* test_event)
 {
 	int error=0;
 	//free_control_list(ui_tree);
-	error=game_init(DIFF2_SIGN);
+	error=game_init(SET_DIFF_PLAYER2);
 	if (error<0){
 		return -1;
 	}
@@ -411,7 +457,7 @@ int runDiffManuP2(int *choice,SDL_Event* test_event)
 }
 
 /* handle game unpause*/
-int setUnpause(int *choice,SDL_Event* test_event){
+int set_unpause(int *choice,SDL_Event* test_event){
 	int error=0;
 	*choice=!(*choice);// form 1 to 0 and 0 to 1
 	/* make move for relevant AI player*/
