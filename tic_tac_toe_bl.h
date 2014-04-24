@@ -5,6 +5,8 @@
 #include "minimax.h"
 #include "ttc_ui.h"
 
+extern int boardCount;
+
 #define TIC_TAC_TOE_NAME "Tic-Tac-Toe"
 
 /* functions */

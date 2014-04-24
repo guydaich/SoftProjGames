@@ -780,6 +780,7 @@ int draw_window(control* window)
 		}
 	
 	window->srfc = surface; 
+	window->ownSurface  = surface; 
 
 	surfaceNum++;//every time we blit a window we must make a new surface
 	window->x = 0;//
@@ -922,6 +923,7 @@ void free_control_list(element_cntrl node)
 			next_elem=cur_elem->next;
 			free_control_list(cur_elem);
 		}
+		free(node->children);
 	}
 
 	//free SDL surface associated with control

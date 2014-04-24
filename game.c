@@ -42,6 +42,7 @@ int main( int argc, char* args[] )
 				gameNum--;
 			}
 		}
+		SDL_Quit();
 		return 0;
 	}
 	while(!quit)
@@ -60,7 +61,8 @@ int main( int argc, char* args[] )
 				}
 				error=pressed_Button->cntrl->pressed_button(&pause,&test_event);
 				if (error<0 ||cur_game==NULL){
-					printf("ERROR: an exception was caught\n");
+					printf("a catchAble error occured\n");
+					SDL_Quit();
 					return 0;
 				}
 				break;
@@ -70,13 +72,14 @@ int main( int argc, char* args[] )
 			if (cur_game!=NULL && cur_game->is_multiplayer==1 && pause==0){
 				error=handelAI_VS_AI(&pause);
 				if (error<0 ||cur_game==NULL){
-					printf("ERROR: an exception was caught\n");
+					printf("a catchAble error occured\n");
 					free_control_list(ui_tree);
 					if (cur_game!=NULL)
 					{
 						free(cur_game);
 						gameNum--;
 				}
+					SDL_Quit();
 					return 0;
 				}
 			}
@@ -88,5 +91,6 @@ int main( int argc, char* args[] )
 		free(cur_game);
 		gameNum--;
 	}
+	SDL_Quit();
 	return 0;
 }

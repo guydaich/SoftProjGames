@@ -53,7 +53,6 @@ linked_list new_list();
 element new_element();
 void deleteList(element head,int is_nodes,int recursivly);
 void remove_tree(vertex root, int is_root,int recursivly);
-vertex new_node(int move, int *game_state, int score);
 //void free_node(vertex node);
 
 /*minimax functions*/

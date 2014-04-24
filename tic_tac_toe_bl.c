@@ -12,7 +12,7 @@ on failure return null*/
 int* ttc_get_initial_state()
 {
 	int i=0,j=0;
-	int* initial_board;
+	int* initial_board=NULL;
 	initial_board = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
 	if(initial_board==NULL){
 		printf("failed to make board(calloc) in ttc_get_initial_state\n");
@@ -35,6 +35,7 @@ int* ttc_copy_and_make_move(int* game_state, int move_row, int move_col, int pla
 {
 	int i=0,j=0;
 	int* copied_state = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
+	boardCount++;
 	if (copied_state==NULL){
 		printf("failed to make board(calloc) in ttc_copy_and_make_move\n");
 		return NULL;
@@ -125,7 +126,7 @@ int ttc_add_to_children_list(linked_list list, int* game_state, int row, int col
 	if (moved_state==NULL){
 		return -1;
 	}
-	node = new_node(row*TIC_TAC_TOE_ROWS + col,(int*)moved_state,ttc_get_state_score(moved_state,player));
+	node = make_node(row*TIC_TAC_TOE_ROWS + col,(int*)moved_state,ttc_get_state_score(moved_state,player));
 	if (node == NULL)
 	{
 		free(moved_state);

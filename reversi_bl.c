@@ -1,5 +1,4 @@
 #include "reversi_bl.h"
-//int dynamic_heuristic_evaluation_function(int* grid);
 
 int *reversi_board=NULL; 
 int reversi_diffficulties[] = {1,2,3,4};//possible didiffficulty levels. this is a global array so it won't be freed at any point on the game.
@@ -53,14 +52,10 @@ int rv_make_node(int* game_state, int row, int col, int player)
 	int* moved_state;
 	vertex node;
 
-	moved_state = rv_copy_and_make_move(game_state,row,col,player);
-	if(moved_state==NULL){
-		return -1;
-	}
-	node = new_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state,player));
+	node = make_node(row*REVERSI_ROWS + col,game_state,rv_get_state_score(game_state,player));
 	if (node == NULL)
 	{
-		free(moved_state);
+		free(game_state);
 		return -1;
 	}
 	return 1;
@@ -78,7 +73,7 @@ int rv_add_to_children_list(linked_list list, int* game_state, int row, int col,
 	if(moved_state==NULL){
 		return -1;
 	}
-	node = new_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state,player));
+	node = make_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state,player));
 	if (node == NULL)
 	{
 		free(moved_state);
@@ -174,6 +169,7 @@ int* rv_copy_and_make_move(int* game_state, int move_row, int move_col, int play
 	int i=0,j=0;
 	//assign new board
 	int* copied_state = (int*)calloc(REVERSI_ROWS * REVERSI_COLS, sizeof(int));
+	boardCount++;
 	if (copied_state==NULL){
 		return NULL;
 	}
@@ -216,8 +212,6 @@ int get_player_pieces(int* game_state, int player)
 * we use this function for the minimax algorithm */
 int rv_get_state_score(int* game_state,int player)
 {
-	//return dynamic_heuristic_evaluation_function(game_state);
-
 	int i=0,j = 0, player_pieces =0, other_pieces = 0; 
 	int score=0; 
 
@@ -243,8 +237,8 @@ int rv_get_state_score(int* game_state,int player)
 	{
 		for(j=0; j < REVERSI_COLS; j++)
 		{
-			// if position is empty: multiply by zero, else, (+1)/(-1) according to piece 
-			//score += game_state[i*REVERSI_ROWS + j] * region_scores[i][j];
+			/* if position is empty: multiply by zero, else, (+1)/(-1) according to piece*/ 
+			/*score += game_state[i*REVERSI_ROWS + j] * region_scores[i][j]; */
 			if (game_state[i*REVERSI_ROWS + j] == player)
 			{
 				score += region_scores[i][j];
@@ -256,7 +250,6 @@ int rv_get_state_score(int* game_state,int player)
 		}
 	}
 	return score;
-	
 }
 
 /* get difficult level for game*/

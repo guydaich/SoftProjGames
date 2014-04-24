@@ -5,6 +5,8 @@
 #include "minimax.h"
 #include "reversi_ui.h"
 
+extern int boardCount;
+
 #define REVERSI_NAME "Reversi"
 
 #define PLAYER_1_START_1 3*REVERSI_ROWS + 3

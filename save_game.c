@@ -75,6 +75,10 @@ int load_game_from_file(char* filename, whichGame* whichG,int** board,int *playe
 		return -2;
 	}
 	file = fopen(filename, "r");
+	if (file==NULL){
+		printf("ERROR: can't open load file\n");
+		return -2;
+	}
 	/*scan game attributes*/
 	fscanf(file,"%s",new_game_name);
 	printf("%s\n",new_game_name);

@@ -144,24 +144,6 @@ element new_element()
 	return new_elem;
 }
 
-vertex new_node(int move, int *game_state, int score)
-{
-	vertex new_node = (vertex)malloc(sizeof(struct  vertex_s));
-
-	if (new_node==NULL)
-	{
-		perror("Error: standard function malloc has failed");
-		return NULL;
-	}
-	
-	new_node->mov_col =		move;
-	new_node->game_state =	game_state;
-	new_node->score =		score;
-	new_node->edges =		new_list();
-	
-	return new_node;
-}
-
 /*frees memory allocated for the node
 void free_node(vertex node)
 {
@@ -243,7 +225,7 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,
 			if (aboveBeta<=aboveAlpha){
 				for ( run = run->next;run != NULL; run = run->next){
 					child=run->node;
-					if(depth>1){
+					if(depth>0){
 						remove_tree(child,0,0);
 					}
 				}
@@ -282,7 +264,7 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,
 			if (aboveBeta<=aboveAlpha){
 				for ( run = run->next;run != NULL; run = run->next){
 					child=run->node;
-					if(depth>1){
+					if(depth>0){
 						remove_tree(child,0,0);
 					}
 				}
