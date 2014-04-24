@@ -915,11 +915,7 @@ void free_control_list(element_cntrl node)
 		return;
 	}
 
-	//free node children
-	if (node->cntrl->img != NULL)
-	{
-		printf("%s\n",node->cntrl->img);	
-	}
+	//free node children	
 	if (node->children != NULL){
 		for (cur_elem=node->children->head;
 			cur_elem != NULL; cur_elem=next_elem){
@@ -969,11 +965,6 @@ void free_control_list(element_cntrl node)
 	}
 	
 	//free node caption
-	if (node->cntrl->caption != NULL)
-	{
-		printf("%s\n",node->cntrl->caption);	
-	}
-
 	if (node->cntrl->caption != NULL)
 	{
 		free(node->cntrl->caption);
