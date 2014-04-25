@@ -133,6 +133,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 	}
 	else if(move_success<0){
 		printf("failed in handle_mouse_button_down\n");
+		free(cur_game->board);
 		free(cur_game);
 		gameNum--;
 		free_control_list(ui_tree);
@@ -150,6 +151,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 				error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
 				if (error<0){
 					printf("failed in handle_computer_move\n");
+					free(cur_game->board);
 					free(cur_game);
 					gameNum--;
 					free_control_list(ui_tree);
@@ -160,6 +162,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 				error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
 				if (error<0){
 					printf("failed in handle_computer_move\n");
+					free(cur_game->board);
 					free(cur_game);
 					gameNum--;
 					free_control_list(ui_tree);
@@ -174,6 +177,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 	error=draw_game();
 	if (error<0){
 		printf("failed in draw_game\n");
+		free(cur_game->board);
 		free(cur_game);
 		gameNum--;
 		free_control_list(ui_tree);
@@ -187,6 +191,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 			error=cur_game->victoryColor(cur_game->board,1,ui_tree);
 			if (error<0){
 				printf("failed in victoryColor\n");
+				free(cur_game->board);
 				free(cur_game);
 				gameNum--;
 				free_control_list(ui_tree);
@@ -197,6 +202,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 			error=cur_game->victoryColor(cur_game->board,-1,ui_tree);
 			if (error<0){
 				printf("failed in victoryColor\n");
+				free(cur_game->board);
 				free(cur_game);
 				gameNum--;
 				free_control_list(ui_tree);
@@ -208,6 +214,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 			error=new_generic_button(ui_tree->children,300,480,"draw",restart_game,0);
 			if (error<0){
 				printf("failed in makeing draw button\n");
+				free(cur_game->board);
 				free(cur_game);
 				gameNum--;
 				free_control_list(ui_tree);
@@ -258,8 +265,9 @@ int  set_current_game(int *choice,SDL_Event* test_event)
 {
 	/* clear current game */
 	if (cur_game!=NULL){
-	free(cur_game);
-	gameNum--;
+		free(cur_game->board);
+		free(cur_game);
+		gameNum--;
 	}
 	/* assign new game */
 	cur_game=new_game(*choice);
@@ -478,6 +486,7 @@ int set_unpause(int *choice,SDL_Event* test_event){
 		error=draw_game();
 	}
 	if (error<0){
+		free(cur_game->board);
 		free(cur_game);
 		gameNum--;
 		free_control_list(ui_tree);

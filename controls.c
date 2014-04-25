@@ -483,7 +483,7 @@ int draw_ui_tree(element_cntrl root)
  * returns 1 on success,-1 on failure*/
 int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel)
 {
-	element_cntrl cur_elem;
+	element_cntrl cur_elem=NULL;
 	int err = 0; 
 	// call the controls drawing function
 	if (draw_cntrl->parent== NULL)//in case of a window
@@ -706,7 +706,7 @@ control* new_window(int x, int y, int w, int h)
 
 int draw_button(control *button, control *container)
 {
-	char* sdl_err; 
+	char* sdl_err=NULL; 
 
 	if (handle_control_surface_load(button,container)==-1)//the handle_control_surface_load makes evrey thing ready for bliting of the button
 	{
@@ -946,6 +946,7 @@ void free_control_list(element_cntrl node)
 			if (node->cntrl->multitext[i] != NULL)
 				SDL_FreeSurface(node->cntrl->multitext[i]);
 		}
+		free(node->cntrl->multitext);
 	}
 
 

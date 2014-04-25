@@ -38,6 +38,7 @@ int main( int argc, char* args[] )
 			free_control_list(ui_tree);
 			if (cur_game!=NULL)
 			{
+				free(cur_game->board);
 				free(cur_game);
 				gameNum--;
 			}
@@ -76,6 +77,7 @@ int main( int argc, char* args[] )
 					free_control_list(ui_tree);
 					if (cur_game!=NULL)
 					{
+						free(cur_game->board);
 						free(cur_game);
 						gameNum--;
 				}
@@ -88,6 +90,7 @@ int main( int argc, char* args[] )
 	free_control_list(ui_tree);
 	if (cur_game!=NULL)
 	{
+		free(cur_game->board);
 		free(cur_game);
 		gameNum--;
 	}

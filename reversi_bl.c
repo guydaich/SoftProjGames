@@ -49,7 +49,6 @@ int* rv_get_initial_state()
 /* creates a node and element for each child-state, and adds to list*/
 int rv_make_node(int* game_state, int row, int col, int player)
 {
-	int* moved_state;
 	vertex node;
 
 	node = make_node(row*REVERSI_ROWS + col,game_state,rv_get_state_score(game_state,player));

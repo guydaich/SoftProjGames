@@ -160,6 +160,7 @@ int run_window(user_selection_type selection_window_type){
 		ui_tree=start_window();
 		if (ui_tree==NULL){
 			if (cur_game!=NULL){
+				free(cur_game->board);
 				free(cur_game);
 				gameNum--;
 			}
@@ -176,6 +177,7 @@ int run_window(user_selection_type selection_window_type){
 		captionArray=init_choice_window(&buttonAction,&number_choices,selection_window_type);
 		if (captionArray==NULL){
 			if (cur_game!=NULL){
+				free(cur_game->board);
 				free(cur_game);
 				gameNum--;
 				cur_game=NULL;
@@ -185,6 +187,7 @@ int run_window(user_selection_type selection_window_type){
 		ui_tree=choice_window(number_choices,buttonAction,captionArray);
 		if (ui_tree==NULL){
 			if (cur_game!=NULL){
+				free(cur_game->board);
 				free(cur_game);
 				gameNum--;
 				cur_game=NULL;
@@ -224,6 +227,7 @@ int run_window(user_selection_type selection_window_type){
 				free_control_list(ui_tree);
 				ui_tree=NULL;
 				if (cur_game!=NULL){
+					free(cur_game->board);
 					free(cur_game);
 					gameNum--;
 					cur_game=NULL;
@@ -269,6 +273,7 @@ int game_init(user_selection_type selection_window_type)
 	if (error<0){
 		free_control_list(ui_tree);
 		ui_tree=NULL;
+		free(cur_game->board);
 		free(cur_game);//checked for null before
 		gameNum--;
 		return -1;

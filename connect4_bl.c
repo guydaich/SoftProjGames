@@ -2,17 +2,6 @@
 #include "connect4_bl.h"
 
 int Connect4_diffficulties[] = {1,2,3,4,5,6,7};
-int max_col_heights[CONNECT4_COLS];//the array helps as make a human move at O(1)-this array remembers the height of evrey colunm on the board
-
-/* adds a piece in top of given column*/
-void add_piece_to_board_C4(int* game_state,int column, int player)
-{
-	// updated the column hight at the array max_col_heights
-	max_col_heights[column-1]--;
-	// update player piece
-	game_state[max_col_heights[column - 1]*CONNECT4_COLS +column - 1] = player;
-}
-
 
 /*this function makes and returns a empty ttc game board(logic, not gui) 
 on failure return null*/
@@ -30,34 +19,23 @@ int *get_initial_state_C4()
 			(game_matrix)[i*CONNECT4_COLS+j] = 0; 
 		}
 	}
-	init_col_heights_C4();//init global variable, no error;
 	return game_matrix;
 }
 
-/* initializes the array max_col_heights(for a new game)*/ 
-void init_col_heights_C4()
-{
-int i =0;
-
-for (i=0; i<CONNECT4_COLS; i++)
-	{
-		max_col_heights[i] = CONNECT4_ROWS;
-	}
-}
-
 /*returns 1 if board is full, 0 otherwise*/
-int is_board_full_C4()
+int is_board_full_C4(int* game_state)
 {
-int i =0;
+int i =0,j=0;
 
-for (i=0; i<CONNECT4_COLS; i++)
+for (j = 0; i < CONNECT4_ROWS; ++i)
+{
+	for (i=0; i<CONNECT4_COLS; i++)
 	{
-		/* if exists a non-full column, board not full */
-		if ((max_col_heights[i]) != 0)
-		{
+		if(game_state[j*CONNECT4_COLS+i]==0){
 			return 0;
 		}
 	}
+}
 return 1;
 }
 
@@ -322,7 +300,7 @@ int* get_difficulty_levels_C4(){
 int is_game_over_C4(int* game_state)
 {
 	int score=get_state_score_C4(game_state,0);
-	if (is_board_full_C4() || score==INT_MAX || score==INT_MIN){
+	if (is_board_full_C4(game_state) || score==INT_MAX || score==INT_MIN){
 		return 1;
 	}
 	return 0;
