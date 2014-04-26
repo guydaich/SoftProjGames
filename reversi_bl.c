@@ -285,6 +285,10 @@ int rv_make_move(int* game_state, int rows, int cols, int player)
 			t_rows += move_directions[i][0]; 
 			t_cols += move_directions[i][1];
 
+			if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS|| t_cols<0 || t_rows<0){
+				break;
+			}
+
 			// if encoutered enemy piece at that derection
 			if (game_state[t_rows*REVERSI_ROWS + t_cols] == player )
 			{
@@ -333,6 +337,10 @@ int rv_is_valid_move (int *game_state, int player, int rows, int cols)
 			
 			t_rows += move_directions[i][0]; 
 			t_cols += move_directions[i][1];
+
+			if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS|| t_cols<0 || t_rows<0){
+				break;
+			}
 
 			// if encoutered another piece
 			if (game_state[t_rows*REVERSI_ROWS + t_cols] == player )
