@@ -284,7 +284,6 @@ int game_init(user_selection_type selection_window_type)
 /*adds the player labels to the implemented game's ui tree, and draws*/
 int draw_game ()
 {
-	/**/
 	control *playerLabel_control=NULL;
 	element_cntrl game_panel=NULL,temp_elem=NULL;
 	char *player_captions[2]={P1,P2};

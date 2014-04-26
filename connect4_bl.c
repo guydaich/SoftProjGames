@@ -1,10 +1,16 @@
-
+/* connect4_bl.c */
+/* game logic class for the connect-4 (henceforth, C4) game
+ * Supplies all game functions required by game implmntation: 
+ * init, name, difficulties, state_children. the panel_function
+ * can be found in connect4_ui.c */
+ 
 #include "connect4_bl.h"
 
+/* game difficulties */
 int Connect4_diffficulties[] = {1,2,3,4,5,6,7};
 
-/*this function makes and returns a empty ttc game board(logic, not gui) 
-on failure return null*/
+/* init a C4 game board, with no pieces.
+ * retunn board pointer, on failure return null*/
 int *get_initial_state_C4()
 {
 	int i,j = 0;
@@ -22,24 +28,25 @@ int *get_initial_state_C4()
 	return game_matrix;
 }
 
-/*returns 1 if board is full, 0 otherwise*/
+/* determines if a given C4 boars is full.
+ * returns 1 if board is full, 0 otherwise */
 int is_board_full_C4(int* game_state)
 {
-int i =0,j=0;
+	int i =0,j=0;
 
-for (j = 0; i < CONNECT4_ROWS; ++i)
-{
-	for (i=0; i<CONNECT4_COLS; i++)
+	for (j = 0; i < CONNECT4_ROWS; ++i)
 	{
-		if(game_state[j*CONNECT4_COLS+i]==0){
-			return 0;
+		for (i=0; i<CONNECT4_COLS; i++)
+		{
+			if(game_state[j*CONNECT4_COLS+i]==0){
+				return 0;
+			}
 		}
 	}
-}
-return 1;
+	return 1;
 }
 
-/*this is a function which evaluate each board
+/* scoring function for C4, as detailed in peoject
 * in case of player 1 victory returns INT_MAX,
 * and in case of player 2 victory returns INT_MIN*/
 int get_state_score_C4(int* game_matrix,int player)
@@ -155,8 +162,8 @@ int get_state_score_C4(int* game_matrix,int player)
 	return totalScore;
 }
 
-/*this function copys a C4 board and makes a move(according to move_col) on the copy
- returns null on failure*/
+/* allocates a copy of from, and and according to move_col, makes a move
+ * returns null on failure, and a pointer to the new board otherwise */
 int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player) 
 {
 	int i, j;
@@ -189,9 +196,9 @@ int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player)
 	return new_board_ptr;
 }
 
-/*this functions returns a list of minimax elements.
- * each of these elements represents a possible move that a player can do in his turn
- * if game_state is the current board.
+/* This functions returns a list of game state element, for minimax use.
+ * Each of these elements represents a possible move that a player can do 
+ * in his turn, where game_state is the current game_state.
  * on success the function returns with *error=0, on failure returns with *error=-1*/
 linked_list get_state_children_C4(int* matrix, int player,int *error)
 {
@@ -244,8 +251,9 @@ linked_list get_state_children_C4(int* matrix, int player,int *error)
 	return newList;
 }
 
-/* creates a minimax node and element for each child-state(game_state+move), and adds to list
-on failure return null*/
+/* creates a minimax node and element for each child-state 
+ * (game_state and move), and adds to list. 
+ * 0 on success, on failure returns -1*/
 int add_to_children_list_C4(linked_list list, int* game_state, int row, int col, int player)
 {
 	int move=col;
@@ -285,7 +293,7 @@ int add_to_children_list_C4(linked_list list, int* game_state, int row, int col,
 	return 1;
 }
 
-
+/* returns game name */
 char* get_name_C4()
 {
 	return Connect4_NAME;
@@ -319,7 +327,8 @@ int is_victory_C4(int* game_state)
 	return 0;
 }
 
-/*this unction interpets a mouse cliking on the GUI game board into a move on the board*/
+/* interpert game mouse button down, to game matrix position
+ * attempt to make the requested move, and return 1 on success, 0 OW*/
 int C4_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 {
 	int x=0;
@@ -331,7 +340,7 @@ int C4_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 	{
 		return 0;
 	}
-	succes=C4_make_move(game_state,0,(x-35)/88,player);
+	succes=C4_make_move(game_state,0,(x-C4_XOFFSET)/C4_WBTN,player);
 	if(succes==0)
 	{
 		return 0;
@@ -339,7 +348,7 @@ int C4_handle_mouse_button_down (SDL_Event *event, int* game_state, int player)
 	return 1;
 }
 
-/*this function act as a wraper for minimax while playing C4*/
+/* Calls minimax to get AIs next move */
 int	C4_handle_computer_turn(int* game_state, int depth, int player)
 {
 	int comp_move;
@@ -359,6 +368,7 @@ int	C4_handle_computer_turn(int* game_state, int depth, int player)
 	return 0;
 }
 
+/* given a state and col, determines row of insertion for new piece */
 int	C4_make_move(int* game_state, int row, int col, int player)
 {
 	int i;

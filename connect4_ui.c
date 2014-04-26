@@ -1,7 +1,12 @@
+/* connect4_ui.c */
+/* supplies the game's panel function, as well as a victory marking */
 #include "connect4_ui.h"
 
 extern int buttomNum;
 
+/* given a game state, and the game board's on-click handler
+   the function creates the entire UI tree, and returns it. 
+   on failure, NULL is returned*/
 element_cntrl	C4_panel_function(int* game_state,int  (*handle_next_move)(int *quit,SDL_Event* test_event))
 {
 	control *C4_grid=NULL;
@@ -10,52 +15,56 @@ element_cntrl	C4_panel_function(int* game_state,int  (*handle_next_move)(int *qu
 	linked_list_cntrl list=NULL;
 	int i=0,j=0,error=0;
 
+	/* panel for the entire game - root of the returned tree*/
 	root = new_control_element(new_panel(0,0,C4_WGRID,C4_HGRID,255,255,255,1));
 	if (root==NULL){
-		printf("can't make root in C4_panel_function\n");
+		printf("ERROR: can't make root in C4_panel_function\n");
 		return NULL;
 	}
-	/*create panel children*/	
+	/* create panel children */	
 	list = new_control_list();
 	if (list==NULL){
-		printf("can't make list for root in C4_panel_function\n");
+		printf("ERROR: can't make list for root in C4_panel_function\n");
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
-	// grid surface - create control and element
+	/* the only child is a grid button */
 	C4_grid = new_button(0,0,C4_GRIDPATH,0,NULL,1);
 	if (C4_grid==NULL){
-	        printf("can't make C4_grid in C4_panel_function\n");
+	        printf("ERROR: can't make C4_grid in C4_panel_function\n");
 		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
+	/* assgin grid handler */
 	C4_grid->pressed_button=handle_next_move;
 	grid = new_control_element(C4_grid);
 	if (grid==NULL){
-		printf("can't make control element for C4_grid in C4_panel_function\n");
+		printf("ERROR: can't make control element for C4_grid in C4_panel_function\n");
 		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
-	// add grid to children list
+	/* add grid to children list */
 	add_control_element_to_list(list,grid);
-	// update root children, and grid parent
+	/* update root children, and grid parent */
 	set_list_as_children(list,root);
 	
+	/* an inner panel to store all game pieces */
 	children_panel = new_control_element(new_panel(C4_XOFFSET,C4_YOFFSET,600,600,255,255,255,0));
 	if (children_panel==NULL){
-		printf("can't make children_panel in C4_panel_function\n");
+		printf("ERROR: can't make children_panel in C4_panel_function\n");
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
+	/* set inner panel as child */
 	list = new_control_list();
 	if (list==NULL){
-		printf("can't make list for C4_grid in C4_panel_function\n");
+		printf("ERROR: can't make list for C4_grid in C4_panel_function\n");
 		free_control(children_panel->cntrl);
 		free(children_panel);
 		free_control(root->cntrl);
@@ -65,10 +74,10 @@ element_cntrl	C4_panel_function(int* game_state,int  (*handle_next_move)(int *qu
 	add_control_element_to_list(list,children_panel);
 	set_list_as_children(list,grid);
 
-	/*create grid children*/
+	/*create pieces*/
 	list = new_control_list();
 	if (list==NULL){
-		printf("can't make list for children_panel in C4_panel_function\n");
+		printf("ERROR: can't make list for children_panel in C4_panel_function\n");
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
@@ -91,14 +100,14 @@ element_cntrl	C4_panel_function(int* game_state,int  (*handle_next_move)(int *qu
 			{
 				temp = new_control_element(C4_button);
 				if (temp==NULL){
-					printf("can't make control element for piece in C4_panel_function\n");
+					printf("ERROR: can't make control element for piece in C4_panel_function\n");
 					error=1;
 					break;
 				}
 				add_control_element_to_list(list,temp);
 			}
 			else if(game_state[i*CONNECT4_COLS + j]==CONNECT4_PLAYER_1 || game_state[i*CONNECT4_COLS + j] == CONNECT4_PLAYER_2){
-				printf("can't make piece in C4_panel_function\n");
+				printf("ERROR: can't make piece in C4_panel_function\n");
 				error=1;
 				break;
 			}
@@ -113,20 +122,21 @@ element_cntrl	C4_panel_function(int* game_state,int  (*handle_next_move)(int *qu
 		free(root);
 		return NULL;
 	}
-	//update parent-children
+	/* update parent-children */
 	set_list_as_children(list,children_panel);
 
 	return root;
 }
 
-
+/* determines the winning sequence for a given game state
+ * and updates UI to reflect victory - replacing undelying images*/
 int color_c4(int* game_state,int player,element_cntrl ui_tree){
 	element_cntrl gamePanel=NULL;
 	int i=0, j=0, k=0, lineScore = 0,error=0;;
 
 	gamePanel=ui_tree->children->tail;
 
-	//lines in rows calculation
+	/* look for line victory */
 	for (i = 0; i < CONNECT4_ROWS; i++) {
 		for (j = 0; j < CONNECT4_COLS - 3; j++) {
 			lineScore = 0;
@@ -139,11 +149,14 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 					lineScore--;
 				}
 			}
+
+			/*after calculation, we check if either Player was victorious
+			* if so, we determine who one, and color the wininig streak*/
 			if (lineScore == 4){
 				for (k = 0; k < 4; k++){
 					error=c4_set_victory_control(i,j+k,gamePanel,CONNECT4_PLAYER_1);
 					if(error==-1){
-						printf("failed to draw victory\n");
+						printf("ERROR: failed to draw victory\n");
 						return -1;
 					}
 				}
@@ -153,7 +166,7 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 				for (k = 0; k < 4; k++){
 					error=c4_set_victory_control(i,j+k,gamePanel,CONNECT4_PLAYER_2);
 					if(error==-1){
-						printf("failed to draw victory\n");
+						printf("ERROR: failed to draw victory\n");
 						return -1;
 					}
 				}
@@ -162,7 +175,7 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 		}
 	}
 
-	//lines in clonums calculation
+	/* look for column victory */
 	for (j = 0; j < CONNECT4_COLS; j++) {
 		for (i = 0; i < CONNECT4_ROWS - 3; i++) {
 			lineScore = 0;
@@ -178,7 +191,7 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 				for (k = 0; k < 4; k++){
 					error=c4_set_victory_control(i+k,j,gamePanel,CONNECT4_PLAYER_1);
 					if(error==-1){
-						printf("failed to draw victory\n");
+						printf("ERROR: failed to draw victory\n");
 						return -1;
 					}
 				}
@@ -188,7 +201,7 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 				for (k = 0; k < 4; k++){
 					error=c4_set_victory_control(i+k,j,gamePanel,CONNECT4_PLAYER_2);
 					if(error==-1){
-						printf("failed to draw victory\n");
+						printf("ERROR: failed to draw victory\n");
 						return -1;
 					}
 				}
@@ -197,7 +210,7 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 		}
 	}
 
-	//lines in diaganals calculation
+	/* look for diagonal victory */
 	for (j = 0; j < CONNECT4_COLS; j++) {
 		for (i = 0; i < CONNECT4_ROWS; i++) {
 			lineScore = 0;
@@ -214,7 +227,7 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 					for (k = 0; k < 4; k++){
 						error=c4_set_victory_control(i+k,j+k,gamePanel,CONNECT4_PLAYER_1);
 						if(error==-1){
-			                printf("failed to draw victory\n");
+			                printf("ERROR: failed to draw victory\n");
 							return -1;
 						}
 					}
@@ -224,7 +237,7 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 					for (k = 0; k < 4; k++){
 						error=c4_set_victory_control(i+k,j+k,gamePanel,CONNECT4_PLAYER_2);
 						if(error==-1){
-			                printf("failed to draw victory\n");
+			                printf("ERROR: failed to draw victory\n");
 							return -1;
 						}
 					}
@@ -245,7 +258,7 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 					for (k = 0; k < 4; k++){
 						error=c4_set_victory_control(i-k,j+k,gamePanel,CONNECT4_PLAYER_1);
 						if(error==-1){
-			                printf("failed to draw victory\n");
+			                printf("ERROR: failed to draw victory\n");
 							return -1;
 						}
 					}
@@ -255,7 +268,7 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 					for (k = 0; k < 4; k++){
 						error=c4_set_victory_control(i-k,j+k,gamePanel,CONNECT4_PLAYER_2);
 						if(error==-1){
-							printf("failed to draw victory\n");
+							printf("ERROR: failed to draw victory\n");
 							return -1;
 						}
 					}

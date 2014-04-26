@@ -1,3 +1,9 @@
+/* button_actions.c*/
+/* This class is responsible for handeling of all on_click actions in the UI.
+ * It calls window change operations (go_to_...), changes game attributes, and
+ * handles the main game-play logic - detecting human moves, calling minimax
+ * for AI moves, calling UI tree updates, and repaining UI */
+
 #include "buttonActions.h"
 #include "windowsDrawing.h"
 
