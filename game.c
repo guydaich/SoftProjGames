@@ -43,6 +43,7 @@ int main( int argc, char* args[] )
 				gameNum--;
 			}
 		}
+		TTF_Quit();
 		SDL_Quit();
 		return 0;
 	}
@@ -63,6 +64,7 @@ int main( int argc, char* args[] )
 				error=pressed_Button->cntrl->pressed_button(&pause,&test_event);
 				if (error<0 ||cur_game==NULL){
 					printf("a catchAble error occured\n");
+					TTF_Quit();
 					SDL_Quit();
 					return 0;
 				}
@@ -81,8 +83,9 @@ int main( int argc, char* args[] )
 						free(cur_game);
 						gameNum--;
 				}
-					SDL_Quit();
-					return 0;
+				TTF_Quit();
+				SDL_Quit();
+				return 0;
 				}
 			}
 		}
@@ -94,6 +97,7 @@ int main( int argc, char* args[] )
 		free(cur_game);
 		gameNum--;
 	}
+	TTF_Quit();
 	SDL_Quit();
 	return 0;
 }

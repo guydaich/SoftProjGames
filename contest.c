@@ -37,7 +37,7 @@ int contest_is_valid_move (int *game_state, int player, int rows, int cols)
 		t_cols = cols + move_directions[i][1];
 		
 		//if the derection lead as out of the board, try another  
-		if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS){
+		if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS|| t_cols<0 || t_rows<0){
 			continue;
 		}
 		// if encoutered enemy piece at that derection
@@ -86,15 +86,24 @@ int contest_num_valid_moves(int* game_state, int player)
 
 /*
  * Assuming my_color stores your color and opp_color stores opponent's color
- * '-' indicates an empty square on the board
- * 'b' indicates a black tile and 'w' indicates a white tile on the board
+ * 0 indicates an empty square on the board
+ * '1' indicates a black tile and '-1' indicates a white tile on the board
  */
-double dynamic_heuristic_evaluation_function(char grid[8][8])  {
-        int my_tiles = 0, opp_tiles = 0, i, j, k, my_front_tiles = 0, opp_front_tiles = 0, x, y;
-        double p = 0, c = 0, l = 0, m = 0, f = 0, d = 0;
+int dynamic_heuristic_evaluation_function(int grid[8][8])  {
+        int my_tiles = 0, opp_tiles = 0, i, j, k, my_front_tiles = 0, opp_front_tiles = 0, x, y,my_color=1;
+        int p = 0, c = 0, l = 0, m = 0, f = 0, d = 0,opp_color=-1,bound_x=8,bound_y=8;
  
         int X1[] = {-1, -1, 0, 1, 1, 1, 0, -1};
         int Y1[] = {0, 1, 1, 1, 0, -1, -1, -1};
+        int V[8][8]={   {4,-3,2,2,2,2,-3,4},
+    					{-3,-4,-1,-1,-1,-1,-4,-3},
+    					{2,-1,1,0,0,1,-1,2},
+    					{2,-1,0,1,1,0,-1,2},
+    					{2,-1,0,1,1,0,-1,2},
+    					{2,-1,1,0,0,1,-1,2},
+    					{-3,-4,-1,-1,-1,-1,-4,-3},
+    					{4,-3,2,2,2,2,-3,4}
+    				};
  
 // Piece difference, frontier disks and disk squares
         for(i=0; i<8; i++)
@@ -106,10 +115,10 @@ double dynamic_heuristic_evaluation_function(char grid[8][8])  {
                                 d -= V[i][j];
                                 opp_tiles++;
                         }
-                        if(grid[i][j] != '-')   {
+                        if(grid[i][j] != 0)   {
                                 for(k=0; k<8; k++)  {
                                         x = i + X1[k]; y = j + Y1[k];
-                                        if(x >= 0 && x < bound_x && y >= 0 && y < bound_y && grid[x][y] == '-') {
+                                        if(x >= 0 && x < bound_x && y >= 0 && y < bound_y && grid[x][y] == 0) {
                                                 if(grid[i][j] == my_color)  my_front_tiles++;
                                                 else opp_front_tiles++;
                                                 break;
@@ -143,7 +152,7 @@ double dynamic_heuristic_evaluation_function(char grid[8][8])  {
  
 // Corner closeness
         my_tiles = opp_tiles = 0;
-        if(grid[0][0] == '-')   {
+        if(grid[0][0] == 0)   {
                 if(grid[0][1] == my_color) my_tiles++;
                 else if(grid[0][1] == opp_color) opp_tiles++;
                 if(grid[1][1] == my_color) my_tiles++;
@@ -151,7 +160,7 @@ double dynamic_heuristic_evaluation_function(char grid[8][8])  {
                 if(grid[1][0] == my_color) my_tiles++;
                 else if(grid[1][0] == opp_color) opp_tiles++;
         }
-        if(grid[0][7] == '-')   {
+        if(grid[0][7] == 0)   {
                 if(grid[0][6] == my_color) my_tiles++;
                 else if(grid[0][6] == opp_color) opp_tiles++;
                 if(grid[1][6] == my_color) my_tiles++;
@@ -159,7 +168,7 @@ double dynamic_heuristic_evaluation_function(char grid[8][8])  {
                 if(grid[1][7] == my_color) my_tiles++;
                 else if(grid[1][7] == opp_color) opp_tiles++;
         }
-        if(grid[7][0] == '-')   {
+        if(grid[7][0] == 0)   {
                 if(grid[7][1] == my_color) my_tiles++;
                 else if(grid[7][1] == opp_color) opp_tiles++;
                 if(grid[6][1] == my_color) my_tiles++;
@@ -167,7 +176,7 @@ double dynamic_heuristic_evaluation_function(char grid[8][8])  {
                 if(grid[6][0] == my_color) my_tiles++;
                 else if(grid[6][0] == opp_color) opp_tiles++;
         }
-        if(grid[7][7] == '-')   {
+        if(grid[7][7] == 0)   {
                 if(grid[6][7] == my_color) my_tiles++;
                 else if(grid[6][7] == opp_color) opp_tiles++;
                 if(grid[6][6] == my_color) my_tiles++;
@@ -175,18 +184,18 @@ double dynamic_heuristic_evaluation_function(char grid[8][8])  {
                 if(grid[7][6] == my_color) my_tiles++;
                 else if(grid[7][6] == opp_color) opp_tiles++;
         }
-        l = -12.5 * (my_tiles - opp_tiles);
+        l = -12 * (my_tiles - opp_tiles);
  
 // Mobility
-        my_tiles = num_valid_moves(my_color, opp_color, grid);
-        opp_tiles = num_valid_moves(opp_color, my_color, grid);
+        my_tiles = contest_num_valid_moves(grid,my_color);
+        opp_tiles = contest_num_valid_moves(grid,opp_color);
         if(my_tiles > opp_tiles)
-                m = (100.0 * my_tiles)/(my_tiles + opp_tiles);
+                m = (100 * my_tiles)/(my_tiles + opp_tiles);
         else if(my_tiles < opp_tiles)
-                m = -(100.0 * opp_tiles)/(my_tiles + opp_tiles);
+                m = -(100 * opp_tiles)/(my_tiles + opp_tiles);
         else m = 0;
  
 // final weighted score
-        double score = (10 * p) + (801.724 * c) + (382.026 * l) + (78.922 * m) + (74.396 * f) + (10 * d);
+        int score = (10 * p) + (801 * c) + (382* l) + (78 * m) + (74* f) + (10 * d);
         return score;
 }
