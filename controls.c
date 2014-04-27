@@ -473,15 +473,19 @@ void set_list_as_children(linked_list_cntrl list, element_cntrl elem)
  * returns -1 on failure*/
 int draw_ui_tree(element_cntrl root)
 {
-	int ret_val = 1; 
-	ret_val  = draw_with_panel(root,root);
+	int ret_val = 0; 
+	draw_with_panel(root,root,&ret_val);
+	if (ret_val < 0)
+	{
+		printf("ERROR: could not draw a UI-Tree\n");
+	}
 	return ret_val;
 }
 
 /*recursive drawing, that passes owning panels
  * to elements for overlay construction 
  * returns 1 on success,-1 on failure*/
-int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel)
+int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel,int *error)
 {
 	element_cntrl cur_elem=NULL;
 	int err = 0; 
@@ -490,7 +494,10 @@ int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel)
 	{
 		err = draw_cntrl->cntrl->draw(draw_cntrl->cntrl,NULL);
 		if (err == -1)
+		{
+			*error = -1;
 			return -1;
+		}
 	}
 	else//anything inside the window
 	{
@@ -503,10 +510,23 @@ int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel)
 		for (cur_elem = draw_cntrl->children->head; 
 			cur_elem!= NULL ;cur_elem=cur_elem->next)
 			{
-			if (draw_cntrl->cntrl->is_panel)
-				draw_with_panel(cur_elem,draw_cntrl);//if draw_cntrl is a panel,his children should be drawn relativly to him 
-			else
-				draw_with_panel(cur_elem,owning_panel);//if draw_cntrl isn't a panel,draw children relativly to his "owning_panel"
+				/* if draw_cntrl is a panel,his children should be drawn relativly to him */
+				if (draw_cntrl->cntrl->is_panel)
+				{
+					draw_with_panel(cur_elem,draw_cntrl,&err);
+					if (err<0)
+					{
+						printf("ERROR: failed to draw a control");
+						*error = -1;
+					}
+				}
+				/* if draw_cntrl isn't a panel,draw children relativly to his "owning_panel" */
+				else
+				{
+					draw_with_panel(cur_elem,owning_panel,&err);
+					printf("ERROR: failed to draw a control");
+					*error = -1;
+				}
 			}
 		return 0;
 		}
@@ -920,6 +940,7 @@ void clear_game_panel(element_cntrl ui_tree)
 void free_control_list(element_cntrl node)
 {
 	element_cntrl cur_elem=NULL,next_elem=NULL;
+	int i=0;
 
 	if (node == NULL){
 		return;
@@ -935,8 +956,58 @@ void free_control_list(element_cntrl node)
 		free(node->children);
 	}
 
-	free_control(node->cntrl);
+	//free SDL surface associated with control
+	if (node->cntrl->ownSurface != NULL){
+		SDL_FreeSurface(node->cntrl->ownSurface);
+	}
+	node->cntrl->ownSurface = NULL;//just in case
+	if (node->cntrl->text_surface != NULL){
+		SDL_FreeSurface(node->cntrl->text_surface);
+	}
+
+	if (node->cntrl->destination_rect != NULL){
+		free(node->cntrl->destination_rect);
+	}
+
+	/*frees up texts*/
+	if (node->cntrl->multitext != NULL){
+		for (i=0; i<node->cntrl->num_texts; i++)
+		{
+			if (node->cntrl->multitext[i] != NULL)
+				SDL_FreeSurface(node->cntrl->multitext[i]);
+		}
+		free(node->cntrl->multitext);
+	}
+
+
+	if (node->cntrl->is_button==1)
+	{
+		buttomNum--;
+	}
+	if (node->cntrl->is_label==1)
+	{
+		labelNum--;
+	}
+	if (node->cntrl->is_panel==1)
+	{
+		panelNum--;
+	}
+	if (node->cntrl->is_window==1)
+	{
+		windowNum--;
+	}
+	
+	//free node caption
+	if (node->cntrl->caption != NULL)
+	{
+		free(node->cntrl->caption);
+	}
+	//free control and node
+	free(node->cntrl);
 	free(node);
+
+	controlElementNum--;
+
 }
 
 /*if a control with this function is pressed, do nothing and continue.*/
@@ -947,12 +1018,11 @@ int empty_click_handle(int *choice,SDL_Event* test_event)
 
 void free_control(control *cntrl)
 {
-	int i=0;
 	//free SDL surface associated with control
 	if (cntrl->ownSurface != NULL){
 		SDL_FreeSurface(cntrl->ownSurface);
 	}
-	cntrl->ownSurface = NULL;//just in case
+	cntrl->ownSurface = NULL;
 	if (cntrl->text_surface != NULL){
 		SDL_FreeSurface(cntrl->text_surface);
 	}
@@ -961,42 +1031,12 @@ void free_control(control *cntrl)
 		free(cntrl->destination_rect);
 	}
 
-	/*frees up texts*/
-	if (cntrl->multitext != NULL){
-		for (i=0; i<cntrl->num_texts; i++)
-		{
-			if (cntrl->multitext[i] != NULL)
-				SDL_FreeSurface(cntrl->multitext[i]);
-		}
-		free(cntrl->multitext);
-	}
-
-
-	if (cntrl->is_button==1)
-	{
-		buttomNum--;
-	}
-	if (cntrl->is_label==1)
-	{
-		labelNum--;
-	}
-	if (cntrl->is_panel==1)
-	{
-		panelNum--;
-	}
-	if (cntrl->is_window==1)
-	{
-		windowNum--;
-	}
-	
 	//free node caption
 	if (cntrl->caption != NULL)
 	{
 		free(cntrl->caption);
 	}
-	//free control and node
 	free(cntrl);
-	controlElementNum--;
 }
 
 /*a function which creates a button with generic_button.bmp and addes it to the list*/
