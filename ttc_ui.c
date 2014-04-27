@@ -245,24 +245,27 @@ int set_victory_control(int i,int j,element_cntrl game_panel,int player){
 
 	/*Choose Striked X or O*/
 	if (player==1){
+		int x=ttc_button->cntrl->x;
+		int y=ttc_button->cntrl->y;
 		// free previous control
 		free_control(ttc_button->cntrl);
-		buttomNum--;
 
-		ttc_button->cntrl=new_button(ttc_button->cntrl->x,
-			ttc_button->cntrl->y,TTC_BTNXPATH_VICTORY,1,NULL,0);
+		ttc_button->cntrl=new_button(x,
+			y,TTC_BTNXPATH_VICTORY,1,NULL,0);
 		if(ttc_button==NULL){
 			printf("ERROR: failed to make button for \"piece of victory\" at row %d and colunm %d in set_victory_control(ttc)\n",i,j);
 			return -1;
 		}
 	}
 	else {
+		int x=ttc_button->cntrl->x;
+		int y=ttc_button->cntrl->y;
+
 		// free previous control
 		free_control(ttc_button->cntrl);
-		buttomNum--;
 
-		ttc_button->cntrl=new_button(ttc_button->cntrl->x,
-			ttc_button->cntrl->y,TTC_BTNOPATH_VICTORY,1,NULL,0); 
+		ttc_button->cntrl=new_button(x,
+			y,TTC_BTNOPATH_VICTORY,1,NULL,0); 
 		if(ttc_button==NULL){
 			printf("ERROR: failed to make button for \"piece of victory\" at row %d and colunm %d in set_victory_control(ttc)\n",i,j);
 			return -1;

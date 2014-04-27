@@ -180,7 +180,7 @@ int ttc_get_state_score(int* game_state)
 	{
 		return 0;
 	}
-};
+}
 
 /* get difficult levels for game*/
 int* ttc_get_difficulty_levels()

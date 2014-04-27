@@ -485,18 +485,24 @@ int go_to_difficulty_player2(int *choice,SDL_Event* test_event)
 /* handle game unpause*/
 int set_unpause(int *choice,SDL_Event* test_event){
 	int error=0;
+	element_cntrl newTail=NULL;
+	if(cur_game->is_multiplayer!=1){
 		if (*choice==1){
+			newTail=ui_tree->children->head->children->tail->prev;
 			free_control_list(ui_tree->children->head->children->tail);
+			ui_tree->children->head->children->tail=newTail;
+			newTail->next=NULL;
 		}
 		else{
 			/*over-write a button with a new button, as rightest son*/
-			error=new_generic_button(ui_tree->children->head->children,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,"unpause",set_unpause,0);
+			error=new_generic_button(ui_tree->children->head->children,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,USPAUSE,set_unpause,0);
 			if (error<0){
 				printf("ERROR: cannot replace pause-unpause buttons");
 				return -1;
 			}
 			ui_tree->children->head->children->tail->parent=ui_tree->children->head;
 		}
+	}
 	*choice=!(*choice);// form 1 to 0 and 0 to 1
 	/* make move for relevant AI player*/
 	if (cur_game->is_multiplayer==3 && cur_game->cur_player==1){

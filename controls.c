@@ -920,7 +920,6 @@ void clear_game_panel(element_cntrl ui_tree)
 void free_control_list(element_cntrl node)
 {
 	element_cntrl cur_elem=NULL,next_elem=NULL;
-	int i=0;
 
 	if (node == NULL){
 		return;
@@ -936,58 +935,8 @@ void free_control_list(element_cntrl node)
 		free(node->children);
 	}
 
-	//free SDL surface associated with control
-	if (node->cntrl->ownSurface != NULL){
-		SDL_FreeSurface(node->cntrl->ownSurface);
-	}
-	node->cntrl->ownSurface = NULL;//just in case
-	if (node->cntrl->text_surface != NULL){
-		SDL_FreeSurface(node->cntrl->text_surface);
-	}
-
-	if (node->cntrl->destination_rect != NULL){
-		free(node->cntrl->destination_rect);
-	}
-
-	/*frees up texts*/
-	if (node->cntrl->multitext != NULL){
-		for (i=0; i<node->cntrl->num_texts; i++)
-		{
-			if (node->cntrl->multitext[i] != NULL)
-				SDL_FreeSurface(node->cntrl->multitext[i]);
-		}
-		free(node->cntrl->multitext);
-	}
-
-
-	if (node->cntrl->is_button==1)
-	{
-		buttomNum--;
-	}
-	if (node->cntrl->is_label==1)
-	{
-		labelNum--;
-	}
-	if (node->cntrl->is_panel==1)
-	{
-		panelNum--;
-	}
-	if (node->cntrl->is_window==1)
-	{
-		windowNum--;
-	}
-	
-	//free node caption
-	if (node->cntrl->caption != NULL)
-	{
-		free(node->cntrl->caption);
-	}
-	//free control and node
-	free(node->cntrl);
+	free_control(node->cntrl);
 	free(node);
-
-	controlElementNum--;
-
 }
 
 /*if a control with this function is pressed, do nothing and continue.*/
@@ -998,11 +947,12 @@ int empty_click_handle(int *choice,SDL_Event* test_event)
 
 void free_control(control *cntrl)
 {
+	int i=0;
 	//free SDL surface associated with control
 	if (cntrl->ownSurface != NULL){
 		SDL_FreeSurface(cntrl->ownSurface);
 	}
-	cntrl->ownSurface = NULL;
+	cntrl->ownSurface = NULL;//just in case
 	if (cntrl->text_surface != NULL){
 		SDL_FreeSurface(cntrl->text_surface);
 	}
@@ -1011,11 +961,42 @@ void free_control(control *cntrl)
 		free(cntrl->destination_rect);
 	}
 
+	/*frees up texts*/
+	if (cntrl->multitext != NULL){
+		for (i=0; i<cntrl->num_texts; i++)
+		{
+			if (cntrl->multitext[i] != NULL)
+				SDL_FreeSurface(cntrl->multitext[i]);
+		}
+		free(cntrl->multitext);
+	}
+
+
+	if (cntrl->is_button==1)
+	{
+		buttomNum--;
+	}
+	if (cntrl->is_label==1)
+	{
+		labelNum--;
+	}
+	if (cntrl->is_panel==1)
+	{
+		panelNum--;
+	}
+	if (cntrl->is_window==1)
+	{
+		windowNum--;
+	}
+	
 	//free node caption
 	if (cntrl->caption != NULL)
 	{
 		free(cntrl->caption);
 	}
+	//free control and node
+	free(cntrl);
+	controlElementNum--;
 }
 
 /*a function which creates a button with generic_button.bmp and addes it to the list*/

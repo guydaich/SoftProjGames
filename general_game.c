@@ -92,7 +92,7 @@ return new_game_obj;
 
 /* since no user interaction is nesscarry, expet for pause un-pausem the AI v AI game is handled herem istead of button_action*/
 int handelAI_VS_AI(int *pause){
-	int error;
+	int error=0;
 	/*if game over, terminate*/
 	if (cur_game->is_game_over( cur_game->board)==1){
 		return 0;

@@ -11,7 +11,7 @@
 #include "buttonActions.h"
 
 /* constants */
-#define RESTART "Rsestart"
+#define RESTART "Restart"
 #define QUIT "Quit"
 #define CANCEL "Cancel"
 #define MAIN_MENU "Main Menu"
@@ -20,6 +20,7 @@
 #define DIFFP1 "P1 Difficulties"
 #define DIFFP2 "P2 Difficulties"
 #define PAUSE "Pause"
+#define USPAUSE "Unpause"
 #define CHOOSE_GAME "Choose Game"
 #define DIFFICULTY "Difficulty"
 #define SAVE_SLOT "Save Slot"
@@ -53,7 +54,7 @@ enum user_selection_type {
 	SET_DIFF_PLAYER2,		/* for player 2 difficulty selection */
 	SELECT_MAIN_MENU,		/* for main menu */
 	SELECT_PLAYER_TYPES,	/* player types (Human, AI) selectiom menu*/
-	EMPTY_WINDOW			/* empty window, for cases where a selection isn't nescarry (like ENUM_PLAYER_1 v ENUM_PLAYER_1) diff*/
+	EMPTY_WINDOW			/* empty window, for cases where a selection isn't nescarry (like HUMAN v HUMAN) diff*/
 };
 typedef enum user_selection_type user_selection_type;
 
