@@ -131,7 +131,8 @@ int get_text_position(SDL_Rect *rect_source, char* text,TTF_Font *font, SDL_Rect
 
 	rect_dest->w = w; 
 	rect_dest->h = h; 
-	rect_dest->x = rect_source->x + (rect_source->w - w)/2;//set in the middle of the control
+	//set in the middle of the control
+	rect_dest->x = rect_source->x + (rect_source->w - w)/2;
 	rect_dest->y = rect_source->y + (rect_source->h - h)/2;
 
 	return 1;
@@ -155,7 +156,7 @@ int get_text_position_multi(SDL_Rect *rect_source, char* text,TTF_Font *font, SD
 	} 
 	rect_dest->w = w; 
 	rect_dest->h = h; 
-	rect_dest->x = rect_source->x;
+	rect_dest->x = rect_source->x + (rect_source->w - w)/2;
 	rect_dest->y = rect_source->y+offset;
 	
 	/* check for overflow */
@@ -264,7 +265,7 @@ int draw_caption_to_control_multi(control *cntrl)
 {
 	TTF_Font *font=NULL;
 	SDL_Surface *surface=NULL;
-	SDL_Color text_color = {0, 0, 0};
+	SDL_Color text_color = {255, 255, 255};
 	SDL_Rect text_rect = {0,0,0,0};
 	SDL_Rect soure_rect = {0,0,0,0};
 	char* sdl_err = NULL;
@@ -583,8 +584,16 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->text_surface=NULL;
 	label->destination_rect=NULL;
 	label->is_grid=0;
-	label->is_bg_img =1;
-	label->is_bg_rect =0;
+	if (img != NULL && strcmp(img,"") > 0)
+	{
+		label->is_bg_img = 1;
+		label->is_bg_rect = 0;
+	}
+	else
+	{
+		label->is_bg_img = 0;
+		label->is_bg_rect = 1;
+	}
 	label->multitext=NULL;
 	label->multitext = (SDL_Surface**)malloc(sizeof(SDL_Surface*)*MAX_CAPTION_LINES);
 	
@@ -759,8 +768,8 @@ int draw_button(control *button, control *container)
 int draw_label(control *label, control *container)
 {
 	char* sdl_err = NULL;
-
-	if (handle_control_surface_load(label,container)==-1)//the handle_control_surface_load makes evrey thing ready for bliting of the label
+	/* the handle_control_surface_load makes evrey thing ready for bliting of the label */
+	if (handle_control_surface_load(label,container)==-1)
 	{
 		printf("ERROR: surface load failed");
 		return -1;
@@ -790,7 +799,8 @@ int draw_label(control *label, control *container)
 			}
 		}
 	}
-	return 0;//sccussfuly drawn
+	/* success */
+	return 0;
 }
 
 

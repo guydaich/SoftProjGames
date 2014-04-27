@@ -10,54 +10,53 @@ extern int windowNum;
 game* cur_game=NULL;
 element_cntrl ui_tree=NULL;
 
-#define GAME_AREA_W 700
-#define GAME_AREA_H 1000
-#define GAME_PANEL_W 300
-#define GAME_PANEL_H 1000
-#define BTN_X_OFFSET 25
-#define BTN_Y_OFFSET 20
-#define BTN_H 100
-#define PADDING 10
-#define PLAYER_LABEL_X_OFFSET 160
-#define PLAYER_LABEL_X_PADDING 300
-#define PLAYER_LABEL_Y_OFFSET 2
-#define PLAYER_LABEL_H 30
-#define PLAYER_LABEL_W 100
-#define BTN_PANEL_X 0
-#define BTN_PANEL_Y 0
-#define BTN_PANEL_W 250
-#define BTN_PANEL_H 60
-#define BTN_PANEL_R 220
-#define BTN_PANEL_G 220
-#define BTN_PANEL_B 220
-#define BTN_X 20
-#define BTN_Y 20
-#define BTN_X_PAD 50
-#define MAIN_X 0
-#define MAIN_Y 0
-#define MAIN_W 240
-#define MAIN_H 300
-#define CHOICE_WIN_X 0
-#define CHOICE_WIN_Y 0
-#define CHOICE_WIN_W 250
-#define CHOICE_WIN_H 60
-#define START_PANEL_X 0
-#define START_PANEL_Y 0
-#define START_PANEL_W 240
-#define START_PANEL_H 300
-#define START_BTN_X 20
-#define START_BTN_Y 20
-#define START_BTN_H 60	
-#define QUESTION_X 0
-#define QUESTION_Y 0
-#define QUESTION_W 500
-#define QUESTION_H 250
-#define TEXTAREA_PATH "./gfx/textArea.bmp"
-#define NOTIF_X 170
-#define NOTIF_Y 30
-#define NOTIF_PAD 160
-
-#define BUTTON_LABEL_PATH "./gfx/button_label.bmp"
+#define GAME_AREA_W				700
+#define GAME_AREA_H				1000
+#define GAME_PANEL_W			300
+#define GAME_PANEL_H			1000
+#define BTN_X_OFFSET			25
+#define BTN_Y_OFFSET			20
+#define BTN_H					100
+#define PADDING					10
+#define PLAYER_LABEL_X_OFFSET	160
+#define PLAYER_LABEL_X_PADDING	300
+#define PLAYER_LABEL_Y_OFFSET	2
+#define PLAYER_LABEL_H			30
+#define PLAYER_LABEL_W			100
+#define BTN_PANEL_X				0
+#define BTN_PANEL_Y				0
+#define BTN_PANEL_W				250
+#define BTN_PANEL_H				60
+#define BTN_PANEL_R				220
+#define BTN_PANEL_G				220
+#define BTN_PANEL_B				220
+#define BTN_X					20
+#define BTN_Y					20
+#define BTN_X_PAD				50
+#define MAIN_X					0
+#define MAIN_Y					0
+#define MAIN_W					240
+#define MAIN_H					300
+#define CHOICE_WIN_X			0
+#define CHOICE_WIN_Y			0
+#define CHOICE_WIN_W			250
+#define CHOICE_WIN_H			60
+#define START_PANEL_X			0
+#define START_PANEL_Y			0
+#define START_PANEL_W			240
+#define START_PANEL_H			300
+#define START_BTN_X				20
+#define START_BTN_Y				20
+#define START_BTN_H				60	
+#define QUESTION_X				0
+#define QUESTION_Y				0
+#define QUESTION_W				500
+#define QUESTION_H				250
+#define NOTIF_X					170
+#define NOTIF_Y					30
+#define NOTIF_PAD				160
+#define TEXTAREA_PATH			"./gfx/textArea.bmp"
+#define BUTTON_LABEL_PATH		"./gfx/button_label.bmp"
 
 /* create a defualt tree for non-game area */
 int get_default_ui_tree()
@@ -67,8 +66,8 @@ int get_default_ui_tree()
 	control* temp_control;
 	linked_list_cntrl list; 
 
-	char* captions[8] = {RESTART,SAVE,PAUSE,MAIN_MENU,DIFFP1,DIFFP2,QUIT,USPAUSE};
-	int (*functions[8])(int* a, SDL_Event* b)  = {restart_game,go_to_save_menu,set_unpause,go_to_start_menu,go_to_difficulty_player1,go_to_difficulty_player2,quit_game,set_unpause};
+	char* captions[7] = {RESTART,SAVE,PAUSE,MAIN_MENU,DIFFP1,DIFFP2,QUIT};
+	int (*functions[7])(int* a, SDL_Event* b)  = {restart_game,go_to_save_menu,set_unpause,go_to_start_menu,go_to_difficulty_player1,go_to_difficulty_player2,quit_game};
 	
 	root = new_control_element(new_window(0,0,GAME_AREA_H,GAME_AREA_W));
 	if (root==NULL){
@@ -108,7 +107,7 @@ int get_default_ui_tree()
 	}
 
 	/*label - paint first*/
-	/*temp_control = new_label(0,0,0,0,BUTTON_LABEL_PATH,255,0,255,1,"");
+	/*temp_control = new_label(0,0,0,0,BUTTON_LABEL_PATH,255,0,255,1,"Use Mouse Clicks to Navigate and Play");
 	if (temp_control==NULL){
 		free_detached_list(list);
 		free_control(root->cntrl);
@@ -133,14 +132,7 @@ int get_default_ui_tree()
 		return -1;
 		}
 	}
-	if ((cur_game->is_multiplayer==1 || cur_game->is_multiplayer==3) && cur_game->cur_player==1){
-		error=new_generic_button(list,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,captions[i],functions[i],0);
-		if (error<0){
-			free_control(root->cntrl);
-			free(root);
-			return -1;
-		}
-	}
+
 	/* set buttons as panel children*/
 	set_list_as_children(list,root->children->head);
 	ui_tree=root;
@@ -315,12 +307,10 @@ int draw_game ()
 		playerLabel_control = new_label(PLAYER_LABEL_X_OFFSET+PLAYER_LABEL_X_PADDING*i,PLAYER_LABEL_Y_OFFSET,
 			PLAYER_LABEL_W,PLAYER_LABEL_H,player_sources[i],255,0,255,1,player_captions[i]);
 		if (playerLabel_control==NULL){
-			free_control_list(game_panel);
 			return -1;
 		}
 		temp_elem = new_control_element(playerLabel_control);
 		if (temp_elem==NULL){
-			free_control_list(game_panel);
 			return -1;
 		}
 		temp_elem->parent=game_panel;
@@ -462,6 +452,22 @@ element_cntrl start_window(){
 		return NULL;
 	}
 
+	temp_control = new_label(0,250,240,100,NULL,255,0,255,1,"Use Mouse Clicks \nto Navigate and Play");
+	if (temp_control==NULL){
+		free_detached_list(list);
+		free_control(root->cntrl);
+		free(root);
+		return NULL;
+	}
+
+	error=add_control_to_element_list(temp_control,list);
+	if (error<0){
+		free_detached_list(list);
+		free_control(root->cntrl);
+		free(root);
+		return NULL;
+	}
+
 	for (i=0; i< 3; i++)
 	{
 		error=new_generic_button(list,START_BTN_X,START_BTN_Y + i*START_BTN_H,captions[i],functions[i],0);
@@ -534,7 +540,7 @@ char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event
 		}
 		*pressed_button=set_player1_difficulty;
 		*number_choices=cur_game->difficulty_num;
-		transporter=(char *)DIFFICULTYP1;
+		transporter=(char *)DIFFICULTY;
 		captionArray=(char**)calloc(*number_choices,sizeof(char*));
 		if (captionArray==NULL){
 			return NULL;
@@ -546,7 +552,7 @@ char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event
 		}
 		*pressed_button=set_player2_difficulty;
 		*number_choices=cur_game->difficulty_num;
-		transporter=(char *)DIFFICULTYP2;
+		transporter=(char *)DIFFICULTY;
 		captionArray=(char**)calloc(*number_choices,sizeof(char*));
 		if (captionArray==NULL){
 			return NULL;
@@ -559,7 +565,7 @@ char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event
 				error =-1;
 				break;
 			}
-			sprintf(buttonName,"%s %d",captionArray[i],i+1);
+			sprintf(buttonName,"%s %d",captionArray[i],i);
 			captionArray[i]=buttonName;
 		}
 		if (error ==-1){
