@@ -34,6 +34,14 @@ int restart_game(int *choice,SDL_Event* test_event)
 	cur_game->cur_player=1;
 	if (cur_game->is_multiplayer==3){
 		*choice=1;
+		if (strcmp(ui_tree->children->head->children->tail->cntrl->caption,QUIT)==0){
+			error=new_generic_button(ui_tree->children->head->children,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,USPAUSE,set_unpause,0);
+			if (error<0){
+				printf("ERROR: cannot replace pause-unpause buttons");
+				return -1;
+			}
+			ui_tree->children->head->children->tail->parent=ui_tree->children->head;
+		}
 	}
 	error=draw_game();
 	if (error<0){

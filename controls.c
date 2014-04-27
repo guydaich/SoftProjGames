@@ -485,7 +485,7 @@ int draw_ui_tree(element_cntrl root)
 /*recursive drawing, that passes owning panels
  * to elements for overlay construction 
  * returns 1 on success,-1 on failure*/
-int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel,int *error)
+int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel)
 {
 	element_cntrl cur_elem=NULL;
 	int err = 0; 
@@ -495,7 +495,6 @@ int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel,int *er
 		err = draw_cntrl->cntrl->draw(draw_cntrl->cntrl,NULL);
 		if (err == -1)
 		{
-			*error = -1;
 			return -1;
 		}
 	}
@@ -513,19 +512,22 @@ int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel,int *er
 				/* if draw_cntrl is a panel,his children should be drawn relativly to him */
 				if (draw_cntrl->cntrl->is_panel)
 				{
-					draw_with_panel(cur_elem,draw_cntrl,&err);
+					err=draw_with_panel(cur_elem,draw_cntrl);
 					if (err<0)
 					{
 						printf("ERROR: failed to draw a control");
-						*error = -1;
+						return -1;
 					}
 				}
 				/* if draw_cntrl isn't a panel,draw children relativly to his "owning_panel" */
 				else
 				{
-					draw_with_panel(cur_elem,owning_panel,&err);
+					err=draw_with_panel(cur_elem,owning_panel);
+					if (err<0)
+					{
 					printf("ERROR: failed to draw a control");
-					*error = -1;
+						return -1;
+					}
 				}
 			}
 		return 0;
