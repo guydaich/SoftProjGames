@@ -25,7 +25,7 @@ typedef struct _general_game
 	char*			(*get_name)();
 	int*			(*get_initial_state)();
 	linked_list		(*get_state_children)(int* game_state, int player,int *error);
-	int				(*get_state_score)(int* game_state,int player);
+	int				(*get_state_score)(int* game_state);
 	int*			(*get_difficulty_levels)();
 	element_cntrl	(*panel_function)(int* game_state,int  (*handle_next_move)(int *choice,SDL_Event* test_event));
 	int				(*handle_mouse_button_down)(SDL_Event *event, int* game_state, int player);
@@ -34,7 +34,6 @@ typedef struct _general_game
 	int				(*is_victory)(int* game_state);
 	int 			(*victoryColor)(int* game_state,int player,element_cntrl ui_tree);
 	int				(*handle_computer_move)(int* game_state, int depth,int player);
-
 
 } game;
 

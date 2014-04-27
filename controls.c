@@ -753,16 +753,26 @@ int draw_label(control *label, control *container)
 	}
 	//blit the label text (by using draw_caption_to_control_multi)
 	if (label->caption != NULL){
-		if (draw_caption_to_control_multi(label)==-1){	
-			printf("ERROR: caption load failed");
-			return -1;
+		if (strchr(label->caption,'\n') != NULL)
+		{
+			if (draw_caption_to_control_multi(label)==-1){	
+				printf("ERROR: caption load failed");
+				return -1;
+			}
+		}
+		else
+		{
+			if (draw_caption_to_control(label)==-1){	
+				printf("ERROR: caption load failed");
+				return -1;
+			}
 		}
 	}
 	return 0;//sccussfuly drawn
 }
 
 
-int draw_window(control* window)
+int draw_window(control* window, control *container)
 {
 	char* sdl_err=NULL;
 	SDL_Surface *surface; 

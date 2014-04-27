@@ -545,7 +545,7 @@ char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event
 	}
 		for (i=0;i<*number_choices;i++){
 		captionArray[i]=transporter;
-			buttonName=(char*)malloc(strlen(captionArray[i])+3);//for the meanwhile a leak; TODO: leak??
+			buttonName=(char*)malloc(strlen(captionArray[i])+3);
 			if (buttonName==NULL){
 				error =-1;
 				break;

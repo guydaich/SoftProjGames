@@ -13,23 +13,27 @@ int numE=0;
 
 /* ---- Interface functions ---- */
 
-/* returns a suggested move foe the player, according to minimax */
+/* we use this to get the first move when AI plays first */
 int get_suggested_move(int * game_matrix, int depth,linked_list (*create_children)(int *gameMatrix, int player,int *error))
 {
 	int cMove = 0,error=0; 
-	vertex root = build_tree(game_matrix, 1,create_children);	// build tree
+	/* build tree */
+	vertex root = build_tree(game_matrix, 1,create_children);
 	if (root == NULL){
 		printf("make root failed\n");
 		return -1;
 	}
-	alphaBeta(root,INT_MIN,INT_MAX,1,0,depth,create_children,&error);								// update scores in the tree
+	/* update scores in the tree */
+	alphaBeta(root,INT_MIN,INT_MAX,1,0,depth,create_children,&error);
 	if(error==-1){
 		printf("alphaBeta failed\n");
 		remove_tree(root, 1,1);
 		return -1;
 	}
-	cMove = getMove(root);								// find best move
-	remove_tree(root, 1,0);								// destroy tree
+	/* find best move */
+	cMove = getMove(root);
+	/* destroy tree */
+	remove_tree(root, 1,0);
 	return cMove;
 }
 
@@ -75,11 +79,14 @@ int getMove(vertex root)
 }
 /* ---- END Interface function ---- */
 
+/* constructs the root and it's children. 
+ * once this is assured, alphabeta may continue construction */
 vertex build_tree(int * game_matrix, int player,linked_list (*create_children)(int *gameMatrix, int player,int *error))
 {
 	linked_list new_children=NULL;
 	int error=0;
-	vertex root = make_node(0, game_matrix,0); 			// new root 
+	/* new root */
+	vertex root = make_node(0, game_matrix,0);
 	if (root == NULL){
 		printf("ERROR: can't create root\n");
 		return NULL;
@@ -94,7 +101,7 @@ vertex build_tree(int * game_matrix, int player,linked_list (*create_children)(i
 	return root;
 }
 
-/* creates a new node, and returns it to Caller */
+/* creates a new node, and returns it to caller */
 vertex make_node(int move, int *game_mtx_ptr, int score)
 {
 	vertex new_node = (vertex)malloc(sizeof(struct  vertex_s));
@@ -113,11 +120,13 @@ vertex make_node(int move, int *game_mtx_ptr, int score)
 /*creates and returns a new list*/
 linked_list new_list()
 {
-	// allocate memory for new list
+	/* allocate memory for new list */
 	linked_list new_list = 
 		(linked_list)malloc(sizeof(struct  linked_list_s));	
 	numOfElemmalList++;
-	if (new_list == NULL)	// handle standart function error
+	
+	/* handle standart function error */
+	if (new_list == NULL)
 	{
 		perror("Error: standard function malloc has failed");
 		return NULL;
@@ -130,30 +139,24 @@ linked_list new_list()
 /*creates and returns a new elements*/
 element new_element()
 {
-	// allocate memory for new element
+	/* allocate memory for new element */
 	element new_elem = (element)malloc(sizeof(struct  element_s));
 	numE++;
-	if (new_elem == NULL)	// handle standart function error
+	
+	/* handle standart function error */
+	if (new_elem == NULL)
 	{
 		perror("Error: standard function malloc has failed");
 		return NULL;
 	}
-	new_elem->node = NULL;		// set members to NULL
+	/* set members to NULL */
+	new_elem->node = NULL;
 	new_elem->next = NULL;
 	new_elem->prev = NULL;
 	return new_elem;
 }
 
-/*frees memory allocated for the node
-void free_node(vertex node)
-{
-	if (node->game_state != NULL){
-		free(node->game_state); 
-	}
-	free(node);
-	return;
-}*/
-
+/* frees up the tree */
 void remove_tree(vertex root, int is_root,int recursivly)
 {
 	if (root->edges!=NULL){
@@ -174,6 +177,7 @@ void remove_tree(vertex root, int is_root,int recursivly)
 	numOfNodemal--;
 }
 
+/* deletes list */
 void deleteList(element head,int is_nodes,int recursivly){
 	if(head==NULL){
 		return;
@@ -186,6 +190,8 @@ void deleteList(element head,int is_nodes,int recursivly){
 	numE--;
 }
 
+/* assumes Node, has children. this function handles 
+ * construction and pruning of minimax tree */
 
 int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,linked_list (*create_children)(int *gameMatrix, int player,int *error),int* error){
 	int aboveAlpha=alpha,aboveBeta=beta;
@@ -193,6 +199,8 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,
 	vertex child;
 	element run;
 	linked_list new_children;
+	
+	/* end-cases, return a score for some leaf */
 	if (depth>=maxdepth || Node->edges->head==NULL){
 		temp= Node->score;
 		if(depth>1){
@@ -201,12 +209,15 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,
 		*error=0;
 		return temp;
 	}
-	if (player==HUMAN){
+	
+	if (player==ENUM_PLAYER_1){
+		/* for every node */
 		for (run = Node->edges->head;run != NULL; run = run->next){
-			child=run->node;					// choose node	
+			child=run->node;
 			if (depth<maxdepth-1){
 				int create_childrenError=0;
-				new_children=create_children(child->game_state, player*-1,&create_childrenError);			// add children
+				/*create a new level of children*/
+				new_children=create_children(child->game_state, player*-1,&create_childrenError);
 				if(create_childrenError==-1){
 					printf("ERROR: can't create children\n");
 					*error=-1;
@@ -214,14 +225,17 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,
 				}
 				child->edges=new_children;
 			}
+			/* continue this process on the next level */
 			temp=alphaBeta(child,alpha,beta,player*-1,depth+1,maxdepth,create_children,&childError);
 			if (childError==-1){
 				*error=-1;
 				return 0;
 			}
+			/* we now have a score from the subtreee*/
 			if(aboveAlpha < temp){
 				aboveAlpha=temp;
 			}
+			/* perfom pruning on this level */
 			if (aboveBeta<=aboveAlpha){
 				for ( run = run->next;run != NULL; run = run->next){
 					child=run->node;
@@ -233,13 +247,16 @@ int alphaBeta(vertex Node,int alpha, int beta,int player,int depth,int maxdepth,
 			}
 			
 		}
+		/* taking max */
 		Node->score=aboveAlpha;
 		if(depth>1){
 			remove_tree(Node,0,0);
 		}
 		*error=0;
+		/*return some score*/
 		return aboveAlpha;
 	}
+	/* perform the same process with roles reversed */
 	else {
 		for (run = Node->edges->head;run != NULL; run = run->next){
 			child=run->node;

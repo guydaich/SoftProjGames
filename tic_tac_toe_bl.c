@@ -106,6 +106,7 @@ linked_list ttc_get_state_children(int* game_state, int player,int *error)
 			free(run_elem->node);
 			free(run_elem);
 		}
+		free(list);
 		*error=-1;
 		return NULL;
 	}
@@ -126,7 +127,7 @@ int ttc_add_to_children_list(linked_list list, int* game_state, int row, int col
 	if (moved_state==NULL){
 		return -1;
 	}
-	node = make_node(row*TIC_TAC_TOE_ROWS + col,(int*)moved_state,ttc_get_state_score(moved_state,player));
+	node = make_node(row*TIC_TAC_TOE_ROWS + col,(int*)moved_state,ttc_get_state_score(moved_state));
 	if (node == NULL)
 	{
 		free(moved_state);
@@ -163,9 +164,9 @@ int ttc_add_to_children_list(linked_list list, int* game_state, int row, int col
 }
 
 /*this is a function which evaluate each board.
-* we always work in difficulty 9(wich means we allways looks to max depth), so either win, loose or neutral. 
+* we always work in difficulty 9 (wich means we allways looks to max depth), so either win, loose or neutral. 
 * the winning moves will bubble up because of the minimax*/
-int ttc_get_state_score(int* game_state,int player)
+int ttc_get_state_score(int* game_state)
 {
 	if (ttc_is_victory(game_state)==1)
 	{
@@ -231,8 +232,8 @@ int ttc_is_board_full(int* game_state)
 
 /* checks if there is a victory in passed game state */
 int ttc_is_victory(int* game_state){
-	if (ttc_is_victory_player(game_state,1)) return 1;
-	if (ttc_is_victory_player(game_state,-1)) return -1;
+	if (ttc_is_victory_player(game_state,ENUM_PLAYER_1)) return 1;
+	if (ttc_is_victory_player(game_state,ENUM_PLAYER_2)) return -1;
 	return 0;
 }
 

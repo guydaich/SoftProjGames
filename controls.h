@@ -107,7 +107,7 @@ int			empty_click_handle(int *quit,SDL_Event* test_event);
 /* control drawing*/
 int			draw_button(control *button, control *container);
 int			draw_label(control *label, control *container);
-int			draw_window(control* window);
+int			draw_window(control* window, control *container);
 int			draw_panel(control* panel, control *container);
 
 /* ui tree drawing */

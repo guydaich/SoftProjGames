@@ -9,14 +9,15 @@ extern int boardCount;
 
 #define TIC_TAC_TOE_NAME "Tic-Tac-Toe"
 
-/* functions */
+/* general functions */
 char*			ttc_get_name();
 int*			ttc_get_initial_state();
 linked_list		ttc_get_state_children(int* game_state, int player,int *error);
-int				ttc_get_state_score(int* game_state,int player);
+int				ttc_get_state_score(int* game_state);
 int*			ttc_get_difficulty_levels();
 void			ttc_draw_function();
 
+/* more functions */
 int				ttc_is_victory(int* game_state);
 int				ttc_is_victory_player(int* game_state, int player);
 int				ttc_is_board_full(int* game_state);

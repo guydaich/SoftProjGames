@@ -174,13 +174,13 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 			}
 		}
 	}
-
+	
 	/* look for column victory */
 	for (j = 0; j < CONNECT4_COLS; j++) {
 		for (i = 0; i < CONNECT4_ROWS - 3; i++) {
 			lineScore = 0;
 			for (k = 0; k < 4; k++) {
-				if (game_state[(i + k)*CONNECT4_COLS + j] == CONNECT4_PLAYER_1){//is it really HUMAN????
+				if (game_state[(i + k)*CONNECT4_COLS + j] == CONNECT4_PLAYER_1){
 					lineScore++;
 				}
 				else if (game_state[(i + k)*CONNECT4_COLS + j] == CONNECT4_PLAYER_2){

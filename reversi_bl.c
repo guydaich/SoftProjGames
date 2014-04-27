@@ -51,7 +51,7 @@ int rv_make_node(int* game_state, int row, int col, int player)
 {
 	vertex node;
 
-	node = make_node(row*REVERSI_ROWS + col,game_state,rv_get_state_score(game_state,player));
+	node = make_node(row*REVERSI_ROWS + col,game_state,rv_get_state_score(game_state));
 	if (node == NULL)
 	{
 		free(game_state);
@@ -72,7 +72,7 @@ int rv_add_to_children_list(linked_list list, int* game_state, int row, int col,
 	if(moved_state==NULL){
 		return -1;
 	}
-	node = make_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state,player));
+	node = make_node(row*REVERSI_ROWS + col,moved_state,rv_get_state_score(moved_state));
 	if (node == NULL)
 	{
 		free(moved_state);
@@ -209,15 +209,16 @@ int get_player_pieces(int* game_state, int player)
 
 /*this is a function which evaluate each board.
 * we use this function for the minimax algorithm */
-int rv_get_state_score(int* game_state,int player)
+int rv_get_state_score(int* game_state)
 {
-	int i=0,j = 0, player_pieces =0, other_pieces = 0; 
+	int i=0,j = 0;
 	int score=0; 
+	int player_pieces =0, other_pieces = 0;
 
 	if (rv_is_game_over(game_state))
 	{
-		player_pieces = get_player_pieces(game_state,player);
-		other_pieces = get_player_pieces(game_state, (-1) * player);
+		player_pieces = get_player_pieces(game_state,ENUM_PLAYER_1);
+		other_pieces = get_player_pieces(game_state,ENUM_PLAYER_2);
 		if (player_pieces > other_pieces)	
 		{
 			return INT_MAX;
@@ -238,11 +239,11 @@ int rv_get_state_score(int* game_state,int player)
 		{
 			/* if position is empty: multiply by zero, else, (+1)/(-1) according to piece*/ 
 			/*score += game_state[i*REVERSI_ROWS + j] * region_scores[i][j]; */
-			if (game_state[i*REVERSI_ROWS + j] == player)
+			if (game_state[i*REVERSI_ROWS + j] == ENUM_PLAYER_1)
 			{
 				score += region_scores[i][j];
 			}
-			else if (game_state[i*REVERSI_ROWS + j] == (-1)*player)
+			else if (game_state[i*REVERSI_ROWS + j] == ENUM_PLAYER_2)
 			{
 				score -= region_scores[i][j];
 			}

@@ -33,11 +33,8 @@ struct vertex_s {
 
 typedef struct  vertex_s * vertex;
 
-#define GCOLS 7 // Actual Game Matrix Size
-#define GROWS 6
-
 enum piece{
-	EMPTY=0,HUMAN=1,COMPUTER=-1
+	EMPTY=0,ENUM_PLAYER_1=1,ENUM_PLAYER_2=-1
 };
 typedef enum piece piece;
 

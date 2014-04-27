@@ -53,7 +53,7 @@ enum user_selection_type {
 	SET_DIFF_PLAYER2,		/* for player 2 difficulty selection */
 	SELECT_MAIN_MENU,		/* for main menu */
 	SELECT_PLAYER_TYPES,	/* player types (Human, AI) selectiom menu*/
-	EMPTY_WINDOW			/* empty window, for cases where a selection isn't nescarry (like HUMAN v HUMAN) diff*/
+	EMPTY_WINDOW			/* empty window, for cases where a selection isn't nescarry (like ENUM_PLAYER_1 v ENUM_PLAYER_1) diff*/
 };
 typedef enum user_selection_type user_selection_type;
 

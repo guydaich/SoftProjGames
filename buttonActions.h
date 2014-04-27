@@ -4,6 +4,10 @@
 
 #include "general_game.h"
 
+#define SAVE_FILE_PREFIX		"./save_file_"
+#define SAVE_FILE_SUFFIX		".txt"
+#define SAVE_FILE_MAX_DIGITS	1
+
 /* main menu handlers */
 int  go_to_game_selection(int *choice,SDL_Event* test_event);
 int  go_to_load_menu(int *choice,SDL_Event* test_event);

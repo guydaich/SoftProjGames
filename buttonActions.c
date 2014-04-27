@@ -7,9 +7,11 @@
 #include "buttonActions.h"
 #include "windowsDrawing.h"
 
-#define SAVE_FILE_PREFIX "./save_file_"
-#define SAVE_FILE_SUFFIX ".txt"
-#define SAVE_FILE_MAX_DIGITS 1
+#define BTN_X_OFFSET 25
+#define BTN_Y_OFFSET 20
+#define BTN_H 100
+#define PADDING 10
+
 
 int gameNum=0;
 
@@ -53,8 +55,7 @@ int quit_game(int *choice,SDL_Event* test_event)
  * retuns -1 on failure*/
 int go_to_game_selection(int *choice,SDL_Event* test_event)
 {
-	int error;
-	//free_control_list(ui_tree);
+	int error=0;
 	error=run_window(SELECT_GAME);
 	if (error<0){
 		return -1;
@@ -138,7 +139,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 		return 0; 
 	}
 	else if(move_success<0){
-		printf("failed in handle_mouse_button_down\n");
+		printf("ERROR: failed in handle_mouse_button_down\n");
 		free(cur_game->board);
 		free(cur_game);
 		gameNum--;
@@ -148,6 +149,17 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 	cur_game->cur_player = (-1)*cur_game->cur_player;
 	if ( !cur_game->is_game_over( cur_game->board))
 	{
+		error=draw_game();
+		if (error<0){
+			printf("ERROR: failed in draw_game\n");
+			free(cur_game->board);
+			free(cur_game);
+			gameNum--;
+			free_control_list(ui_tree);
+			return -1;
+		}
+		SDL_Delay(100);
+
 		/* if playing against computer */
 		if (cur_game->is_multiplayer==2 || cur_game->is_multiplayer==3)
 		{
@@ -156,7 +168,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 			if (cur_game->cur_player==1){
 				error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
 				if (error<0){
-					printf("failed in handle_computer_move\n");
+					printf("ERROR: failed in handle_computer_move\n");
 					free(cur_game->board);
 					free(cur_game);
 					gameNum--;
@@ -167,7 +179,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 			else {
 				error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
 				if (error<0){
-					printf("failed in handle_computer_move\n");
+					printf("ERROR: failed in handle_computer_move\n");
 					free(cur_game->board);
 					free(cur_game);
 					gameNum--;
@@ -182,7 +194,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 	/*draw updated game UI*/
 	error=draw_game();
 	if (error<0){
-		printf("failed in draw_game\n");
+		printf("ERROR: failed in draw_game\n");
 		free(cur_game->board);
 		free(cur_game);
 		gameNum--;
@@ -473,6 +485,18 @@ int go_to_difficulty_player2(int *choice,SDL_Event* test_event)
 /* handle game unpause*/
 int set_unpause(int *choice,SDL_Event* test_event){
 	int error=0;
+		if (*choice==1){
+			free_control_list(ui_tree->children->head->children->tail);
+		}
+		else{
+			/*over-write a button with a new button, as rightest son*/
+			error=new_generic_button(ui_tree->children->head->children,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,"unpause",set_unpause,0);
+			if (error<0){
+				printf("ERROR: cannot replace pause-unpause buttons");
+				return -1;
+			}
+			ui_tree->children->head->children->tail->parent=ui_tree->children->head;
+		}
 	*choice=!(*choice);// form 1 to 0 and 0 to 1
 	/* make move for relevant AI player*/
 	if (cur_game->is_multiplayer==3 && cur_game->cur_player==1){
@@ -490,6 +514,14 @@ int set_unpause(int *choice,SDL_Event* test_event){
 		cur_game->cur_player = (-1)*(cur_game->cur_player);
 		/*try to repaint GUI*/
 		error=draw_game();
+	}
+	else {
+		if (draw_ui_tree(ui_tree)<0)
+		{
+			printf("ERROR: drawing UI Tree Failed");
+			return -1;
+		}
+		SDL_Flip( (ui_tree->cntrl->srfc) );
 	}
 	if (error<0){
 		free(cur_game->board);

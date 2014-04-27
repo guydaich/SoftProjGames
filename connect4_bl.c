@@ -49,7 +49,7 @@ int is_board_full_C4(int* game_state)
 /* scoring function for C4, as detailed in peoject
 * in case of player 1 victory returns INT_MAX,
 * and in case of player 2 victory returns INT_MIN*/
-int get_state_score_C4(int* game_matrix,int player)
+int get_state_score_C4(int* game_matrix)
 {
 	int sizesOFLine[8] = { 0 };
 	int weightVector[6] = { -5, -2, -1, 1, 2, 5 };
@@ -60,10 +60,10 @@ int get_state_score_C4(int* game_matrix,int player)
 		for (j = 0; j < CONNECT4_COLS - 3; j++) {
 			lineScore = 0;
 			for (k = 0; k < 4; k++) {
-				if (game_matrix[(i)*CONNECT4_COLS + j + k] == HUMAN){
+				if (game_matrix[(i)*CONNECT4_COLS + j + k] == ENUM_PLAYER_1){
 					lineScore++;
 				}
-				else if (game_matrix[(i)*CONNECT4_COLS + j + k] == COMPUTER){
+				else if (game_matrix[(i)*CONNECT4_COLS + j + k] == ENUM_PLAYER_2){
 					lineScore--;
 				}
 			}
@@ -84,10 +84,10 @@ int get_state_score_C4(int* game_matrix,int player)
 		for (i = 0; i < CONNECT4_ROWS - 3; i++) {
 			lineScore = 0;
 			for (k = 0; k < 4; k++) {
-				if (game_matrix[(i + k)*CONNECT4_COLS + j] == HUMAN){
+				if (game_matrix[(i + k)*CONNECT4_COLS + j] == ENUM_PLAYER_1){
 					lineScore++;
 				}
-				else if (game_matrix[(i + k)*CONNECT4_COLS + j] == COMPUTER){
+				else if (game_matrix[(i + k)*CONNECT4_COLS + j] == ENUM_PLAYER_2){
 					lineScore--;
 				}
 			}
@@ -109,10 +109,10 @@ int get_state_score_C4(int* game_matrix,int player)
 			lineScore = 0;
 			if (((i + 3) < CONNECT4_ROWS) && ((j + 3) < CONNECT4_COLS)){
 				for (k = 0; k < 4; k++) {
-					if (game_matrix[(i + k)*CONNECT4_COLS + j + k] == HUMAN){
+					if (game_matrix[(i + k)*CONNECT4_COLS + j + k] == ENUM_PLAYER_1){
 						lineScore++;
 					}
-					else if (game_matrix[(i + k)*CONNECT4_COLS + j + k] == COMPUTER){
+					else if (game_matrix[(i + k)*CONNECT4_COLS + j + k] == ENUM_PLAYER_2){
 						lineScore--;
 					}
 				}
@@ -129,10 +129,10 @@ int get_state_score_C4(int* game_matrix,int player)
 			lineScore = 0;
 			if (((i - 3) > -1) && ((j + 3) < CONNECT4_COLS)){//diganals which go down and right
 				for (k = 0; k < 4; k++) {
-					if (game_matrix[(i - k)*CONNECT4_COLS + j + k] == HUMAN){
+					if (game_matrix[(i - k)*CONNECT4_COLS + j + k] == ENUM_PLAYER_1){
 						lineScore++;
 					}
-					else if (game_matrix[(i - k)*CONNECT4_COLS + j + k] == COMPUTER){
+					else if (game_matrix[(i - k)*CONNECT4_COLS + j + k] == ENUM_PLAYER_2){
 						lineScore--;
 					}
 				}
@@ -164,7 +164,7 @@ int get_state_score_C4(int* game_matrix,int player)
 
 /* allocates a copy of from, and and according to move_col, makes a move
  * returns null on failure, and a pointer to the new board otherwise */
-int * copy_and_make_move_C4(board_t from,int move_row, int move_col, int player) 
+int * copy_and_make_move_C4(board_t from, int move_col, int player) 
 {
 	int i, j;
 	int *new_board_ptr = // allocate new board
@@ -214,8 +214,8 @@ linked_list get_state_children_C4(int* matrix, int player,int *error)
 		return NULL;
 	}
 
-	if (get_state_score_C4(matrix,0) == INT_MAX ||
-		get_state_score_C4(matrix,0) == INT_MIN)		//if victory achieved stop building
+	if (get_state_score_C4(matrix) == INT_MAX ||
+		get_state_score_C4(matrix) == INT_MIN)		//if victory achieved stop building
 	{
 		return newList;
 	}
@@ -226,7 +226,7 @@ linked_list get_state_children_C4(int* matrix, int player,int *error)
 		{
 			continue;								// continue to next move
 		}
-		addChildError=add_to_children_list_C4( newList,matrix,0,move,child_player);
+		addChildError=add_to_children_list_C4( newList,matrix,move,child_player);
 		if(addChildError==-1){
 			break;
 		}
@@ -245,6 +245,7 @@ linked_list get_state_children_C4(int* matrix, int player,int *error)
 			free(run_elem->node);
 			free(run_elem);
 		}
+		free(newList);
 		*error=-1;
 		return NULL;
 	}
@@ -254,18 +255,18 @@ linked_list get_state_children_C4(int* matrix, int player,int *error)
 /* creates a minimax node and element for each child-state 
  * (game_state and move), and adds to list. 
  * 0 on success, on failure returns -1*/
-int add_to_children_list_C4(linked_list list, int* game_state, int row, int col, int player)
+int add_to_children_list_C4(linked_list list, int* game_state, int col, int player)
 {
 	int move=col;
 	int* moved;
 	element new_elem_mv;
 	vertex node_mv;
-	moved = copy_and_make_move_C4(game_state,0,move - 1, player);
+	moved = copy_and_make_move_C4(game_state,move - 1, player);
 	if (moved == NULL){
 		return -1;
 	}
 	// create new node
-	node_mv = make_node(move, moved, get_state_score_C4(moved,0));
+	node_mv = make_node(move, moved, get_state_score_C4(moved));
 	if (node_mv == NULL){
 		free(moved);
 		return -1;
@@ -307,7 +308,7 @@ int* get_difficulty_levels_C4(){
 /*for given board, if the game is over (full board or victory) return 1. else return 0*/
 int is_game_over_C4(int* game_state)
 {
-	int score=get_state_score_C4(game_state,0);
+	int score=get_state_score_C4(game_state);
 	if (is_board_full_C4(game_state) || score==INT_MAX || score==INT_MIN){
 		return 1;
 	}
@@ -317,7 +318,7 @@ int is_game_over_C4(int* game_state)
 /*for given board, if one of the players achived victory return 1. else return 0*/
 int is_victory_C4(int* game_state)
 {
-	int score=get_state_score_C4(game_state,0);
+	int score=get_state_score_C4(game_state);
 	if (score==INT_MAX ){
 		return 1;
 	}
