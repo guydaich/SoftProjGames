@@ -100,7 +100,7 @@ int save_game(int *choice,SDL_Event* test_event)
 	if(is_rewrite==1)
 	{
          //ask user if he want s to overwrite
-		userAnswer=question_window("This file already exist.\nDo you wish to overwrite?",USER_PROMPT);
+		userAnswer=question_window("This file already exist.\nDo you wish to overwrite?\n",USER_PROMPT);
 		if (userAnswer < 0)
 		{
 			printf("ERROR: failed to interact with user\n");
@@ -347,7 +347,10 @@ int  go_to_start_menu(int *choice,SDL_Event* test_event)
 	if(cur_game->is_multiplayer<0 || cur_game->is_multiplayer>4){
 		return -1;
 	}
-	if (cur_game->is_multiplayer==1 || cur_game->is_multiplayer==3){
+	if ((cur_game->is_multiplayer==1 || cur_game->is_multiplayer==3) && cur_game->cur_player==1){
+		*choice=1; /* pauses game on start*/
+	}
+	else if(cur_game->is_multiplayer==2 && cur_game->cur_player==-1){
 		*choice=1; /* pauses game on start*/
 	}
 
@@ -424,7 +427,7 @@ int load_game(int *choice,SDL_Event* test_event)
 	/*try loading from file*/
 	error=load_game_from_file(fileLocation,&whichGame,&gameBoard,&player);
 	if (error==-2){
-		error = question_window("the game is either corrupt or doesn't exist",USER_NOTIF);
+		error = question_window("the game is either corrupt or doesn't exist\n",USER_NOTIF);
 		if (error<0)
 		{
 			printf("ERROR: could not notify user of problem");
@@ -496,10 +499,12 @@ int set_unpause(int *choice,SDL_Event* test_event){
 	element_cntrl newTail=NULL;
 	if(cur_game->is_multiplayer!=1){
 		if (*choice==1){
-			newTail=ui_tree->children->head->children->tail->prev;
-			free_control_list(ui_tree->children->head->children->tail);
-			ui_tree->children->head->children->tail=newTail;
-			newTail->next=NULL;
+			if (strcmp(ui_tree->children->head->children->tail->cntrl->caption,QUIT)!=0){
+				newTail=ui_tree->children->head->children->tail->prev;
+				free_control_list(ui_tree->children->head->children->tail);
+				ui_tree->children->head->children->tail=newTail;
+				newTail->next=NULL;
+			}
 		}
 		else{
 			/*over-write a button with a new button, as rightest son*/
@@ -513,7 +518,7 @@ int set_unpause(int *choice,SDL_Event* test_event){
 	}
 	*choice=!(*choice);// form 1 to 0 and 0 to 1
 	/* make move for relevant AI player*/
-	if (cur_game->is_multiplayer==3 && cur_game->cur_player==1){
+	if (cur_game->is_multiplayer==3 && cur_game->cur_player==1 || cur_game->is_multiplayer==2 && cur_game->cur_player==-1){
 		if (cur_game->cur_player==1){
 			error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
 		}

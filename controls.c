@@ -475,7 +475,7 @@ void set_list_as_children(linked_list_cntrl list, element_cntrl elem)
 int draw_ui_tree(element_cntrl root)
 {
 	int ret_val = 0; 
-	draw_with_panel(root,root,&ret_val);
+	draw_with_panel(root,root);
 	if (ret_val < 0)
 	{
 		printf("ERROR: could not draw a UI-Tree\n");
@@ -584,7 +584,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->text_surface=NULL;
 	label->destination_rect=NULL;
 	label->is_grid=0;
-	if (img != NULL && strcmp(img,"") > 0)
+	if (img != NULL)
 	{
 		label->is_bg_img = 1;
 		label->is_bg_rect = 0;

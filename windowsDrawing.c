@@ -66,8 +66,8 @@ int get_default_ui_tree()
 	control* temp_control;
 	linked_list_cntrl list; 
 
-	char* captions[7] = {RESTART,SAVE,PAUSE,MAIN_MENU,DIFFP1,DIFFP2,QUIT};
-	int (*functions[7])(int* a, SDL_Event* b)  = {restart_game,go_to_save_menu,set_unpause,go_to_start_menu,go_to_difficulty_player1,go_to_difficulty_player2,quit_game};
+	char* captions[8] = {RESTART,SAVE,PAUSE,MAIN_MENU,DIFFP1,DIFFP2,QUIT,USPAUSE};
+	int (*functions[8])(int* a, SDL_Event* b)  = {restart_game,go_to_save_menu,set_unpause,go_to_start_menu,go_to_difficulty_player1,go_to_difficulty_player2,quit_game,set_unpause};
 	
 	root = new_control_element(new_window(0,0,GAME_AREA_H,GAME_AREA_W));
 	if (root==NULL){
@@ -132,7 +132,23 @@ int get_default_ui_tree()
 		return -1;
 		}
 	}
+	if ((cur_game->is_multiplayer==1 || cur_game->is_multiplayer==3) && cur_game->cur_player==1){
+		error=new_generic_button(list,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,captions[i],functions[i],0);
+		if (error<0){
+			free_control(root->cntrl);
+			free(root);
+			return -1;
+		}
+	}
+	else if(cur_game->is_multiplayer==2 && cur_game->cur_player==-1){
+		error=new_generic_button(list,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,captions[i],functions[i],0);
+		if (error<0){
+			free_control(root->cntrl);
+			free(root);
+			return -1;
+		}
 
+	}
 	/* set buttons as panel children*/
 	set_list_as_children(list,root->children->head);
 	ui_tree=root;
@@ -307,10 +323,12 @@ int draw_game ()
 		playerLabel_control = new_label(PLAYER_LABEL_X_OFFSET+PLAYER_LABEL_X_PADDING*i,PLAYER_LABEL_Y_OFFSET,
 			PLAYER_LABEL_W,PLAYER_LABEL_H,player_sources[i],255,0,255,1,player_captions[i]);
 		if (playerLabel_control==NULL){
+			free_control_list(game_panel);
 			return -1;
 		}
 		temp_elem = new_control_element(playerLabel_control);
 		if (temp_elem==NULL){
+			free_control_list(game_panel);
 			return -1;
 		}
 		temp_elem->parent=game_panel;
@@ -540,7 +558,7 @@ char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event
 		}
 		*pressed_button=set_player1_difficulty;
 		*number_choices=cur_game->difficulty_num;
-		transporter=(char *)DIFFICULTY;
+		transporter=(char *)DIFFICULTYP1;
 		captionArray=(char**)calloc(*number_choices,sizeof(char*));
 		if (captionArray==NULL){
 			return NULL;
@@ -552,7 +570,7 @@ char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event
 		}
 		*pressed_button=set_player2_difficulty;
 		*number_choices=cur_game->difficulty_num;
-		transporter=(char *)DIFFICULTY;
+		transporter=(char *)DIFFICULTYP2;
 		captionArray=(char**)calloc(*number_choices,sizeof(char*));
 		if (captionArray==NULL){
 			return NULL;
@@ -565,7 +583,7 @@ char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event
 				error =-1;
 				break;
 			}
-			sprintf(buttonName,"%s %d",captionArray[i],i);
+			sprintf(buttonName,"%s %d",captionArray[i],i+1);
 			captionArray[i]=buttonName;
 		}
 		if (error ==-1){

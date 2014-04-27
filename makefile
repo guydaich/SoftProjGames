@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -Wall
+CFLAGS=-g -Wall -lm -std=c99 -pedantic-errors
 INCS=-I/usr/include/SDL -Isdl-ttf-lib
 OBJS=game.o general_game.o tic_tac_toe_bl.o connect4_bl.o reversi_bl.o ttc_ui.o connect4_ui.o reversi_ui.o controls.o save_game.o minimax.o buttonActions.o windowsDrawing.o
 
@@ -9,7 +9,7 @@ clean:
 	-rm gameprong $(OBJS)
 
 gameprong: $(OBJS)
-	$(CC) -o gameprong $(OBJS) -lSDL -Lsdl-ttf-lib -lSDL_ttf
+	$(CC) -o gameprong $(OBJS) -lSDL -Lsdl-ttf-lib -lSDL_ttf $(CFLAGS)
 
 game.o:game.c game.h windowsDrawing.h
 	$(CC) $(CFLAGS) -c $*.c $(INCS)

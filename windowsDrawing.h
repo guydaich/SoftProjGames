@@ -34,8 +34,8 @@
 #define YES "yes"
 #define NO "no"
 #define OK "ok"
-#define P1 " Player 1"
-#define P2 " Player 2"
+#define P1 " Player 1\n"
+#define P2 " Player 2\n"
 #define P_COLORED "./gfx/coloredPlayer.bmp"
 #define P_EMPTY "./gfx/emptyPlayer.bmp"
 
