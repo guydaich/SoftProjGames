@@ -534,7 +534,7 @@ char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event
 		}
 		*pressed_button=set_player1_difficulty;
 		*number_choices=cur_game->difficulty_num;
-		transporter=(char *)DIFFICULTY;
+		transporter=(char *)DIFFICULTYP1;
 		captionArray=(char**)calloc(*number_choices,sizeof(char*));
 		if (captionArray==NULL){
 			return NULL;
@@ -546,7 +546,7 @@ char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event
 		}
 		*pressed_button=set_player2_difficulty;
 		*number_choices=cur_game->difficulty_num;
-		transporter=(char *)DIFFICULTY;
+		transporter=(char *)DIFFICULTYP2;
 		captionArray=(char**)calloc(*number_choices,sizeof(char*));
 		if (captionArray==NULL){
 			return NULL;
@@ -559,7 +559,7 @@ char** init_choice_window(int (**pressed_button)(int *quit,SDL_Event* test_event
 				error =-1;
 				break;
 			}
-			sprintf(buttonName,"%s %d",captionArray[i],i);
+			sprintf(buttonName,"%s %d",captionArray[i],i+1);
 			captionArray[i]=buttonName;
 		}
 		if (error ==-1){
