@@ -198,39 +198,9 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 	}
 	/*check if game ended*/
 	if ( cur_game->is_game_over( cur_game->board)){
-		/*if victory, highlight the victorious sequence
-		 * accoring to the victor*/
-		if (cur_game->is_victory( cur_game->board) == 1){
-			error=cur_game->victoryColor(cur_game->board,1,ui_tree);
-			if (error<0){
-				printf("ERROR: failed in victoryColor\n");
-				free(cur_game->board);
-				free(cur_game);
-				free_control_list(ui_tree);
-				return -1;
-			}
-		}
-		else if (cur_game->is_victory( cur_game->board) == -1){
-			error=cur_game->victoryColor(cur_game->board,-1,ui_tree);
-			if (error<0){
-				printf("ERROR: failed in victoryColor\n");
-				free(cur_game->board);
-				free(cur_game);
-				free_control_list(ui_tree);
-				return -1;
-			}
-		}
-		else //if tie, add to ui a tie-message
-		{
-			error=new_generic_button(ui_tree->children,300,480,"draw",restart_game,0);
-			if (error<0){
-				printf("ERROR: failed makeing a new button\n");
-				free(cur_game->board);
-				free(cur_game);
-				free_control_list(ui_tree);
-				return -1;
-			}
-			ui_tree->children->tail->parent=ui_tree;
+		error=add_ui_tree_victory();
+		if(error<0){
+			return -1;
 		}
 		/*repaint the ui*/
 		if (draw_ui_tree(ui_tree)<0)
@@ -526,6 +496,45 @@ int set_unpause(int *choice,SDL_Event* test_event){
 		free(cur_game);
 		free_control_list(ui_tree);
 		return -1;
+	}
+	return 0;
+}
+
+int add_ui_tree_victory(){
+	int error=0;
+	/*if victory, highlight the victorious sequence
+	 * accoring to the victor*/
+	if (cur_game->is_victory( cur_game->board) == 1){
+		error=cur_game->victoryColor(cur_game->board,1,ui_tree);
+		if (error<0){
+			printf("ERROR: failed in victoryColor\n");
+			free(cur_game->board);
+			free(cur_game);
+			free_control_list(ui_tree);
+			return -1;
+		}
+	}
+	else if (cur_game->is_victory( cur_game->board) == -1){
+		error=cur_game->victoryColor(cur_game->board,-1,ui_tree);
+		if (error<0){
+			printf("ERROR: failed in victoryColor\n");
+			free(cur_game->board);
+			free(cur_game);
+			free_control_list(ui_tree);
+			return -1;
+		}
+	}
+	else //if tie, add to ui a tie-message
+	{
+		error=new_generic_button(ui_tree->children,300,480,"draw",restart_game,0);
+		if (error<0){
+			printf("ERROR: failed makeing a new button\n");
+			free(cur_game->board);
+			free(cur_game);
+			free_control_list(ui_tree);
+			return -1;
+		}
+		ui_tree->children->tail->parent=ui_tree;
 	}
 	return 0;
 }

@@ -244,6 +244,9 @@ int game_init(user_selection_type selection_window_type)
 		free(cur_game);//checked for null before
 		return -1;
 	}
+	if(cur_game->is_game_over( cur_game->board)){
+		add_ui_tree_victory();
+	}
 	return 0;
 }
 
@@ -254,7 +257,7 @@ int draw_game ()
 	element_cntrl game_panel=NULL,temp_elem=NULL;
 	char *player_captions[2]={P1,P2};
 	char *player_sources[2];
-	int i=0;
+	int i=0,error=0;
 
 	clear_game_panel(ui_tree);
 	game_panel = (cur_game)->panel_function((cur_game)->board,handle_next_move);
@@ -288,6 +291,14 @@ int draw_game ()
 
 	add_control_element_to_list(ui_tree->children,game_panel);
 	game_panel->parent= ui_tree;
+
+	if ( cur_game->is_game_over( cur_game->board)){
+		error=add_ui_tree_victory();
+		if(error<0){
+			return -1;
+		}
+
+	}
 	if (draw_ui_tree(ui_tree)<0)
 	{
 		printf("ERROR: drawing UI Tree Failed");

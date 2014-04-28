@@ -5,7 +5,7 @@
 #include "general_game.h"
 
 #define SAVE_FILE_PREFIX		"./save_file_"
-#define SAVE_FILE_SUFFIX		".txt"
+#define SAVE_FILE_SUFFIX		".in"
 #define SAVE_FILE_MAX_DIGITS	1
 
 #define BTN_X_OFFSET 35
@@ -22,6 +22,7 @@ int  quit_game(int *choice,SDL_Event* test_event);
 
 /* game button handlers */
 int  handle_next_move(int *choice,SDL_Event* test_event);
+int  add_ui_tree_victory();
 int  restart_game(int *choice,SDL_Event* test_event);
 int  go_to_save_menu(int *choice,SDL_Event* test_event);
 int  set_unpause(int *choice,SDL_Event* test_event);
