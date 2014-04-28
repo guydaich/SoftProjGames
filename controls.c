@@ -5,10 +5,6 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
-#define MAX_CAPTION_LINES 25
-#define FONT_SIZE 16
-#define GENERIC_BTN_PATH "./gfx/generic_button.bmp"
-#define GAME_WINDOW_NAME "gamesprog"
 
 /*creates a rectangle, according to control size, position and panel boundaries*/
 void get_rect(SDL_Rect *rect_dest, control *cntrl, control *parent_panel)
@@ -533,7 +529,9 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	label->x = x;
 	label->y = y;
 	label->w = w;
-	label->h = h;	
+	label->h = h;
+	label->offsetx=0;
+	label->offsety=0;	
 	label->is_transparant = is_trans;
 	label->R = R;
 	label->B = B;
@@ -604,6 +602,8 @@ control* new_button(int x, int y, char *img, int is_trans ,char *caption, int is
 	button->y = y;
 	button->w = 0;
 	button->h = 0;	
+	button->offsetx=0;
+	button->offsety=0;
 	button->is_transparant = is_trans;
 	button->R = 0;
 	button->B = 0;
@@ -621,6 +621,7 @@ control* new_button(int x, int y, char *img, int is_trans ,char *caption, int is
 	button->is_bg_img =1;
 	button->is_bg_rect =0;
 	button->multitext=NULL;
+	button->num_texts=0;
 
 	return button;
 }
@@ -647,6 +648,8 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G, int is_bg_re
 	panel->y = y;
 	panel->h = h;
 	panel->w = w;
+	panel->offsetx=0;
+	panel->offsety=0;
 	panel->R = R;
 	panel->B = B;
 	panel->G = G;
@@ -663,6 +666,7 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G, int is_bg_re
 	panel->is_bg_img =0;
 	panel->is_bg_rect=is_bg_rect;
 	panel->multitext=NULL;
+	panel->num_texts=0;
 
 	return panel;
 }
@@ -688,6 +692,8 @@ control* new_window(int x, int y, int w, int h)
 	window->y = y;
 	window->h = h;
 	window->w = w;
+	window->offsetx=0;
+	window->offsety=0;
 	window->draw = draw_window;// drawing funct
 	window->ownSurface=NULL;
 	window->caption=NULL;
@@ -700,6 +706,8 @@ control* new_window(int x, int y, int w, int h)
 	window->is_bg_img =0;
 	window->is_bg_rect =0;
 	window->multitext=NULL;
+	window->num_texts=0;
+
 
 	return window;
 }

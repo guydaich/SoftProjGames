@@ -7,13 +7,6 @@
 #include "buttonActions.h"
 #include "windowsDrawing.h"
 
-#define BTN_X_OFFSET 25
-#define BTN_Y_OFFSET 20
-#define BTN_H 100
-#define PADDING 10
-#define OVER_WRITE_MSG "This file already exist.\nDo you wish to overwrite?\n"
-#define SAVE_GAME_ERROR_MSG "the game is either corrupt or doesn't exist\n"
-
 extern int quit;
 extern game* cur_game;
 extern element_cntrl ui_tree;

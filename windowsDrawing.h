@@ -43,10 +43,6 @@
 #define GAME_AREA_H				1000
 #define GAME_PANEL_W			300
 #define GAME_PANEL_H			1000
-#define BTN_X_OFFSET			25
-#define BTN_Y_OFFSET			20
-#define BTN_H					100
-#define PADDING					10
 #define PLAYER_LABEL_X_OFFSET	160
 #define PLAYER_LABEL_X_PADDING	300
 #define PLAYER_LABEL_Y_OFFSET	2

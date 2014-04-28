@@ -6,10 +6,10 @@ OBJS=game.o general_game.o tic_tac_toe_bl.o connect4_bl.o reversi_bl.o ttc_ui.o 
 all: gameprog
 
 clean:
-	-rm gameprong $(OBJS)
+	-rm gameprog $(OBJS)
 
-gameprong: $(OBJS)
-	$(CC) -o gameprong $(OBJS) -lSDL -Lsdl-ttf-lib -lSDL_ttf $(CFLAGS)
+gameprog: $(OBJS)
+	$(CC) -o gameprog $(OBJS) -lSDL -Lsdl-ttf-lib -lSDL_ttf $(CFLAGS)
 
 game.o:game.c game.h windowsDrawing.h
 	$(CC) $(CFLAGS) -c $*.c $(INCS)

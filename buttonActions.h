@@ -8,6 +8,13 @@
 #define SAVE_FILE_SUFFIX		".txt"
 #define SAVE_FILE_MAX_DIGITS	1
 
+#define BTN_X_OFFSET 35
+#define BTN_Y_OFFSET 20
+#define BTN_H 90
+#define PADDING 10
+#define OVER_WRITE_MSG "This file already exist.\nDo you wish to overwrite?\n"
+#define SAVE_GAME_ERROR_MSG "the game is either corrupt or doesn't exist\n"
+
 /* main menu handlers */
 int  go_to_game_selection(int *choice,SDL_Event* test_event);
 int  go_to_load_menu(int *choice,SDL_Event* test_event);

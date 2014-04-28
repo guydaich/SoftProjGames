@@ -9,9 +9,9 @@ element_cntrl ui_tree=NULL;
 int get_default_ui_tree()
 {
 	int error=0, i=0;
-	element_cntrl root;
-	control* temp_control;
-	linked_list_cntrl list; 
+	element_cntrl root=NULL;
+	control* temp_control=NULL;
+	linked_list_cntrl list=NULL; 
 
 	char* captions[8] = {RESTART,SAVE,PAUSE,MAIN_MENU,DIFFP1,DIFFP2,QUIT,USPAUSE};
 	int (*functions[8])(int* a, SDL_Event* b)  = {restart_game,go_to_save_menu,set_unpause,go_to_start_menu,go_to_difficulty_player1,go_to_difficulty_player2,quit_game,set_unpause};

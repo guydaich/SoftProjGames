@@ -14,6 +14,11 @@
 #define MAGNETAG 0
 #define MAGNETAB 255
 
+#define MAX_CAPTION_LINES 25
+#define FONT_SIZE 16
+#define GENERIC_BTN_PATH "./gfx/generic_button.bmp"
+#define GAME_WINDOW_NAME "gamesprog"
+
 /* Data structres - control abstract class, and control linked list*/
 
 /* generic control struct */
