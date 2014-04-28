@@ -11,7 +11,8 @@
 #define BTN_Y_OFFSET 20
 #define BTN_H 100
 #define PADDING 10
-
+#define OVER_WRITE_MSG "This file already exist.\nDo you wish to overwrite?\n"
+#define SAVE_GAME_ERROR_MSG "the game is either corrupt or doesn't exist\n"
 
 extern int quit;
 extern game* cur_game;
@@ -35,7 +36,7 @@ int restart_game(int *choice,SDL_Event* test_event)
 		if (strcmp(ui_tree->children->head->children->tail->cntrl->caption,QUIT)==0){
 			error=new_generic_button(ui_tree->children->head->children,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,USPAUSE,set_unpause,0);
 			if (error<0){
-				printf("ERROR: cannot replace pause-unpause buttons");
+				printf("ERROR: cannot replace pause-unpause buttons\n");
 				return -1;
 			}
 			ui_tree->children->head->children->tail->parent=ui_tree->children->head;
@@ -80,14 +81,14 @@ int save_game(int *choice,SDL_Event* test_event)
 	file_length = strlen(SAVE_FILE_PREFIX) + strlen(SAVE_FILE_SUFFIX) + SAVE_FILE_MAX_DIGITS;
 	if (file_length <= 0 )
 	{
-		printf("ERROR: illegal save file path");
+		printf("ERROR: illegal save file path\n");
 		return -1; 
 	}
 	
 	fileLocation=(char *)malloc(file_length);
 	if (fileLocation == NULL)
 	{
-		printf("ERROR: standart function malloc has failed");
+		printf("ERROR: standart function malloc has failed\n");
 		return -1; 
 	}
 	sprintf(fileLocation,"%s%d%s",SAVE_FILE_PREFIX,*choice,SAVE_FILE_SUFFIX);
@@ -98,7 +99,7 @@ int save_game(int *choice,SDL_Event* test_event)
 	if(is_rewrite==1)
 	{
          //ask user if he want s to overwrite
-		userAnswer=question_window("This file already exist.\nDo you wish to overwrite?\n",USER_PROMPT);
+		userAnswer=question_window(OVER_WRITE_MSG,USER_PROMPT);
 		if (userAnswer < 0)
 		{
 			printf("ERROR: failed to interact with user\n");
@@ -111,7 +112,7 @@ int save_game(int *choice,SDL_Event* test_event)
 						cur_game->cols,cur_game->rows,(cur_game->get_name()));
 			/*impossible to overwrtie*/
 			if(error<0){
-				printf("failed to write to file after asking\n");
+				printf("ERROR: failed to write to file after asking\n");
 				free(fileLocation);
 				return -1;
 			}
@@ -121,7 +122,7 @@ int save_game(int *choice,SDL_Event* test_event)
 	/* makes next move on board, according to current game,
  	* types of players. returns -1 on failure.*/
 	else if(is_rewrite<0){
-		printf("failed to write to file\n");
+		printf("ERROR: failed to write to file\n");
 		free(fileLocation);
 		return -1;
 	}
@@ -209,7 +210,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 		if (cur_game->is_victory( cur_game->board) == 1){
 			error=cur_game->victoryColor(cur_game->board,1,ui_tree);
 			if (error<0){
-				printf("failed in victoryColor\n");
+				printf("ERROR: failed in victoryColor\n");
 				free(cur_game->board);
 				free(cur_game);
 				free_control_list(ui_tree);
@@ -219,7 +220,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 		else if (cur_game->is_victory( cur_game->board) == -1){
 			error=cur_game->victoryColor(cur_game->board,-1,ui_tree);
 			if (error<0){
-				printf("failed in victoryColor\n");
+				printf("ERROR: failed in victoryColor\n");
 				free(cur_game->board);
 				free(cur_game);
 				free_control_list(ui_tree);
@@ -230,7 +231,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 		{
 			error=new_generic_button(ui_tree->children,300,480,"draw",restart_game,0);
 			if (error<0){
-				printf("failed in makeing draw button\n");
+				printf("ERROR: failed makeing a new button\n");
 				free(cur_game->board);
 				free(cur_game);
 				free_control_list(ui_tree);
@@ -241,7 +242,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 		/*repaint the ui*/
 		if (draw_ui_tree(ui_tree)<0)
 		{
-			printf("ERROR: cannot draw UI tree");
+			printf("ERROR: cannot draw UI tree\n");
 			return -1;
 		}
 		SDL_Flip(ui_tree->cntrl->srfc);
@@ -313,7 +314,7 @@ int  go_to_start_menu(int *choice,SDL_Event* test_event)
 	int error=0;
 	error=run_window(SELECT_MAIN_MENU);
 	if(error<0 || (cur_game==NULL && quit!=1)){
-		printf("ERORR: could not move to new window");
+		printf("ERORR: could not move to new window\n");
 		return -1;
 	}
 	else if (quit==1){
@@ -331,6 +332,7 @@ int  go_to_start_menu(int *choice,SDL_Event* test_event)
 	if(error<0){
 		return -1;
 	}
+	/* is_multiplayer determines the type of players*/
 	if(cur_game->is_multiplayer<0 || cur_game->is_multiplayer>4){
 		return -1;
 	}
@@ -399,14 +401,14 @@ int load_game(int *choice,SDL_Event* test_event)
 	file_length = strlen(SAVE_FILE_PREFIX) + strlen(SAVE_FILE_SUFFIX) + SAVE_FILE_MAX_DIGITS;
 	if (file_length <= 0 )
 	{
-		printf("ERROR: illegal save file path");
+		printf("ERROR: illegal save file path\n");
 		return -1; 
 	}
 	
 	fileLocation=(char *)malloc(file_length);
 	if (fileLocation == NULL)
 	{
-		printf("ERROR: standart function malloc has failed");
+		printf("ERROR: standart function malloc has failed\n");
 		return -1; 
 	}
 	sprintf(fileLocation,"%s%d%s",SAVE_FILE_PREFIX,*choice,SAVE_FILE_SUFFIX);
@@ -414,10 +416,10 @@ int load_game(int *choice,SDL_Event* test_event)
 	/*try loading from file*/
 	error=load_game_from_file(fileLocation,&whichGame,&gameBoard,&player);
 	if (error==-2){
-		error = question_window("the game is either corrupt or doesn't exist\n",USER_NOTIF);
+		error = question_window(SAVE_GAME_ERROR_MSG,USER_NOTIF);
 		if (error<0)
 		{
-			printf("ERROR: could not notify user of problem");
+			printf("ERROR: could not notify user of problem\n");
 			return -1;
 		}
 		/* resume program */
@@ -494,7 +496,7 @@ int set_unpause(int *choice,SDL_Event* test_event){
 			/*over-write a button with a new button, as rightest son*/
 			error=new_generic_button(ui_tree->children->head->children,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,USPAUSE,set_unpause,0);
 			if (error<0){
-				printf("ERROR: cannot replace pause-unpause buttons");
+				printf("ERROR: cannot replace pause-unpause buttons\n");
 				return -1;
 			}
 			ui_tree->children->head->children->tail->parent=ui_tree->children->head;
@@ -510,7 +512,7 @@ int set_unpause(int *choice,SDL_Event* test_event){
 			error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
 		}
 		if (error<0){
-			printf("ERROR: could not make move after unpause");
+			printf("ERROR: could not make move after unpause\n");
 			return -1;
 		}
 		/*switch players*/
@@ -521,7 +523,7 @@ int set_unpause(int *choice,SDL_Event* test_event){
 	else {
 		if (draw_ui_tree(ui_tree)<0)
 		{
-			printf("ERROR: drawing UI Tree Failed");
+			printf("ERROR: drawing UI Tree Failed\n");
 			return -1;
 		}
 		SDL_Flip( (ui_tree->cntrl->srfc) );
