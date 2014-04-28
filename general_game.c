@@ -11,10 +11,18 @@ extern int quit;
 extern game* cur_game;
 extern element_cntrl ui_tree;
 
+#define MSG_END_DRAW "Game Draw!"
+
 /* inits a new game */
 game* new_game(whichGame game_id)
 {
-	game *new_game_obj = (game*)malloc(sizeof(game));  //TODO check new_game_obj!=NULL
+	game *new_game_obj = (game*)malloc(sizeof(game));
+	if (new_game_obj == NULL)
+	{
+		printf("ERROR: standart function malloc has failed\n");
+		return NULL;
+	}
+
 	/*assign game specific pointers, constants, etc.*/
 	switch (game_id)
 	{
@@ -75,7 +83,7 @@ game* new_game(whichGame game_id)
 	new_game_obj->board = new_game_obj->get_initial_state();
 	if (new_game_obj->board == NULL)
 	{
-		printf("ERROR: could not get initial game board");
+		printf("ERROR: could not get initial game board\n");
 		return NULL;
 	}
 	//init with imposable values in order not to double init the game.
@@ -98,14 +106,14 @@ int handelAI_VS_AI(int *pause){
 	if ((cur_game)->cur_player==1){
 		error=cur_game->handle_computer_move(cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
 		if (error<0){
-			printf("failed in handle_computer_move\n");
+			printf("ERROR: failed in handle_computer_move\n");
 			return -1;
 		}
 	}
 	else {
 		error=cur_game->handle_computer_move(cur_game->board,cur_game->difficultyP2,cur_game->cur_player);
 		if (error<0){
-			printf("failed in handle_computer_move\n");
+			printf("ERROR: failed in handle_computer_move\n");
 			return -1;
 		}
 	}
@@ -118,22 +126,22 @@ int handelAI_VS_AI(int *pause){
 		if (cur_game->is_victory( cur_game->board) == 1){
 			error=cur_game->victoryColor(cur_game->board,1,ui_tree);
 			if (error<0){
-				printf("failed in victoryColor\n");
+				printf("ERROR: failed in victoryColor\n");
 				return -1;
 			}
 		}
 		else if (cur_game->is_victory( cur_game->board) == -1){
 			error=cur_game->victoryColor(cur_game->board,-1,ui_tree);
 			if (error<0){
-				printf("failed in victoryColor\n");
+				printf("ERROR: failed in victoryColor\n");
 				return -1;
 			}
 		}
 		else
 		{
-			error=new_generic_button(ui_tree->children,300,480,"draw",restart_game,0);
+			error=new_generic_button(ui_tree->children,300,480,MSG_END_DRAW,restart_game,0);
 			if (error<0){
-				printf("failed in makeing draw button\n");
+				printf("ERROR: failed in makeing draw button\n");
 				return -1;
 			}
 			ui_tree->children->tail->parent=ui_tree;
