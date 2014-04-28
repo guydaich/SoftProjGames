@@ -5,11 +5,6 @@
 
 #include "minimax.h"
 
-vertex mainRoot=NULL;
-int boardCount=0;
-int numOfElemmalList=0;
-int numOfNodemal=0;
-int numE=0;
 
 /* ---- Interface functions ---- */
 
@@ -105,7 +100,6 @@ vertex build_tree(int * game_matrix, int player,linked_list (*create_children)(i
 vertex make_node(int move, int *game_mtx_ptr, int score)
 {
 	vertex new_node = (vertex)malloc(sizeof(struct  vertex_s));
-	numOfNodemal++;
 	if (new_node==NULL){
 		perror("Error: standard function malloc has failed");
 		return NULL;
@@ -123,7 +117,6 @@ linked_list new_list()
 	/* allocate memory for new list */
 	linked_list new_list = 
 		(linked_list)malloc(sizeof(struct  linked_list_s));	
-	numOfElemmalList++;
 	
 	/* handle standart function error */
 	if (new_list == NULL)
@@ -141,7 +134,6 @@ element new_element()
 {
 	/* allocate memory for new element */
 	element new_elem = (element)malloc(sizeof(struct  element_s));
-	numE++;
 	
 	/* handle standart function error */
 	if (new_elem == NULL)
@@ -167,14 +159,11 @@ void remove_tree(vertex root, int is_root,int recursivly)
 			deleteList(root->edges->head,1,recursivly);
 	}
 	free(root->edges);
-	numOfElemmalList--;
 	}
 	if (is_root==0){
 		free(root->game_state);
-		boardCount--;
 	}
 	free(root);
-	numOfNodemal--;
 }
 
 /* deletes list */
@@ -187,7 +176,6 @@ void deleteList(element head,int is_nodes,int recursivly){
 		remove_tree(head->node,0,recursivly);
 	}
 	free(head);
-	numE--;
 }
 
 /* assumes Node, has children. this function handles 

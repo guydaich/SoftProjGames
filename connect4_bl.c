@@ -175,8 +175,6 @@ int * copy_and_make_move_C4(board_t from, int move_col, int player)
 		return NULL;
 	}
 
-	boardCount++;
-
 	for (i = 0; i < CONNECT4_ROWS; i++)		// copy board
 	{
 		for (j = 0; j < CONNECT4_COLS; j++)

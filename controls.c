@@ -7,13 +7,6 @@
 
 #define MAX_CAPTION_LINES 25
 
-int controlElementNum=0;
-int buttomNum=0;
-int labelNum=0;
-int panelNum=0;
-int windowNum=0;
-int surfaceNum=0;
-
 
 /*creates a rectangle, according to control size, position and panel boundaries*/
 void get_rect(SDL_Rect *rect_dest, control *cntrl, control *parent_panel)
@@ -375,7 +368,6 @@ element_cntrl new_control_element(control* cntrl)
 		return NULL;
 	}
 
-	controlElementNum++;
 	elem->cntrl = cntrl;
 	elem->next=NULL;
 	elem->prev=NULL;
@@ -475,7 +467,7 @@ void set_list_as_children(linked_list_cntrl list, element_cntrl elem)
 int draw_ui_tree(element_cntrl root)
 {
 	int ret_val = 0; 
-	draw_with_panel(root,root);
+	ret_val=draw_with_panel(root,root);
 	if (ret_val < 0)
 	{
 		printf("ERROR: could not draw a UI-Tree\n");
@@ -551,7 +543,6 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 		printf("ERROR: standard function malloc has failed");
 		return NULL;
 	}
-	labelNum++;
 	label->is_button = 0;
 	label->is_label = 1;
 	label->is_panel = 0;
@@ -608,6 +599,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	{
 		label->multitext[i] = (SDL_Surface*)NULL;
 	}
+	label->num_texts=0;
 
 	return label;
 }
@@ -621,7 +613,6 @@ control* new_button(int x, int y, char *img, int is_trans ,char *caption, int is
 		printf("ERROR: standard function malloc has failed");
 		return NULL;
 	}
-	buttomNum++;
 	button->is_button = 1;
 	button->is_label = 0;
 	button->is_panel = 0;
@@ -665,7 +656,6 @@ control* new_panel(int x, int y, int w, int h, int R, int B, int G, int is_bg_re
 		printf("ERROR: standard function malloc has failed");
 		return NULL;
 	}
-	panelNum++;
 	panel->is_button = 0;
 	panel->is_label = 0;
 	panel->is_panel = 1;
@@ -707,7 +697,6 @@ control* new_window(int x, int y, int w, int h)
 		printf("ERROR: standard function malloc has failed");
 		return NULL;
 	}
-	windowNum++;
 	window->is_button = 0;
 	window->is_label = 0;
 	window->is_panel = 0;
@@ -823,8 +812,7 @@ int draw_window(control* window, control *container)
 	
 	window->srfc = surface; 
 	window->ownSurface  = surface; 
-
-	surfaceNum++;//every time we blit a window we must make a new surface
+	//every time we blit a window we must make a new surface
 	window->x = 0;//
 	window->y = 0; 
 	window->offsetx = 0; 
@@ -952,7 +940,6 @@ void clear_game_panel(element_cntrl ui_tree)
 void free_control_list(element_cntrl node)
 {
 	element_cntrl cur_elem=NULL,next_elem=NULL;
-	int i=0;
 
 	if (node == NULL){
 		return;
@@ -968,57 +955,9 @@ void free_control_list(element_cntrl node)
 		free(node->children);
 	}
 
-	//free SDL surface associated with control
-	if (node->cntrl->ownSurface != NULL){
-		SDL_FreeSurface(node->cntrl->ownSurface);
-	}
-	node->cntrl->ownSurface = NULL;//just in case
-	if (node->cntrl->text_surface != NULL){
-		SDL_FreeSurface(node->cntrl->text_surface);
-	}
-
-	if (node->cntrl->destination_rect != NULL){
-		free(node->cntrl->destination_rect);
-	}
-
-	/*frees up texts*/
-	if (node->cntrl->multitext != NULL){
-		for (i=0; i<node->cntrl->num_texts; i++)
-		{
-			if (node->cntrl->multitext[i] != NULL)
-				SDL_FreeSurface(node->cntrl->multitext[i]);
-		}
-		free(node->cntrl->multitext);
-	}
-
-
-	if (node->cntrl->is_button==1)
-	{
-		buttomNum--;
-	}
-	if (node->cntrl->is_label==1)
-	{
-		labelNum--;
-	}
-	if (node->cntrl->is_panel==1)
-	{
-		panelNum--;
-	}
-	if (node->cntrl->is_window==1)
-	{
-		windowNum--;
-	}
-	
-	//free node caption
-	if (node->cntrl->caption != NULL)
-	{
-		free(node->cntrl->caption);
-	}
 	//free control and node
-	free(node->cntrl);
+	free_control(node->cntrl);
 	free(node);
-
-	controlElementNum--;
 
 }
 
@@ -1030,6 +969,7 @@ int empty_click_handle(int *choice,SDL_Event* test_event)
 
 void free_control(control *cntrl)
 {
+	int i=0;
 	//free SDL surface associated with control
 	if (cntrl->ownSurface != NULL){
 		SDL_FreeSurface(cntrl->ownSurface);
@@ -1043,6 +983,16 @@ void free_control(control *cntrl)
 		free(cntrl->destination_rect);
 	}
 
+	/*frees up texts*/
+	if (cntrl->multitext != NULL){
+		for (i=0; i<cntrl->num_texts; i++)
+		{
+			if (cntrl->multitext[i] != NULL)
+				SDL_FreeSurface(cntrl->multitext[i]);
+		}
+		free(cntrl->multitext);
+	}
+
 	//free node caption
 	if (cntrl->caption != NULL)
 	{
@@ -1054,7 +1004,7 @@ void free_control(control *cntrl)
 /*a function which creates a button with generic_button.bmp and addes it to the list*/
 int new_generic_button(linked_list_cntrl parent_element_list,int x,int y,char* caption,int (*pressed_button)(int *choice,SDL_Event* test_event),int button_choice){
 	control* temp_control;
-	int error;
+	int error=0;
 	char *caption_cpy;
 
 	//in order to free caption freely

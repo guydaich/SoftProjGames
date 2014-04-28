@@ -1,7 +1,5 @@
 # include "ttc_ui.h"
 
-extern int buttomNum;
-
 element_cntrl ttc_panel_function(int* game_state,int  (*handle_next_move)(int *quit,SDL_Event* test_event))
 { 
 	control *ttc_grid=NULL;

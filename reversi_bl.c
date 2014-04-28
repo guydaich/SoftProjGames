@@ -168,7 +168,6 @@ int* rv_copy_and_make_move(int* game_state, int move_row, int move_col, int play
 	int i=0,j=0;
 	//assign new board
 	int* copied_state = (int*)calloc(REVERSI_ROWS * REVERSI_COLS, sizeof(int));
-	boardCount++;
 	if (copied_state==NULL){
 		return NULL;
 	}

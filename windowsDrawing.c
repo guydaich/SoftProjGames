@@ -138,7 +138,6 @@ int run_window(user_selection_type selection_window_type){
 			if (cur_game!=NULL){
 				free(cur_game->board);
 				free(cur_game);
-				gameNum--;
 			}
 			return -1;
 		}
@@ -155,7 +154,6 @@ int run_window(user_selection_type selection_window_type){
 			if (cur_game!=NULL){
 				free(cur_game->board);
 				free(cur_game);
-				gameNum--;
 				cur_game=NULL;
 			}
 			return -1;
@@ -165,7 +163,6 @@ int run_window(user_selection_type selection_window_type){
 			if (cur_game!=NULL){
 				free(cur_game->board);
 				free(cur_game);
-				gameNum--;
 				cur_game=NULL;
 			}
 			return -1;
@@ -205,7 +202,6 @@ int run_window(user_selection_type selection_window_type){
 				if (cur_game!=NULL){
 					free(cur_game->board);
 					free(cur_game);
-					gameNum--;
 					cur_game=NULL;
 				}
 				return -1;
@@ -251,7 +247,6 @@ int game_init(user_selection_type selection_window_type)
 		ui_tree=NULL;
 		free(cur_game->board);
 		free(cur_game);//checked for null before
-		gameNum--;
 		return -1;
 	}
 	return 0;

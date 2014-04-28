@@ -7,8 +7,6 @@
 #include "general_game.h"
 #include "windowsDrawing.h"
 
-extern int gameNum;
-
 extern int quit;
 extern game* cur_game;
 extern element_cntrl ui_tree;
@@ -17,7 +15,6 @@ extern element_cntrl ui_tree;
 game* new_game(whichGame game_id)
 {
 	game *new_game_obj = (game*)malloc(sizeof(game));  //TODO check new_game_obj!=NULL
-	gameNum++;
 	/*assign game specific pointers, constants, etc.*/
 	switch (game_id)
 	{

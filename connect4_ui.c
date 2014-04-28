@@ -2,7 +2,6 @@
 /* supplies the game's panel function, as well as a victory marking */
 #include "connect4_ui.h"
 
-extern int buttomNum;
 
 /* given a game state, and the game board's on-click handler
    the function creates the entire UI tree, and returns it. 
@@ -313,7 +312,6 @@ int c4_set_victory_control(int i,int j,element_cntrl game_panel,int player)
 	if (player==1){
 		// free previous control
 		free_control(c4_button->cntrl); 
-		buttomNum--;
 
 		c4_button->cntrl=new_button(c4_button->cntrl->x,
 			c4_button->cntrl->y,C4_BTN_RED_VICTORY_PATH,1,NULL,0);
@@ -325,7 +323,6 @@ int c4_set_victory_control(int i,int j,element_cntrl game_panel,int player)
 	else {
 		// free previous control
 		free_control(c4_button->cntrl); 
-		buttomNum--;
 
 		c4_button->cntrl=new_button(c4_button->cntrl->x,
 			c4_button->cntrl->y,C4_BTN_BLUE_VICTORY_PATH,1,NULL,0);

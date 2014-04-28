@@ -35,7 +35,6 @@ int* ttc_copy_and_make_move(int* game_state, int move_row, int move_col, int pla
 {
 	int i=0,j=0;
 	int* copied_state = (int*)calloc(TIC_TAC_TOE_ROWS * TIC_TAC_TOE_COLS, sizeof(int));
-	boardCount++;
 	if (copied_state==NULL){
 		printf("failed to make board(calloc) in ttc_copy_and_make_move\n");
 		return NULL;

@@ -40,7 +40,6 @@ int main( int argc, char* args[] )
 			{
 				free(cur_game->board);
 				free(cur_game);
-				gameNum--;
 			}
 		}
 		TTF_Quit();
@@ -81,7 +80,6 @@ int main( int argc, char* args[] )
 					{
 						free(cur_game->board);
 						free(cur_game);
-						gameNum--;
 				}
 				TTF_Quit();
 				SDL_Quit();
@@ -95,7 +93,6 @@ int main( int argc, char* args[] )
 	{
 		free(cur_game->board);
 		free(cur_game);
-		gameNum--;
 	}
 	TTF_Quit();
 	SDL_Quit();

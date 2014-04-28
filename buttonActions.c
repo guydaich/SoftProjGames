@@ -13,8 +13,6 @@
 #define PADDING 10
 
 
-int gameNum=0;
-
 extern int quit;
 extern game* cur_game;
 extern element_cntrl ui_tree;
@@ -150,7 +148,6 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 		printf("ERROR: failed in handle_mouse_button_down\n");
 		free(cur_game->board);
 		free(cur_game);
-		gameNum--;
 		free_control_list(ui_tree);
 		return -1;
 	}
@@ -162,7 +159,6 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 			printf("ERROR: failed in draw_game\n");
 			free(cur_game->board);
 			free(cur_game);
-			gameNum--;
 			free_control_list(ui_tree);
 			return -1;
 		}
@@ -179,7 +175,6 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 					printf("ERROR: failed in handle_computer_move\n");
 					free(cur_game->board);
 					free(cur_game);
-					gameNum--;
 					free_control_list(ui_tree);
 					return -1;
 				}
@@ -190,7 +185,6 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 					printf("ERROR: failed in handle_computer_move\n");
 					free(cur_game->board);
 					free(cur_game);
-					gameNum--;
 					free_control_list(ui_tree);
 					return -1;
 				}
@@ -205,7 +199,6 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 		printf("ERROR: failed in draw_game\n");
 		free(cur_game->board);
 		free(cur_game);
-		gameNum--;
 		free_control_list(ui_tree);
 		return -1;
 	}
@@ -219,7 +212,6 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 				printf("failed in victoryColor\n");
 				free(cur_game->board);
 				free(cur_game);
-				gameNum--;
 				free_control_list(ui_tree);
 				return -1;
 			}
@@ -230,7 +222,6 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 				printf("failed in victoryColor\n");
 				free(cur_game->board);
 				free(cur_game);
-				gameNum--;
 				free_control_list(ui_tree);
 				return -1;
 			}
@@ -242,7 +233,6 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 				printf("failed in makeing draw button\n");
 				free(cur_game->board);
 				free(cur_game);
-				gameNum--;
 				free_control_list(ui_tree);
 				return -1;
 			}
@@ -293,7 +283,6 @@ int  set_current_game(int *choice,SDL_Event* test_event)
 	if (cur_game!=NULL){
 		free(cur_game->board);
 		free(cur_game);
-		gameNum--;
 	}
 	/* assign new game */
 	cur_game=new_game(*choice);
@@ -310,8 +299,7 @@ int  set_current_game(int *choice,SDL_Event* test_event)
 /* move to load game window*/
 int  go_to_load_menu(int *choice,SDL_Event* test_event)
 {
-	int error;
-	//free_control_list(ui_tree);
+	int error=0;
 	error=run_window(LOAD_GAME);
 	if(error<0){
 		return -1;
@@ -322,8 +310,7 @@ int  go_to_load_menu(int *choice,SDL_Event* test_event)
 /*move to the first start window*/
 int  go_to_start_menu(int *choice,SDL_Event* test_event)
 {
-	int error;
-	//free_control_list(ui_tree);
+	int error=0;
 	error=run_window(SELECT_MAIN_MENU);
 	if(error<0 || (cur_game==NULL && quit!=1)){
 		printf("ERORR: could not move to new window");
@@ -461,7 +448,6 @@ int load_game(int *choice,SDL_Event* test_event)
 int go_to_save_menu(int *choice,SDL_Event* test_event)
 {
 	int error=0;
-	//free_control_list(ui_tree);
 	error=game_init(SAVE_GAME);
 	if (error<0){
 		return -1;
@@ -473,7 +459,6 @@ int go_to_save_menu(int *choice,SDL_Event* test_event)
 int go_to_difficulty_player1(int *choice,SDL_Event* test_event)
 {
 	int error=0;
-	//free_control_list(ui_tree);
 	error=game_init(SET_DIFF_PLAYER1);
 	if (error<0){
 		return -1;
@@ -485,7 +470,6 @@ int go_to_difficulty_player1(int *choice,SDL_Event* test_event)
 int go_to_difficulty_player2(int *choice,SDL_Event* test_event)
 {
 	int error=0;
-	//free_control_list(ui_tree);
 	error=game_init(SET_DIFF_PLAYER2);
 	if (error<0){
 		return -1;
@@ -545,7 +529,6 @@ int set_unpause(int *choice,SDL_Event* test_event){
 	if (error<0){
 		free(cur_game->board);
 		free(cur_game);
-		gameNum--;
 		free_control_list(ui_tree);
 		return -1;
 	}

@@ -12,8 +12,6 @@
 /* definitions */
 #define Connect4_NAME "Connect4"
 
-extern int boardCount;
-
 /* required game functions */
 char*			get_name_C4();
 int *			get_initial_state_C4();
