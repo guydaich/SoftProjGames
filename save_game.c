@@ -15,8 +15,9 @@ int save_game_in_file(char* filename, int *game_state, int player, int cols, int
 		/*try save*/
 		if(write_game_to_file(filename,game_state,player,cols,rows,game_name)==0) 
 		{
-			//if (file != NULL)
-			//	fclose(file);
+			if (file != NULL){
+				fclose(file);
+			}
 			return 0;
 		}
 		else {
@@ -149,5 +150,10 @@ int fill_matrix_loaded(FILE *file,int *game_matrix,int cols,int rows)
 			game_matrix[i*(cols)+j]=temp;
 		}
 	}
-	return 0;
+	if (fscanf(file,"%d ",&temp)<0){
+		return 0;
+	}
+	else {
+		return -1;
+	}
 }
