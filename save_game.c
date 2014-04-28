@@ -15,9 +15,6 @@ int save_game_in_file(char* filename, int *game_state, int player, int cols, int
 		/*try save*/
 		if(write_game_to_file(filename,game_state,player,cols,rows,game_name)==0) 
 		{
-			if (file != NULL){
-				fclose(file);
-			}
 			return 0;
 		}
 		else {

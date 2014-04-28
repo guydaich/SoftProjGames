@@ -504,7 +504,7 @@ int set_unpause(int *choice,SDL_Event* test_event){
 	}
 	*choice=!(*choice);// form 1 to 0 and 0 to 1
 	/* make move for relevant AI player*/
-	if (cur_game->is_multiplayer==3 && cur_game->cur_player==1 || cur_game->is_multiplayer==2 && cur_game->cur_player==-1){
+	if ((cur_game->is_multiplayer==3 && cur_game->cur_player==1) || (cur_game->is_multiplayer==2 && cur_game->cur_player==-1)){
 		if (cur_game->cur_player==1){
 			error=cur_game->handle_computer_move( cur_game->board,cur_game->difficultyP1,cur_game->cur_player);
 		}

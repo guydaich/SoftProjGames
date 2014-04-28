@@ -1,11 +1,6 @@
 #include "windowsDrawing.h"
 
 extern int quit;
-extern int gameNum;
-extern int controlElementNum;
-extern int buttomNum;
-extern int panelNum;
-extern int windowNum;
 
 game* cur_game=NULL;
 element_cntrl ui_tree=NULL;
@@ -171,7 +166,7 @@ int run_window(user_selection_type selection_window_type){
 	if (!quit){
 		if (draw_ui_tree(ui_tree) < 0)
 		{
-			printf("ERROR: drawing UI tree Failed");
+			printf("ERROR: drawing UI tree Failed\n");
 			return -1;
 		}
 		SDL_Flip( ui_tree->cntrl->srfc );

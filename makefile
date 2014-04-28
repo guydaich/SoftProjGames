@@ -3,7 +3,7 @@ CFLAGS=-g -Wall -lm -std=c99 -pedantic-errors
 INCS=-I/usr/include/SDL -Isdl-ttf-lib
 OBJS=game.o general_game.o tic_tac_toe_bl.o connect4_bl.o reversi_bl.o ttc_ui.o connect4_ui.o reversi_ui.o controls.o save_game.o minimax.o buttonActions.o windowsDrawing.o
 
-all: gameprong
+all: gameprog
 
 clean:
 	-rm gameprong $(OBJS)

@@ -6,6 +6,7 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
 #define MAX_CAPTION_LINES 25
+#define FONT_SIZE 16
 #define GENERIC_BTN_PATH "./gfx/generic_button.bmp"
 #define GAME_WINDOW_NAME "gamesprog"
 
@@ -85,6 +86,7 @@ int handle_control_surface_load(control *cntrl, control *container)
 					sdl_err = SDL_GetError();
 					if (sdl_err != NULL)
 						printf("ERROR: %s\n",sdl_err);
+					return -1;
 				}
 			}
 		}
@@ -193,14 +195,13 @@ int draw_caption_to_control(control *cntrl)
 
 	//make all text Calculations
 	make_rect(&soure_rect, cntrl->h,cntrl->w,cntrl->offsetx,cntrl->offsety);
-	
-	font = TTF_OpenFont("arial.ttf", 16);
+
+	font = TTF_OpenFont("arial.ttf", FONT_SIZE);
 	if (font == NULL)  // unable to load font
 	{
 		ttf_err = TTF_GetError();
 		if (ttf_err != NULL)
-			printf("%s",ttf_err);
-		TTF_CloseFont(font);
+			printf("ERROR: %s",ttf_err);
 		return -1;
 	}
 	
@@ -263,12 +264,12 @@ int draw_caption_to_control_multi(control *cntrl)
 	//make all text Calculations
 	
 	/*get font */
-	font = TTF_OpenFont("arial.ttf", 16);
+	font = TTF_OpenFont("arial.ttf", FONT_SIZE);
 	if (font == NULL) {
 		ttf_err = TTF_GetError();
 		if (ttf_err != NULL)
-			printf("ERROR: %s\n", ttf_err);
-		TTF_CloseFont(font);
+			printf("ERROR: %s\n", ttf_err);		
+		return -1;
 	}
 
 
@@ -287,6 +288,8 @@ int draw_caption_to_control_multi(control *cntrl)
 		lines[linecount] = token;
 		linecount++;
 		token = strtok(NULL, "\n");
+		if (linecount == MAX_CAPTION_LINES-1)
+			return -1;
 	}
 
 	//record number of lines
@@ -309,9 +312,9 @@ int draw_caption_to_control_multi(control *cntrl)
 		{
 			surface = TTF_RenderText_Blended(font, lines[i], text_color);
 			if (surface==NULL){
-				sdl_err = SDL_GetError();
-				if (sdl_err != NULL)
-					printf("ERROR: %s\n", sdl_err);
+				ttf_err = TTF_GetError();
+				if (ttf_err != NULL)
+					printf("ERROR: %s\n", ttf_err);
 				SDL_FreeSurface(surface);
 				TTF_CloseFont(font);
 				return -1;
@@ -498,7 +501,7 @@ int draw_with_panel(element_cntrl draw_cntrl, element_cntrl owning_panel)
 					err=draw_with_panel(cur_elem,owning_panel);
 					if (err<0)
 					{
-					printf("ERROR: failed to draw a control\n");
+						printf("ERROR: failed to draw a control\n");
 						return -1;
 					}
 				}
@@ -571,7 +574,7 @@ control* new_label(int x, int y, int w, int h, char *img, int R, int G, int B, i
 	if (label->multitext==NULL)
 	{
 		printf("ERROR: standard function malloc has failed");
-                free(label);
+        free(label);
 		return NULL;
 	}
 	
@@ -777,7 +780,7 @@ int draw_window(control* window, control *container)
 {
 	char* sdl_err=NULL;
 	SDL_Surface *surface; 
-	SDL_WM_SetCaption("GAME_WINDOW_NAME", "GAME_WINDOW_NAME");
+	SDL_WM_SetCaption(GAME_WINDOW_NAME, GAME_WINDOW_NAME);
 
 	surface = SDL_SetVideoMode(window->w,window->h,32,SDL_HWSURFACE|SDL_DOUBLEBUF);
 
@@ -786,7 +789,6 @@ int draw_window(control* window, control *container)
 		sdl_err = SDL_GetError();
 		if (sdl_err != NULL)
 			printf("ERROR: %s\n", sdl_err);
-			SDL_FreeSurface(window->srfc);
 			return -1;
 		}
 	
@@ -821,7 +823,7 @@ int draw_panel(control* panel, control *container)
 			sdl_err = SDL_GetError();
 			if (sdl_err != NULL)
 				printf("ERROR: %s\n", sdl_err);
-				return -1;
+			return -1;
 		}
 	}
 	return 0;//sccusses
