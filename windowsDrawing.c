@@ -10,54 +10,6 @@ extern int windowNum;
 game* cur_game=NULL;
 element_cntrl ui_tree=NULL;
 
-#define GAME_AREA_W				700
-#define GAME_AREA_H				1000
-#define GAME_PANEL_W			300
-#define GAME_PANEL_H			1000
-#define BTN_X_OFFSET			25
-#define BTN_Y_OFFSET			20
-#define BTN_H					100
-#define PADDING					10
-#define PLAYER_LABEL_X_OFFSET	160
-#define PLAYER_LABEL_X_PADDING	300
-#define PLAYER_LABEL_Y_OFFSET	2
-#define PLAYER_LABEL_H			30
-#define PLAYER_LABEL_W			100
-#define BTN_PANEL_X				0
-#define BTN_PANEL_Y				0
-#define BTN_PANEL_W				250
-#define BTN_PANEL_H				60
-#define BTN_PANEL_R				220
-#define BTN_PANEL_G				220
-#define BTN_PANEL_B				220
-#define BTN_X					20
-#define BTN_Y					20
-#define BTN_X_PAD				50
-#define MAIN_X					0
-#define MAIN_Y					0
-#define MAIN_W					240
-#define MAIN_H					300
-#define CHOICE_WIN_X			0
-#define CHOICE_WIN_Y			0
-#define CHOICE_WIN_W			250
-#define CHOICE_WIN_H			60
-#define START_PANEL_X			0
-#define START_PANEL_Y			0
-#define START_PANEL_W			240
-#define START_PANEL_H			300
-#define START_BTN_X				20
-#define START_BTN_Y				20
-#define START_BTN_H				60	
-#define QUESTION_X				0
-#define QUESTION_Y				0
-#define QUESTION_W				500
-#define QUESTION_H				250
-#define NOTIF_X					170
-#define NOTIF_Y					30
-#define NOTIF_PAD				160
-#define TEXTAREA_PATH			"./gfx/textArea.bmp"
-#define BUTTON_LABEL_PATH		"./gfx/button_label.bmp"
-
 /* create a defualt tree for non-game area */
 int get_default_ui_tree()
 {
@@ -132,7 +84,16 @@ int get_default_ui_tree()
 		return -1;
 		}
 	}
-	if ((cur_game->is_multiplayer==1 || cur_game->is_multiplayer==3) && cur_game->cur_player==1){
+	if(cur_game->is_multiplayer==1){
+		error=new_generic_button(list,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,captions[i],functions[i],0);
+		if (error<0){
+			free_control(root->cntrl);
+			free(root);
+			return -1;
+		}
+
+	}
+	else if (cur_game->is_multiplayer==3 && cur_game->cur_player==1){
 		error=new_generic_button(list,BTN_X_OFFSET,BTN_Y_OFFSET + BTN_H*2 + PADDING,captions[i],functions[i],0);
 		if (error<0){
 			free_control(root->cntrl);
