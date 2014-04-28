@@ -1,3 +1,15 @@
+/* improved scoring function, uses a combination of heuristics, based on the following article :
+ * http://courses.cs.washington.edu/courses/cse573/04au/Project/mini1/RUSSIA/Final_Paper.pdf */
+
+#define REVERSI_ROWS 8
+#define REVERSI_COLS 8
+
+int contest_player_has_moves(int* game_state, int player);
+int contest_is_valid_move (int *game_state, int player, int rows, int cols);
+int contest_num_valid_moves(int* game_state, int player);
+int dynamic_heuristic_evaluation_function(int* grid);
+
+int move_directions[8][2] = {{1,1},{-1,-1},{1,-1},{-1,1},{0,1},{1,0},{-1,0},{0,-1}};
 
 /*check if given player can make a move. if cam returns 1,else 0.*/
 int contest_player_has_moves(int* game_state, int player)
@@ -8,7 +20,7 @@ int contest_player_has_moves(int* game_state, int player)
 	{
 		for(j=0; j < REVERSI_COLS; j++)
 		{
-			if (rv_is_valid_move(game_state, player,i,j))
+			if (contest_is_valid_move(game_state, player,i,j))
 			{
 	            return 1;
             }
@@ -43,6 +55,10 @@ int contest_is_valid_move (int *game_state, int player, int rows, int cols)
 		// if encoutered enemy piece at that derection
 		while (game_state[t_rows*REVERSI_ROWS + t_cols] == other)
 		{
+
+			if (t_cols>=REVERSI_COLS || t_rows>=REVERSI_ROWS|| t_cols<0 || t_rows<0){
+				break;
+			}
 			length++;
 			
 			t_rows += move_directions[i][0]; 
@@ -75,7 +91,7 @@ int contest_num_valid_moves(int* game_state, int player)
 	{
 		for(j=0; j < REVERSI_COLS; j++)
 		{
-			if (rv_is_valid_move(game_state, player,i,j))
+			if (contest_is_valid_move(game_state, player,i,j))
 			{
 	            move_count++;
             }
@@ -89,7 +105,7 @@ int contest_num_valid_moves(int* game_state, int player)
  * 0 indicates an empty square on the board
  * '1' indicates a black tile and '-1' indicates a white tile on the board
  */
-int dynamic_heuristic_evaluation_function(int grid[8][8])  {
+int dynamic_heuristic_evaluation_function(int* grid)  {
         int my_tiles = 0, opp_tiles = 0, i, j, k, my_front_tiles = 0, opp_front_tiles = 0, x, y,my_color=1;
         int p = 0, c = 0, l = 0, m = 0, f = 0, d = 0,opp_color=-1,bound_x=8,bound_y=8;
  
@@ -108,18 +124,18 @@ int dynamic_heuristic_evaluation_function(int grid[8][8])  {
 // Piece difference, frontier disks and disk squares
         for(i=0; i<8; i++)
                 for(j=0; j<8; j++)  {
-                        if(grid[i][j] == my_color)  {
+                        if(grid[i*8+j] == my_color)  {
                                 d += V[i][j];
                                 my_tiles++;
-                        } else if(grid[i][j] == opp_color)  {
+                        } else if(grid[i*8+j] == opp_color)  {
                                 d -= V[i][j];
                                 opp_tiles++;
                         }
-                        if(grid[i][j] != 0)   {
+                        if(grid[i*8+j] != 0)   {
                                 for(k=0; k<8; k++)  {
                                         x = i + X1[k]; y = j + Y1[k];
-                                        if(x >= 0 && x < bound_x && y >= 0 && y < bound_y && grid[x][y] == 0) {
-                                                if(grid[i][j] == my_color)  my_front_tiles++;
+                                        if(x >= 0 && x < bound_x && y >= 0 && y < bound_y && grid[x*8+y] == 0) {
+                                                if(grid[i*8+j] == my_color)  my_front_tiles++;
                                                 else opp_front_tiles++;
                                                 break;
                                         }
@@ -140,49 +156,49 @@ int dynamic_heuristic_evaluation_function(int grid[8][8])  {
  
 // Corner occupancy
         my_tiles = opp_tiles = 0;
-        if(grid[0][0] == my_color) my_tiles++;
-        else if(grid[0][0] == opp_color) opp_tiles++;
-        if(grid[0][7] == my_color) my_tiles++;
-        else if(grid[0][7] == opp_color) opp_tiles++;
-        if(grid[7][0] == my_color) my_tiles++;
-        else if(grid[7][0] == opp_color) opp_tiles++;
-        if(grid[7][7] == my_color) my_tiles++;
-        else if(grid[7][7] == opp_color) opp_tiles++;
+        if(grid[0] == my_color) my_tiles++;
+        else if(grid[0] == opp_color) opp_tiles++;
+        if(grid[7] == my_color) my_tiles++;
+        else if(grid[7] == opp_color) opp_tiles++;
+        if(grid[7*8] == my_color) my_tiles++;
+        else if(grid[7*8] == opp_color) opp_tiles++;
+        if(grid[7*8+7] == my_color) my_tiles++;
+        else if(grid[7*8+7] == opp_color) opp_tiles++;
         c = 25 * (my_tiles - opp_tiles);
  
 // Corner closeness
         my_tiles = opp_tiles = 0;
-        if(grid[0][0] == 0)   {
-                if(grid[0][1] == my_color) my_tiles++;
-                else if(grid[0][1] == opp_color) opp_tiles++;
-                if(grid[1][1] == my_color) my_tiles++;
-                else if(grid[1][1] == opp_color) opp_tiles++;
-                if(grid[1][0] == my_color) my_tiles++;
-                else if(grid[1][0] == opp_color) opp_tiles++;
+        if(grid[0] == 0)   {
+                if(grid[1] == my_color) my_tiles++;
+                else if(grid[1] == opp_color) opp_tiles++;
+                if(grid[9] == my_color) my_tiles++;
+                else if(grid[9] == opp_color) opp_tiles++;
+                if(grid[8] == my_color) my_tiles++;
+                else if(grid[8] == opp_color) opp_tiles++;
         }
-        if(grid[0][7] == 0)   {
-                if(grid[0][6] == my_color) my_tiles++;
-                else if(grid[0][6] == opp_color) opp_tiles++;
-                if(grid[1][6] == my_color) my_tiles++;
-                else if(grid[1][6] == opp_color) opp_tiles++;
-                if(grid[1][7] == my_color) my_tiles++;
-                else if(grid[1][7] == opp_color) opp_tiles++;
+        if(grid[7] == 0)   {
+                if(grid[6] == my_color) my_tiles++;
+                else if(grid[6] == opp_color) opp_tiles++;
+                if(grid[14] == my_color) my_tiles++;
+                else if(grid[14] == opp_color) opp_tiles++;
+                if(grid[15] == my_color) my_tiles++;
+                else if(grid[15] == opp_color) opp_tiles++;
         }
-        if(grid[7][0] == 0)   {
-                if(grid[7][1] == my_color) my_tiles++;
-                else if(grid[7][1] == opp_color) opp_tiles++;
-                if(grid[6][1] == my_color) my_tiles++;
-                else if(grid[6][1] == opp_color) opp_tiles++;
-                if(grid[6][0] == my_color) my_tiles++;
-                else if(grid[6][0] == opp_color) opp_tiles++;
+        if(grid[7*8] == 0)   {
+                if(grid[7*8+1] == my_color) my_tiles++;
+                else if(grid[7*8+1] == opp_color) opp_tiles++;
+                if(grid[6*8+1] == my_color) my_tiles++;
+                else if(grid[6*8+1] == opp_color) opp_tiles++;
+                if(grid[6*8] == my_color) my_tiles++;
+                else if(grid[6*8] == opp_color) opp_tiles++;
         }
-        if(grid[7][7] == 0)   {
-                if(grid[6][7] == my_color) my_tiles++;
-                else if(grid[6][7] == opp_color) opp_tiles++;
-                if(grid[6][6] == my_color) my_tiles++;
-                else if(grid[6][6] == opp_color) opp_tiles++;
-                if(grid[7][6] == my_color) my_tiles++;
-                else if(grid[7][6] == opp_color) opp_tiles++;
+        if(grid[7*8+7] == 0)   {
+                if(grid[6*8+7] == my_color) my_tiles++;
+                else if(grid[6*8+7] == opp_color) opp_tiles++;
+                if(grid[6*8+6] == my_color) my_tiles++;
+                else if(grid[6*8+6] == opp_color) opp_tiles++;
+                if(grid[7*8+6] == my_color) my_tiles++;
+                else if(grid[7*8+6] == opp_color) opp_tiles++;
         }
         l = -12 * (my_tiles - opp_tiles);
  
