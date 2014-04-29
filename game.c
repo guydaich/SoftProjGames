@@ -10,7 +10,7 @@ extern element_cntrl ui_tree;
 int gui_init()
 {
 	
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) 
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) 
 	{
 		printf("ERROR: unable to init SDL: %s\n",SDL_GetError());
 		return -1;
