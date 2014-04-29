@@ -10,11 +10,12 @@
 #define SAVE_FILE_MAX_DIGITS	1
 #define OVER_WRITE_MSG			"This file already exist.\nDo you wish to overwrite?\n"
 #define SAVE_GAME_ERROR_MSG		"The saved game is either corrupt or doesn't exist\n"
+#define BTNS_GAME_DRAW_MSG		"Game Draw!"
 
 /* ui defintions */
-#define BTN_X_OFFSET			35
+#define BTN_X_OFFSET			50
 #define BTN_Y_OFFSET			20
-#define BTN_H					90
+#define BTN_H					80
 #define PADDING					10
 
 

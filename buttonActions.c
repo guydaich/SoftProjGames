@@ -196,6 +196,7 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 		free_control_list(ui_tree);
 		return -1;
 	}
+	/*check if game ended*/
 	return 0;
 }
 
@@ -512,7 +513,7 @@ int add_ui_tree_victory(){
 	}
 	else //if tie, add to ui a tie-message
 	{
-		error=new_generic_button(ui_tree->children,300,480,"draw",restart_game,0);
+		error=new_generic_button(ui_tree->children,300,480,BTNS_GAME_DRAW_MSG,restart_game,0);
 		if (error<0){
 			printf("ERROR: failed makeing a new button\n");
 			free(cur_game->board);
