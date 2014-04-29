@@ -288,7 +288,7 @@ int color_c4(int* game_state,int player,element_cntrl ui_tree){
 int c4_set_victory_control(int i,int j,element_cntrl game_panel,int player)
 {
 	element_cntrl c4_button;
-	int k;
+	int k=0;
 
 	/* TTC pieces in ui tree */
 	c4_button=game_panel->children->head->children->head->children->head;
@@ -310,22 +310,26 @@ int c4_set_victory_control(int i,int j,element_cntrl game_panel,int player)
 
 	/*Choose Striked X or O*/
 	if (player==1){
+		int x=c4_button->cntrl->x;
+		int y=c4_button->cntrl->y;
 		// free previous control
 		free_control(c4_button->cntrl); 
 
-		c4_button->cntrl=new_button(c4_button->cntrl->x,
-			c4_button->cntrl->y,C4_BTN_RED_VICTORY_PATH,1,NULL,0);
+		c4_button->cntrl=new_button(x,
+			y,C4_BTN_RED_VICTORY_PATH,1,NULL,0);
 		if(c4_button==NULL){
 			printf("ERROR: failed to make button for \"piece of victory\" at row %d and colunm %d in c4_set_victory_control\n",i,j);
 			return -1;
 		}
 	}
 	else {
+		int x=c4_button->cntrl->x;
+		int y=c4_button->cntrl->y;
 		// free previous control
 		free_control(c4_button->cntrl); 
 
-		c4_button->cntrl=new_button(c4_button->cntrl->x,
-			c4_button->cntrl->y,C4_BTN_BLUE_VICTORY_PATH,1,NULL,0);
+		c4_button->cntrl=new_button(x,
+			y,C4_BTN_BLUE_VICTORY_PATH,1,NULL,0);
 		if(c4_button==NULL){
 			printf("ERROR: failed to make button for \"piece of victory\" at row %d and colunm %d in c4_set_victory_control\n",i,j);
 			return -1;

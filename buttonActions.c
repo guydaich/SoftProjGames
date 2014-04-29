@@ -196,20 +196,6 @@ int  handle_next_move(int *choice,SDL_Event* test_event)
 		free_control_list(ui_tree);
 		return -1;
 	}
-	/*check if game ended*/
-	if ( cur_game->is_game_over( cur_game->board)){
-		error=add_ui_tree_victory();
-		if(error<0){
-			return -1;
-		}
-		/*repaint the ui*/
-		if (draw_ui_tree(ui_tree)<0)
-		{
-			printf("ERROR: cannot draw UI tree\n");
-			return -1;
-		}
-		SDL_Flip(ui_tree->cntrl->srfc);
-	}
 	return 0;
 }
 

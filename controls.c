@@ -855,7 +855,8 @@ int draw_panel(control* panel, control *container)
   in case the function didn't find anything it returns null in target*/
 void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl *target)
 {
-	element_cntrl cur_elem;
+	element_cntrl cur_elem=NULL;
+	*target=NULL;
 	if ((root->cntrl->is_grid))
 	{
 		// match coordinates
@@ -867,6 +868,9 @@ void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl 
 			for (cur_elem = root->children->head; 
 			cur_elem!= NULL ;cur_elem=cur_elem->next){
 				find_element_by_coordinates(cur_elem,x,y,target);
+				if(*target!=NULL){
+					break;
+				}
 			}
 			if (*target == NULL)//no matching button under greid or a button with no children, return grid itself
 			{
@@ -907,6 +911,9 @@ void find_element_by_coordinates(element_cntrl root,int x, int y, element_cntrl 
 		for (cur_elem = root->children->head; 
 			cur_elem!= NULL ;cur_elem=cur_elem->next){
 				find_element_by_coordinates(cur_elem,x,y,target);//check the children
+				if(*target!=NULL){
+					break;
+				}
 			}
 	}
 	return;

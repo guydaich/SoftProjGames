@@ -265,6 +265,7 @@ int draw_game ()
 		return -1;
 	}
 	//label - player
+	if ( !cur_game->is_game_over( cur_game->board)){
 	if (cur_game->cur_player==-1){
 		player_sources[0]=P_EMPTY;
 		player_sources[1]=P_COLORED;
@@ -291,13 +292,14 @@ int draw_game ()
 
 	add_control_element_to_list(ui_tree->children,game_panel);
 	game_panel->parent= ui_tree;
-
-	if ( cur_game->is_game_over( cur_game->board)){
+	}
+	else {
+		add_control_element_to_list(ui_tree->children,game_panel);
+		game_panel->parent= ui_tree;
 		error=add_ui_tree_victory();
 		if(error<0){
 			return -1;
 		}
-
 	}
 	if (draw_ui_tree(ui_tree)<0)
 	{
