@@ -9,10 +9,10 @@
 #define REVERSI_NAME "Reversi"
 
 /* initial player positions*/
-#define PLAYER_1_START_1 3*REVERSI_ROWS + 3
-#define PLAYER_2_START_1 4*REVERSI_ROWS + 3
-#define PLAYER_1_START_2 4*REVERSI_ROWS + 4
-#define PLAYER_2_START_2 3*REVERSI_ROWS + 4
+#define PLAYER_2_START_1 3*REVERSI_ROWS + 3
+#define PLAYER_2_START_2 4*REVERSI_ROWS + 4
+#define PLAYER_1_START_1 4*REVERSI_ROWS + 3
+#define PLAYER_1_START_2 3*REVERSI_ROWS + 4
 
 /* score matrix regions */
 #define R5 10
