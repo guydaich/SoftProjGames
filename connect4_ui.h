@@ -14,7 +14,9 @@
 #define C4_WGRID			700
 #define C4_HGRID			700
 #define C4_HBTN				88 
-#define C4_WBTN				88 
+#define C4_WBTN				88
+#define C4_PIECES_PANEL_W	600
+#define C4_PIECES_PANEL_H	600
 
 /* graphics paths */ 
 #define C4_GRIDPATH					"./gfx/C4board.bmp"

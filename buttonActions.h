@@ -4,16 +4,19 @@
 
 #include "general_game.h"
 
+/* save game messages and files*/
 #define SAVE_FILE_PREFIX		"./save_file_"
 #define SAVE_FILE_SUFFIX		".in"
 #define SAVE_FILE_MAX_DIGITS	1
+#define OVER_WRITE_MSG			"This file already exist.\nDo you wish to overwrite?\n"
+#define SAVE_GAME_ERROR_MSG		"The saved game is either corrupt or doesn't exist\n"
 
-#define BTN_X_OFFSET 35
-#define BTN_Y_OFFSET 20
-#define BTN_H 90
-#define PADDING 10
-#define OVER_WRITE_MSG "This file already exist.\nDo you wish to overwrite?\n"
-#define SAVE_GAME_ERROR_MSG "the game is either corrupt or doesn't exist\n"
+/* ui defintions */
+#define BTN_X_OFFSET			35
+#define BTN_Y_OFFSET			20
+#define BTN_H					90
+#define PADDING					10
+
 
 /* main menu handlers */
 int  go_to_game_selection(int *choice,SDL_Event* test_event);

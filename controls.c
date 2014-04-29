@@ -10,11 +10,21 @@
 void get_rect(SDL_Rect *rect_dest, control *cntrl, control *parent_panel)
 {
 	//+ becuase cntrl offset is relative to his parent_panel
-	rect_dest->x = cntrl->x + parent_panel->x;
-	rect_dest->y = cntrl->y + parent_panel->y;
+	rect_dest->x = cntrl->x + parent_panel->offsetx;
+	rect_dest->y = cntrl->y + parent_panel->offsety;
 	//min in order to insure that the control won't be able to pass parent_panel borders
-	rect_dest->w = MIN(cntrl->w, parent_panel->w - cntrl->x);
-	rect_dest->h = MIN(cntrl->h, parent_panel->h - cntrl->y);
+	if (parent_panel->offsetx + parent_panel->w < rect_dest->x + cntrl->w)
+		rect_dest->w = parent_panel->w + parent_panel->offsetx - cntrl->x;
+	else
+		rect_dest->w = cntrl->w;
+
+	if (parent_panel->offsety + parent_panel->h < rect_dest->y + cntrl->h)
+		rect_dest->h = parent_panel->h + parent_panel->offsety - cntrl->y;
+	else
+		rect_dest->h = cntrl->h;
+
+	//rect_dest->w = MIN(cntrl->w, parent_panel->w - cntrl->x);
+	//rect_dest->h = MIN(cntrl->h, parent_panel->h - cntrl->y);
 }
 
 

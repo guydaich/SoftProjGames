@@ -10,35 +10,40 @@
 #include "save_game.h"
 #include "buttonActions.h"
 
-/* constants */
-#define RESTART "Restart"
-#define QUIT "Quit"
-#define CANCEL "Cancel"
-#define MAIN_MENU "Main Menu"
-#define SAVE "Save Game"
-#define LOAD "Load Game"
-#define DIFFP1 "P1 Difficulties"
-#define DIFFP2 "P2 Difficulties"
-#define PAUSE "Pause"
-#define USPAUSE "Unpause"
-#define CHOOSE_GAME "Choose Game"
-#define DIFFICULTYP1 "Difficulty P1 level"
-#define DIFFICULTYP2 "Difficulty P2 level"
-#define SAVE_SLOT "Save Slot"
-#define LOAD_SLOT "Load Slot"
-#define GAME_NAME "Game"
-#define AI_1 "AI Vs AI"
-#define AI_2 "Human Vs AI"
-#define AI_3 "AI Vs Human"
-#define AI_4 "Human Vs Human"
-#define YES "yes"
-#define NO "no"
-#define OK "ok"
-#define P1 " Player 1\n"
-#define P2 " Player 2\n"
-#define P_COLORED "./gfx/coloredPlayer.bmp"
-#define P_EMPTY "./gfx/emptyPlayer.bmp"
+/* captions */
+#define RESTART			"Restart"
+#define QUIT			"Quit"
+#define CANCEL			"Cancel"
+#define MAIN_MENU		"Main Menu"
+#define SAVE			"Save Game"
+#define LOAD			"Load Game"
+#define DIFFP1			"Player 1 Difficulties"
+#define DIFFP2			"Player 2 Difficulties"
+#define PAUSE			"Pause"
+#define USPAUSE			"Unpause"
+#define CHOOSE_GAME		"Choose Game"
+#define DIFFICULTYP1	"Difficulty - Player 1:"
+#define DIFFICULTYP2	"Difficulty - Player 2:"
+#define SAVE_SLOT		"Save Slot"
+#define LOAD_SLOT		"Load Slot"
+#define GAME_NAME		"Game"
+#define AI_1			"AI Vs AI"
+#define AI_2			"Human Vs AI"
+#define AI_3			"AI Vs Human"
+#define AI_4			"Human Vs Human"
+#define YES				"Yes"
+#define NO				"No"
+#define OK				"OK"
+#define P1				" Player 1\n"
+#define P2				" Player 2\n"
 
+/*paths */
+#define P_COLORED				"./gfx/coloredPlayer.bmp"
+#define P_EMPTY					"./gfx/emptyPlayer.bmp"
+#define TEXTAREA_PATH			"./gfx/textArea.bmp"
+#define BUTTON_LABEL_PATH		"./gfx/button_label.bmp"
+
+/* ui defintions */
 #define GAME_AREA_W				700
 #define GAME_AREA_H				1000
 #define GAME_PANEL_W			300
@@ -80,8 +85,6 @@
 #define NOTIF_X					170
 #define NOTIF_Y					50
 #define NOTIF_PAD				140
-#define TEXTAREA_PATH			"./gfx/textArea.bmp"
-#define BUTTON_LABEL_PATH		"./gfx/button_label.bmp"
 
 
 

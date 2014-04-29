@@ -1,3 +1,8 @@
+/* general_game.h */
+/* we define here the general_game struct, that is an abstract class 
+ * instantiated with some specific game, that fullfills it's interface, 
+ * so that all game actions may be handled generically */
+
 #ifndef GENERAL_GAME_H
 #define GENERAL_GAME_H
 
@@ -37,6 +42,7 @@ typedef struct _general_game
 
 } game;
 
+/* functions */
 game* new_game(whichGame game_id);
 int handelAI_VS_AI(int *pause);
 

@@ -1,5 +1,5 @@
-/* controls.h																		*/
-/* this class handles the controls of the GUI. It defines the general control Factory 
+/* controls.h */
+/* This class handles the controls of the GUI. It defines the general control Factory 
  * and specifies concrete control initializers. all controls have a specific drawing
  * drawing function */
 

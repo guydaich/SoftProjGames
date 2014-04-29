@@ -1,4 +1,5 @@
 /* minimax.h */
+/* we define here datastructures to help us in the minimax tree represantation */
 #ifndef MINIMAX_H
 #define MINIMAX_H
 

@@ -5,6 +5,7 @@
 #include "minimax.h"
 #include "ttc_ui.h"
 
+/* name */
 #define TIC_TAC_TOE_NAME "Tic-Tac-Toe"
 
 /* general functions */

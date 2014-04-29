@@ -9,7 +9,9 @@ element_cntrl ttc_panel_function(int* game_state,int  (*handle_next_move)(int *q
 	int i=0,j=0,error =0;
  	
 	/* main panel */
-	root = new_control_element(new_panel(0,0,700,700,255,255,255,1));
+
+	root = new_control_element(new_panel(TTC_MAIN_PANEL_OFFSET_X,TTC_MAIN_PANEL_OFFSET_Y,TTC_MAIN_PANEL_HEIGHT,TTC_MAIN_PANEL_WIDTH
+		,255,255,255,1));
 	if (root==NULL){
 		printf("can't make root in ttc_panel_function\n");
 		return NULL;
@@ -42,7 +44,8 @@ element_cntrl ttc_panel_function(int* game_state,int  (*handle_next_move)(int *q
 	add_control_element_to_list(list,grid);
 	set_list_as_children(list,root);
 	/*pieces panel, as grid child*/
-	children_panel = new_control_element(new_panel(50,50,600,600,255,255,255,0));
+	children_panel = new_control_element(new_panel(TTC_BUTTON_PANEL_OFFSET_X,TTC_BUTTON_PANEL_OFFSET_Y
+		,TTC_BUTTON_PANEL_WIDTH,TTC_BUTTON_PANEL_HEIGHT,255,255,255,0));
 	if (children_panel==NULL){
 		printf("can't make children_panel in ttc_panel_function\n");
 		free_control(root->cntrl);

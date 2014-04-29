@@ -20,8 +20,8 @@ int gui_init()
 		printf("ERROR: unable to init SDL: %s\n",SDL_GetError());
 		return -1;
 	}
-	//freopen("CON","w",stdout);//make log files
-	//freopen("CON","w",stderr);
+	//freopen("stdout.log","w",stdout);//make log files
+	//freopen("stderr.log","w",stderr);
 	return 1;
 }
 

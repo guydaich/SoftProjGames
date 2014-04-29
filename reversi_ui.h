@@ -10,12 +10,20 @@
 #define REVERSI_PLAYER_2	-1
 
 /* UI definitions*/
-#define RVR_XOFFSET			49
-#define RVR_YOFFSET			49
-#define RVR_WGRID			600
-#define RVR_HGRID			600
-#define RVR_HBTN			75 
-#define RVR_WBTN			75 
+#define RVR_XOFFSET					49
+#define RVR_YOFFSET					49
+#define RVR_WGRID					600
+#define RVR_HGRID					600
+#define RVR_HBTN					75 
+#define RVR_WBTN					75 
+#define RVR_BUTTON_PANEL_OFFSET_X	49
+#define RVR_BUTTON_PANEL_OFFSET_Y	49
+#define RVR_BUTTON_PANEL_WIDTH		598
+#define RVR_BUTTON_PANEL_HEIGHT		598
+#define RVR_MAIN_PANEL_OFFSET_X		0
+#define RVR_MAIN_PANEL_OFFSET_Y		0
+#define RVR_MAIN_PANEL_WIDTH		700
+#define RVR_MAIN_PANEL_HEIGHT		700
 
 /* paths */
 #define RVR_GRIDPATH		"./gfx/reversi_board.bmp"

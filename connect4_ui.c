@@ -52,8 +52,8 @@ element_cntrl	C4_panel_function(int* game_state,int  (*handle_next_move)(int *qu
 	/* update root children, and grid parent */
 	set_list_as_children(list,root);
 	
-	/* an inner panel to store all game pieces */
-	children_panel = new_control_element(new_panel(C4_XOFFSET,C4_YOFFSET,600,600,255,255,255,0));
+	/* an inner panel to store all game pieces */	
+	children_panel = new_control_element(new_panel(C4_XOFFSET,C4_YOFFSET,C4_PIECES_PANEL_W,C4_PIECES_PANEL_H,255,255,255,0));
 	if (children_panel==NULL){
 		printf("ERROR: can't make children_panel in C4_panel_function\n");
 		free_control(root->cntrl);

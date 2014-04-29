@@ -11,21 +11,22 @@ element_cntrl	rv_panel_function(int* game_state,int  (*handle_next_move)(int *qu
 	int i=0,j=0,error=0;
  	
 	/*create root panel and grid as a child*/
-	root = new_control_element(new_panel(0,0,700,700,255,255,255,1));
+	root = new_control_element(new_panel(RVR_MAIN_PANEL_OFFSET_X,RVR_MAIN_PANEL_OFFSET_Y,
+		RVR_MAIN_PANEL_WIDTH,RVR_MAIN_PANEL_HEIGHT,255,255,255,1));
 	if (root==NULL){
-		printf("can't make root in rv_panel_function\n");
+		printf("ERROR: can't make root in rv_panel_function\n");
 		return NULL;
 	}
 	list = new_control_list();
 	if (list==NULL){
-		printf("can't make list for root in rv_panel_function\n");
+		printf("ERROR: can't make list for root in rv_panel_function\n");
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
 	rv_grid = new_button(0,0,RVR_GRIDPATH,0,NULL,1);
 	if (rv_grid==NULL){
-        printf("can't make rv_grid in rv_panel_function\n");
+        printf("ERROR: can't make rv_grid in rv_panel_function\n");
 		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
@@ -34,7 +35,7 @@ element_cntrl	rv_panel_function(int* game_state,int  (*handle_next_move)(int *qu
 	rv_grid->pressed_button=handle_next_move;
 	grid = new_control_element(rv_grid);
 	if (grid==NULL){
-		printf("can't make control element for rv_grid in rv_panel_function\n");
+		printf("ERROR: can't make control element for rv_grid in rv_panel_function\n");
 		free_detached_list(list);
 		free_control(root->cntrl);
 		free(root);
@@ -44,16 +45,19 @@ element_cntrl	rv_panel_function(int* game_state,int  (*handle_next_move)(int *qu
 	set_list_as_children(list,root);
 	
 	/*panel to organise children within the game board*/
-	children_panel = new_control_element(new_panel(49,49,598,598,255,255,255,0));
+	
+
+	children_panel = new_control_element(new_panel(RVR_BUTTON_PANEL_OFFSET_X,RVR_BUTTON_PANEL_OFFSET_Y,
+	RVR_BUTTON_PANEL_HEIGHT,RVR_BUTTON_PANEL_WIDTH,255,255,255,0));
 	if (children_panel==NULL){
-		printf("can't make children_panel in rv_panel_function\n");
+		printf("ERROR: can't make children_panel in rv_panel_function\n");
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
 	}
 	list = new_control_list();
 	if (list==NULL){
-		printf("can't make list for rv_grid in rv_panel_function\n");
+		printf("ERROR: can't make list for rv_grid in rv_panel_function\n");
 		free_control(children_panel->cntrl);
 		free(children_panel);
 		free_control(root->cntrl);
@@ -66,7 +70,7 @@ element_cntrl	rv_panel_function(int* game_state,int  (*handle_next_move)(int *qu
 	/*create grid children - the board pieces*/
 	list = new_control_list();
 	if (list==NULL){
-		printf("can't make list for children_panel in rv_panel_function\n");
+		printf("ERROR: can't make list for children_panel in rv_panel_function\n");
 		free_control(root->cntrl);
 		free(root);
 		return NULL;
@@ -88,7 +92,7 @@ element_cntrl	rv_panel_function(int* game_state,int  (*handle_next_move)(int *qu
 			{
 				temp = new_control_element(rv_button);
                     if (temp==NULL){
-					printf("can't make control element for piece in rv_panel_function\n");
+					printf("ERROR: can't make control element for piece in rv_panel_function\n");
 					error=1;
 					break;
 				}

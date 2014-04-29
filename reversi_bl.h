@@ -5,13 +5,16 @@
 #include "minimax.h"
 #include "reversi_ui.h"
 
+/* name */
 #define REVERSI_NAME "Reversi"
 
+/* initial player positions*/
 #define PLAYER_1_START_2 3*REVERSI_ROWS + 3
 #define PLAYER_2_START_2 4*REVERSI_ROWS + 3
 #define PLAYER_1_START_1 4*REVERSI_ROWS + 4
 #define PLAYER_2_START_1 3*REVERSI_ROWS + 4
 
+/* score matrix regions */
 #define R5 10
 #define R4 -5
 #define R3 5
@@ -27,7 +30,6 @@ int				rv_get_state_score(int* game_state);
 int*			rv_get_difficulty_levels();
 
 /* more game functions*/
-
 int				rv_make_move(int * game_state, int rows, int cols, int player);
 int				rv_is_valid_move (int *game_state, int player, int rows, int cols);
 int*			rv_copy_and_make_move(int* game_state, int move_row, int move_col, int player);
