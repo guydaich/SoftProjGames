@@ -100,14 +100,13 @@ int contest_num_valid_moves(int* game_state, int player)
 	return move_count;
 }
 
-/*
- * Assuming my_color stores your color and opp_color stores opponent's color
- * 0 indicates an empty square on the board
- * '1' indicates a black tile and '-1' indicates a white tile on the board
- */
+/* calculate all */
 int calc_score_reversi(int* board)  {
-        int P1_pieces = 0, P2_pieces = 0, i, j, k, P1_tiles = 0,P2_tiles = 0, x, y,my_color=1;
-        int p = 0, c = 0, l = 0, m = 0, f = 0, d = 0,opp_color=-1,bound_x=8,bound_y=8;
+        int P1_pieces = 0, P2_pieces = 0;
+        int i, j, k;
+        int P1_tiles = 0,P2_tiles = 0;
+        int x, y,p1_color=1;
+        int p = 0, c = 0, l = 0, m = 0, f = 0, d = 0,p2_color=-1,bound_x=8,bound_y=8;
  
         int line_wight[] = {-1, -1, 0, 1, 1, 1, 0, -1};
         int col_wight[] = {0, 1, 1, 1, 0, -1, -1, -1};
@@ -123,10 +122,10 @@ int calc_score_reversi(int* board)  {
  
         for(i=0; i<8; i++)
                 for(j=0; j<8; j++)  {
-                        if(board[i*8+j] == my_color)  {
+                        if(board[i*8+j] == p1_color)  {
                                 d += V[i][j];
                                 P1_pieces++;
-                        } else if(board[i*8+j] == opp_color)  {
+                        } else if(board[i*8+j] == p2_color)  {
                                 d -= V[i][j];
                                 P2_pieces++;
                         }
@@ -134,7 +133,7 @@ int calc_score_reversi(int* board)  {
                                 for(k=0; k<8; k++)  {
                                         x = i + line_wight[k]; y = j + col_wight[k];
                                         if(x >= 0 && x < bound_x && y >= 0 && y < bound_y && board[x*8+y] == 0) {
-                                                if(board[i*8+j] == my_color)  P1_tiles++;
+                                                if(board[i*8+j] == p1_color)  P1_tiles++;
                                                 else P2_tiles++;
                                                 break;
                                         }
@@ -154,59 +153,59 @@ int calc_score_reversi(int* board)  {
         else f = 0;
  
         P1_pieces = P2_pieces = 0;
-        if(board[0] == my_color) P1_pieces++;
-        else if(board[0] == opp_color) P2_pieces++;
-        if(board[7] == my_color) P1_pieces++;
-        else if(board[7] == opp_color) P2_pieces++;
-        if(board[7*8] == my_color) P1_pieces++;
-        else if(board[7*8] == opp_color) P2_pieces++;
-        if(board[7*8+7] == my_color) P1_pieces++;
-        else if(board[7*8+7] == opp_color) P2_pieces++;
+        if(board[0] == p1_color) P1_pieces++;
+        else if(board[0] == p2_color) P2_pieces++;
+        if(board[7] == p1_color) P1_pieces++;
+        else if(board[7] == p2_color) P2_pieces++;
+        if(board[7*8] == p1_color) P1_pieces++;
+        else if(board[7*8] == p2_color) P2_pieces++;
+        if(board[7*8+7] == p1_color) P1_pieces++;
+        else if(board[7*8+7] == p2_color) P2_pieces++;
         c = 25 * (P1_pieces - P2_pieces);
 
         P1_pieces = P2_pieces = 0;
         if(board[0] == 0)   {
-                if(board[1] == my_color) P1_pieces++;
-                else if(board[1] == opp_color) P2_pieces++;
-                if(board[9] == my_color) P1_pieces++;
-                else if(board[9] == opp_color) P2_pieces++;
-                if(board[8] == my_color) P1_pieces++;
-                else if(board[8] == opp_color) P2_pieces++;
+                if(board[1] == p1_color) P1_pieces++;
+                else if(board[1] == p2_color) P2_pieces++;
+                if(board[9] == p1_color) P1_pieces++;
+                else if(board[9] == p2_color) P2_pieces++;
+                if(board[8] == p1_color) P1_pieces++;
+                else if(board[8] == p2_color) P2_pieces++;
         }
         if(board[7] == 0)   {
-                if(board[6] == my_color) P1_pieces++;
-                else if(board[6] == opp_color) P2_pieces++;
-                if(board[14] == my_color) P1_pieces++;
-                else if(board[14] == opp_color) P2_pieces++;
-                if(board[15] == my_color) P1_pieces++;
-                else if(board[15] == opp_color) P2_pieces++;
+                if(board[6] == p1_color) P1_pieces++;
+                else if(board[6] == p2_color) P2_pieces++;
+                if(board[14] == p1_color) P1_pieces++;
+                else if(board[14] == p2_color) P2_pieces++;
+                if(board[15] == p1_color) P1_pieces++;
+                else if(board[15] == p2_color) P2_pieces++;
         }
         if(board[7*8] == 0)   {
-                if(board[7*8+1] == my_color) P1_pieces++;
-                else if(board[7*8+1] == opp_color) P2_pieces++;
-                if(board[6*8+1] == my_color) P1_pieces++;
-                else if(board[6*8+1] == opp_color) P2_pieces++;
-                if(board[6*8] == my_color) P1_pieces++;
-                else if(board[6*8] == opp_color) P2_pieces++;
+                if(board[7*8+1] == p1_color) P1_pieces++;
+                else if(board[7*8+1] == p2_color) P2_pieces++;
+                if(board[6*8+1] == p1_color) P1_pieces++;
+                else if(board[6*8+1] == p2_color) P2_pieces++;
+                if(board[6*8] == p1_color) P1_pieces++;
+                else if(board[6*8] == p2_color) P2_pieces++;
         }
         if(board[7*8+7] == 0)   {
-                if(board[6*8+7] == my_color) P1_pieces++;
-                else if(board[6*8+7] == opp_color) P2_pieces++;
-                if(board[6*8+6] == my_color) P1_pieces++;
-                else if(board[6*8+6] == opp_color) P2_pieces++;
-                if(board[7*8+6] == my_color) P1_pieces++;
-                else if(board[7*8+6] == opp_color) P2_pieces++;
+                if(board[6*8+7] == p1_color) P1_pieces++;
+                else if(board[6*8+7] == p2_color) P2_pieces++;
+                if(board[6*8+6] == p1_color) P1_pieces++;
+                else if(board[6*8+6] == p2_color) P2_pieces++;
+                if(board[7*8+6] == p1_color) P1_pieces++;
+                else if(board[7*8+6] == p2_color) P2_pieces++;
         }
         l = -12 * (P1_pieces - P2_pieces);
  
-        P1_pieces = contest_num_valid_moves(board,my_color);
-        P2_pieces = contest_num_valid_moves(board,opp_color);
+        P1_pieces = contest_num_valid_moves(board,p1_color);
+        P2_pieces = contest_num_valid_moves(board,p2_color);
         if(P1_pieces > P2_pieces)
                 m = (100 * P1_pieces)/(P1_pieces + P2_pieces);
         else if(P1_pieces < P2_pieces)
                 m = -(100 * P2_pieces)/(P1_pieces + P2_pieces);
         else m = 0;
  
-        int score = (10 * p) + (801 * c) + (382* l) + (78 * m) + (74* f) + (10 * d);
+        int score = (int)((10 * p) + (801.724 * c) + (382.026 * l) + (78.922 * m) + (74.396 * f) + (10 * d));
         return score;
 }
