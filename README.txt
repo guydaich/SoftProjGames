@@ -1,4 +1,4 @@
-This is the final project of the C programing language course from second year of BA study at Tel-Aviv University, Computer Sience Department, 2014.
+This is the final project of the C programing language course from second year of BS study at Tel-Aviv University, Computer Sience Department, 2014.
 Created by David Lifshitz and Guy Daich.
 
 This project implemants three games: Tic-ta-toe,Connect4 and Reversi.
